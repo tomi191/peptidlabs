@@ -25,6 +25,19 @@
     "browsePeptides": "Browse Peptides",
     "viewCoa": "View COA Reports"
   },
+  "categories": {
+    "title": "Categories"
+  },
+  "trust": {
+    "hplcTitle": "HPLC Verified",
+    "hplcSub": "≥98% purity guaranteed",
+    "coaTitle": "COA Included",
+    "coaSub": "Every batch third-party tested",
+    "shippingTitle": "EU Shipping",
+    "shippingSub": "1-3 days BG, 3-7 EU",
+    "paymentTitle": "Secure Payment",
+    "paymentSub": "Stripe + COD (Bulgaria)"
+  },
   "footer": {
     "description": "Research grade peptides. HPLC tested. COA included.",
     "shop": "Shop",

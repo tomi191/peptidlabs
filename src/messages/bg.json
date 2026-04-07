@@ -25,6 +25,19 @@
     "browsePeptides": "Разгледай пептиди",
     "viewCoa": "Виж COA доклади"
   },
+  "categories": {
+    "title": "Категории"
+  },
+  "trust": {
+    "hplcTitle": "HPLC Верифициран",
+    "hplcSub": "≥98% гарантирана чистота",
+    "coaTitle": "COA Включен",
+    "coaSub": "Всеки batch тестван от трета страна",
+    "shippingTitle": "Доставка в ЕС",
+    "shippingSub": "1-3 дни БГ, 3-7 ЕС",
+    "paymentTitle": "Сигурно плащане",
+    "paymentSub": "Stripe + наложен платеж (България)"
+  },
   "footer": {
     "description": "Research grade пептиди. HPLC тествани. COA включен.",
     "shop": "Магазин",
