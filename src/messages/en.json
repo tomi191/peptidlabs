@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "shop": "Shop",
+    "encyclopedia": "Encyclopedia",
+    "blog": "Blog",
+    "about": "About Us"
+  },
+  "common": {
+    "addToCart": "Add to Cart",
+    "viewAll": "View All",
+    "bestsellers": "Bestsellers",
+    "freeShipping": "Free shipping over 99 BGN",
+    "hplcTested": "All peptides HPLC tested ≥98%",
+    "researchOnly": "All products are sold for research purposes only. Not intended for human consumption.",
+    "coaIncluded": "COA included"
+  },
+  "header": {
+    "freeShipping": "Free shipping over €49",
+    "allTested": "All peptides HPLC tested ≥98%"
+  },
+  "hero": {
+    "tag": "Research Grade Peptides",
+    "title": "Third-party tested.\nEU shipping.\nEvery batch verified.",
+    "subtitle": "65+ research peptides with HPLC-verified purity. Certificate of Analysis with every order.",
+    "browsePeptides": "Browse Peptides",
+    "viewCoa": "View COA Reports"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "shop": "Магазин",
+    "encyclopedia": "Енциклопедия",
+    "blog": "Блог",
+    "about": "За нас"
+  },
+  "common": {
+    "addToCart": "Добави",
+    "viewAll": "Виж всички",
+    "bestsellers": "Най-продавани",
+    "freeShipping": "Безплатна доставка над 99 лв",
+    "hplcTested": "Всички пептиди HPLC тествани ≥98%",
+    "researchOnly": "Всички продукти се продават само за изследователски цели. Не са предназначени за консумация от хора.",
+    "coaIncluded": "COA включен"
+  },
+  "header": {
+    "freeShipping": "Безплатна доставка над 99 лв",
+    "allTested": "Всички пептиди HPLC тествани ≥98%"
+  },
+  "hero": {
+    "tag": "Research Grade Peptides",
+    "title": "Тествани от трета страна.\nДоставка от ЕС.\nВсеки batch верифициран.",
+    "subtitle": "65+ research пептида с HPLC-верифицирана чистота. Certificate of Analysis с всяка поръчка.",
+    "browsePeptides": "Разгледай пептиди",
+    "viewCoa": "Виж COA доклади"
+  }
+}
