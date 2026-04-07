@@ -38,6 +38,12 @@
     "paymentTitle": "Сигурно плащане",
     "paymentSub": "Stripe + наложен платеж (България)"
   },
+  "shop": {
+    "title": "Магазин",
+    "allProducts": "Всички",
+    "products": "продукта",
+    "noProducts": "Няма намерени продукти в тази категория."
+  },
   "footer": {
     "description": "Research grade пептиди. HPLC тествани. COA включен.",
     "shop": "Магазин",
