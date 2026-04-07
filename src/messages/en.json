@@ -145,7 +145,15 @@
     "emptyCart": "Your cart is empty",
     "required": "This field is required",
     "invalidEmail": "Please enter a valid email",
-    "invalidPhone": "Phone must be at least 8 characters"
+    "invalidPhone": "Phone must be at least 8 characters",
+    "success": "Order Placed Successfully",
+    "successMessage": "Thank you for your order!",
+    "orderId": "Order ID",
+    "codPaymentNote": "You will pay upon delivery.",
+    "cardPaymentNote": "Payment has been processed.",
+    "continueShopping": "Continue Shopping",
+    "backToHome": "Back to Home",
+    "stripeNotConfigured": "Card payment is not available yet. Please use Cash on Delivery."
   },
   "footer": {
     "description": "Research grade peptides. HPLC tested. COA included.",

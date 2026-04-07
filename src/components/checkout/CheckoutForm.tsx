@@ -195,8 +195,47 @@ export default function CheckoutForm() {
         cart.clearCart();
         router.push(`/checkout/success?order=${data.orderId}`);
       } else {
-        // TODO: Stripe checkout will be wired in Task 3
-        setApiError("Card payment is not yet available. Please use cash on delivery.");
+        // Stripe Checkout redirect flow
+        const res = await fetch("/api/checkout/stripe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone,
+            shippingAddress: {
+              name: formData.fullName,
+              address: formData.address,
+              addressLine2: formData.addressLine2,
+              city: formData.city,
+              postalCode: formData.postalCode,
+              country: formData.country,
+            },
+            items: cart.items.map((i) => ({
+              productId: i.product.id,
+              productName: i.product.name,
+              quantity: i.quantity,
+              unitPrice:
+                currency === "EUR"
+                  ? i.product.price_eur
+                  : i.product.price_bgn,
+            })),
+            subtotal,
+            shippingCost,
+            total,
+            currency,
+            locale,
+            researchConfirmed: true,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.url) {
+          // Don't clear cart yet — user might cancel on Stripe
+          window.location.href = data.url;
+        } else {
+          setApiError(data.error || "Payment error");
+        }
       }
     } catch {
       setApiError("An unexpected error occurred. Please try again.");
