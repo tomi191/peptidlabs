@@ -44,6 +44,16 @@
     "products": "products",
     "noProducts": "No products found in this category."
   },
+  "product": {
+    "addToCart": "Add to Cart",
+    "overview": "Overview",
+    "science": "Science",
+    "coa": "COA",
+    "researchDisclaimer": "This product is intended for research purposes only.",
+    "scienceComingSoon": "Scientific data coming soon.",
+    "coaRequest": "Certificate of Analysis available upon request. Contact us.",
+    "downloadCoa": "Download COA"
+  },
   "footer": {
     "description": "Research grade peptides. HPLC tested. COA included.",
     "shop": "Shop",

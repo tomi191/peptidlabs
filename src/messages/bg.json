@@ -44,6 +44,16 @@
     "products": "продукта",
     "noProducts": "Няма намерени продукти в тази категория."
   },
+  "product": {
+    "addToCart": "Добави в кошницата",
+    "overview": "Общ преглед",
+    "science": "Наука",
+    "coa": "COA",
+    "researchDisclaimer": "Този продукт е предназначен само за изследователски цели.",
+    "scienceComingSoon": "Научни данни предстоят.",
+    "coaRequest": "Certificate of Analysis се предоставя при поискване. Свържете се с нас.",
+    "downloadCoa": "Свали COA"
+  },
   "footer": {
     "description": "Research grade пептиди. HPLC тествани. COA включен.",
     "shop": "Магазин",
