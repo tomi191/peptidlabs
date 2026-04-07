@@ -7,6 +7,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import "../globals.css";
 
 const inter = Inter({
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
           <Header />
           {children}
           <Footer />
+          <WhatsAppButton />
         </NextIntlClientProvider>
       </body>
     </html>
