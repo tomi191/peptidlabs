@@ -134,3 +134,79 @@ export async function getCategoryBySlug(
     .single();
   return data as Category | null;
 }
+
+export async function getRelatedProducts(
+  productId: string,
+  limit = 4
+): Promise<Product[]> {
+  const supabase = await createServerSupabase();
+
+  // Find category IDs for this product
+  const { data: links } = await supabase
+    .from("product_categories")
+    .select("category_id")
+    .eq("product_id", productId);
+
+  if (!links || links.length === 0) {
+    // Fallback: return other published products
+    const { data: fallback } = await supabase
+      .from("products")
+      .select("*")
+      .eq("status", "published")
+      .neq("id", productId)
+      .limit(limit);
+    return (fallback as Product[]) ?? [];
+  }
+
+  const categoryIds = links.map((l) => l.category_id);
+
+  // Find other product IDs in the same categories
+  const { data: siblingLinks } = await supabase
+    .from("product_categories")
+    .select("product_id")
+    .in("category_id", categoryIds)
+    .neq("product_id", productId);
+
+  if (!siblingLinks || siblingLinks.length === 0) {
+    const { data: fallback } = await supabase
+      .from("products")
+      .select("*")
+      .eq("status", "published")
+      .neq("id", productId)
+      .limit(limit);
+    return (fallback as Product[]) ?? [];
+  }
+
+  const uniqueIds = [...new Set(siblingLinks.map((l) => l.product_id))];
+
+  const { data: products } = await supabase
+    .from("products")
+    .select("*")
+    .in("id", uniqueIds)
+    .eq("status", "published")
+    .limit(limit);
+
+  return (products as Product[]) ?? [];
+}
+
+export async function getProductCategory(
+  productId: string
+): Promise<Category | null> {
+  const supabase = await createServerSupabase();
+  const { data: link } = await supabase
+    .from("product_categories")
+    .select("category_id")
+    .eq("product_id", productId)
+    .limit(1)
+    .single();
+
+  if (!link) return null;
+
+  const { data: category } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("id", link.category_id)
+    .single();
+
+  return category as Category | null;
+}
