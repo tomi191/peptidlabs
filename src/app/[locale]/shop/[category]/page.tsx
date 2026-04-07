@@ -22,6 +22,7 @@ import {
   getCategoryBySlug,
   getProductsByCategory,
 } from "@/lib/queries";
+import { createStaticSupabase } from "@/lib/supabase/static";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductCard } from "@/components/product/ProductCard";
 
@@ -39,9 +40,11 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export async function generateStaticParams() {
-  const categories = await getCategories();
+  const supabase = createStaticSupabase();
+  const { data } = await supabase.from("categories").select("slug");
+  const slugs = (data ?? []).map((c) => c.slug);
   return routing.locales.flatMap((locale) =>
-    categories.map((cat) => ({ locale, category: cat.slug }))
+    slugs.map((category) => ({ locale, category }))
   );
 }
 

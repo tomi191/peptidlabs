@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getProductBySlug, getPublishedProducts } from "@/lib/queries";
+import { createStaticSupabase } from "@/lib/supabase/static";
 import { QuickSpecBar } from "@/components/product/QuickSpecBar";
 import { ProductTabs } from "@/components/product/ProductTabs";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
@@ -14,14 +15,12 @@ type PageProps = {
 };
 
 export async function generateStaticParams() {
-  const products = await getPublishedProducts();
-  const params: { locale: string; slug: string }[] = [];
-  for (const locale of routing.locales) {
-    for (const product of products) {
-      params.push({ locale, slug: product.slug });
-    }
-  }
-  return params;
+  const supabase = createStaticSupabase();
+  const { data } = await supabase.from("products").select("slug").eq("status", "published");
+  const slugs = (data ?? []).map((p) => p.slug);
+  return routing.locales.flatMap((locale) =>
+    slugs.map((slug) => ({ locale, slug }))
+  );
 }
 
 export async function generateMetadata({

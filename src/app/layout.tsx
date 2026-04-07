@@ -1,35 +1,10 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500"],
-});
-
-export const metadata: Metadata = {
-  title: "PeptideLab.bg",
-  description: "Research peptides",
-};
+// Root layout is a pass-through; <html> and <body> live in [locale]/layout.tsx
+// so the lang attribute can be set from the locale param.
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="bg"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
-    </html>
-  );
+  return children;
 }
