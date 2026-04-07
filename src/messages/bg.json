@@ -54,6 +54,15 @@
     "coaRequest": "Certificate of Analysis се предоставя при поискване. Свържете се с нас.",
     "downloadCoa": "Свали COA"
   },
+  "cart": {
+    "title": "Кошница",
+    "empty": "Кошницата ви е празна",
+    "shopNow": "Разгледай магазина",
+    "subtotal": "Междинна сума",
+    "freeShippingNote": "Безплатна доставка над 99 лв",
+    "checkout": "Поръчай",
+    "remove": "Премахни"
+  },
   "footer": {
     "description": "Research grade пептиди. HPLC тествани. COA включен.",
     "shop": "Магазин",

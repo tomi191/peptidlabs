@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
 import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
+import CartDrawer from "@/components/layout/CartDrawer";
 
 /* ── Cart icon with badge (reads Zustand) ── */
-function CartIcon() {
+function CartIcon({ onClick }: { onClick: () => void }) {
   const totalItems = useCart((s) => s.totalItems);
   const [mounted, setMounted] = useState(false);
 
@@ -19,7 +21,11 @@ function CartIcon() {
   const count = mounted ? totalItems() : 0;
 
   return (
-    <button className="relative text-navy hover:text-secondary transition-colors">
+    <button
+      onClick={onClick}
+      className="relative text-navy hover:text-secondary transition-colors"
+      aria-label="Open cart"
+    >
       <ShoppingBag size={20} strokeWidth={1.5} />
       {count > 0 && (
         <span className="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-medium w-4 h-4 rounded-full flex items-center justify-center leading-none">
@@ -43,7 +49,9 @@ const navHrefs: Record<(typeof navKeys)[number], string> = {
 export default function Header() {
   const t = useTranslations("nav");
   const tc = useTranslations("header");
+  const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <header>
@@ -96,7 +104,7 @@ export default function Header() {
           <button className="text-navy hover:text-secondary transition-colors hidden sm:block">
             <User size={20} strokeWidth={1.5} />
           </button>
-          <CartIcon />
+          <CartIcon onClick={() => setCartOpen(true)} />
 
           {/* Hamburger — visible below lg */}
           <button
@@ -146,6 +154,11 @@ export default function Header() {
           </div>
         </nav>
       )}
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        locale={locale}
+      />
     </header>
   );
 }

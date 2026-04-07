@@ -54,6 +54,15 @@
     "coaRequest": "Certificate of Analysis available upon request. Contact us.",
     "downloadCoa": "Download COA"
   },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "shopNow": "Browse shop",
+    "subtotal": "Subtotal",
+    "freeShippingNote": "Free shipping over €49",
+    "checkout": "Checkout",
+    "remove": "Remove"
+  },
   "footer": {
     "description": "Research grade peptides. HPLC tested. COA included.",
     "shop": "Shop",
