@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { CreditCard, Banknote, Loader2 } from "lucide-react";
+import { useRouter } from "@/i18n/navigation";
+import { useCart } from "@/lib/store/cart";
+
+const FREE_SHIPPING_THRESHOLD_BGN = 99;
+const FREE_SHIPPING_THRESHOLD_EUR = 49;
+const SHIPPING_COST_BGN = 5.99;
+const SHIPPING_COST_EUR = 4.99;
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -57,6 +64,18 @@ const LABEL_CLASS = "block text-sm font-medium text-navy mb-1.5";
 
 export default function CheckoutForm() {
   const t = useTranslations("checkout");
+  const locale = useLocale();
+  const router = useRouter();
+  const cart = useCart();
+
+  const currency = locale === "bg" ? "BGN" : "EUR";
+  const subtotal = cart.totalPrice(currency as "BGN" | "EUR");
+  const threshold =
+    currency === "BGN" ? FREE_SHIPPING_THRESHOLD_BGN : FREE_SHIPPING_THRESHOLD_EUR;
+  const shippingBase =
+    currency === "BGN" ? SHIPPING_COST_BGN : SHIPPING_COST_EUR;
+  const shippingCost = subtotal >= threshold ? 0 : shippingBase;
+  const total = subtotal + shippingCost;
 
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -73,6 +92,7 @@ export default function CheckoutForm() {
   const [researchConfirmed, setResearchConfirmed] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   function handleChange(field: keyof FormData, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -123,6 +143,7 @@ export default function CheckoutForm() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setApiError(null);
     const validationErrors = validate();
     setErrors(validationErrors);
 
@@ -130,17 +151,58 @@ export default function CheckoutForm() {
 
     setIsSubmitting(true);
 
-    const orderData = {
-      ...formData,
-      paymentMethod,
-      researchConfirmed,
-    };
+    try {
+      if (paymentMethod === "cod") {
+        const res = await fetch("/api/orders/cod", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone,
+            shippingAddress: {
+              name: formData.fullName,
+              address: formData.address,
+              addressLine2: formData.addressLine2,
+              city: formData.city,
+              postalCode: formData.postalCode,
+              country: formData.country,
+            },
+            items: cart.items.map((i) => ({
+              productId: i.product.id,
+              productName: i.product.name,
+              quantity: i.quantity,
+              unitPrice:
+                currency === "EUR"
+                  ? i.product.price_eur
+                  : i.product.price_bgn,
+            })),
+            subtotal,
+            shippingCost,
+            total,
+            currency,
+            locale,
+            researchConfirmed: true,
+          }),
+        });
 
-    // eslint-disable-next-line no-console
-    console.log("Order data:", orderData);
-    alert("Order flow will be connected in the next task");
+        const data = await res.json();
 
-    setIsSubmitting(false);
+        if (!res.ok) {
+          setApiError(data.error || "Failed to place order");
+          return;
+        }
+
+        cart.clearCart();
+        router.push(`/checkout/success?order=${data.orderId}`);
+      } else {
+        // TODO: Stripe checkout will be wired in Task 3
+        setApiError("Card payment is not yet available. Please use cash on delivery.");
+      }
+    } catch {
+      setApiError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const isCodAvailable = formData.country === "Bulgaria";
@@ -378,6 +440,13 @@ export default function CheckoutForm() {
           <p className="text-xs text-red-500 mt-1">{errors.researchConfirm}</p>
         )}
       </section>
+
+      {/* API Error */}
+      {apiError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {apiError}
+        </div>
+      )}
 
       {/* Submit Button */}
       <button
