@@ -24,5 +24,23 @@
     "subtitle": "65+ research пептида с HPLC-верифицирана чистота. Certificate of Analysis с всяка поръчка.",
     "browsePeptides": "Разгледай пептиди",
     "viewCoa": "Виж COA доклади"
+  },
+  "footer": {
+    "description": "Research grade пептиди. HPLC тествани. COA включен.",
+    "shop": "Магазин",
+    "healing": "Healing",
+    "weightLoss": "Weight Loss",
+    "ghMuscle": "GH / Muscle",
+    "nootropic": "Nootropic",
+    "antiAging": "Anti-Aging",
+    "accessories": "Аксесоари",
+    "information": "Информация",
+    "contact": "Контакт",
+    "delivery": "Доставка и плащане",
+    "returns": "Връщане и рекламации",
+    "faq": "Често задавани въпроси",
+    "contactUs": "Свържете се с нас",
+    "disclaimer": "Всички продукти се продават само за in-vitro изследователски цели. Не са предназначени за консумация от хора.",
+    "copyright": "© 2026 PeptideLab.bg. Всички права запазени."
   }
 }

@@ -24,5 +24,23 @@
     "subtitle": "65+ research peptides with HPLC-verified purity. Certificate of Analysis with every order.",
     "browsePeptides": "Browse Peptides",
     "viewCoa": "View COA Reports"
+  },
+  "footer": {
+    "description": "Research grade peptides. HPLC tested. COA included.",
+    "shop": "Shop",
+    "healing": "Healing",
+    "weightLoss": "Weight Loss",
+    "ghMuscle": "GH / Muscle",
+    "nootropic": "Nootropic",
+    "antiAging": "Anti-Aging",
+    "accessories": "Accessories",
+    "information": "Information",
+    "contact": "Contact",
+    "delivery": "Delivery & Payment",
+    "returns": "Returns & Refunds",
+    "faq": "FAQ",
+    "contactUs": "Contact Us",
+    "disclaimer": "All products are sold strictly for in-vitro research purposes only. Not for human consumption.",
+    "copyright": "© 2026 PeptideLab.bg. All rights reserved."
   }
 }
