@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugins:*)",
+      "Bash(git clone:*)",
+      "WebSearch",
+      "Bash(bash setup:*)",
+      "Bash(npm install:*)",
+      "Bash(bash:*)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack --yes)",
+      "Bash(mkdir:*)",
+      "Bash(timeout 15 npm run dev)"
+    ]
+  }
+}
