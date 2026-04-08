@@ -8,6 +8,7 @@ import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
 import CartDrawer from "@/components/layout/CartDrawer";
+import SearchModal from "@/components/ui/SearchModal";
 
 /* ── Cart icon with badge (reads Zustand) ── */
 function CartIcon({ onClick }: { onClick: () => void }) {
@@ -52,6 +53,19 @@ export default function Header() {
   const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Ctrl+K / Cmd+K to open search
+  useEffect(() => {
+    function handleGlobalKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    document.addEventListener("keydown", handleGlobalKey);
+    return () => document.removeEventListener("keydown", handleGlobalKey);
+  }, []);
 
   return (
     <header>
@@ -95,7 +109,11 @@ export default function Header() {
 
         {/* Right icons */}
         <div className="flex items-center gap-4">
-          <button className="text-navy hover:text-secondary transition-colors hidden sm:block">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="text-navy hover:text-secondary transition-colors hidden sm:block"
+            aria-label="Search"
+          >
             <Search size={20} strokeWidth={1.5} />
           </button>
           <button className="text-navy hover:text-secondary transition-colors hidden sm:block">
@@ -137,7 +155,11 @@ export default function Header() {
 
           {/* Mobile-only icon row */}
           <div className="flex items-center gap-4 pt-2 border-t border-border sm:hidden">
-            <button className="text-navy hover:text-secondary transition-colors">
+            <button
+              onClick={() => { setSearchOpen(true); setMobileOpen(false); }}
+              className="text-navy hover:text-secondary transition-colors"
+              aria-label="Search"
+            >
               <Search size={20} strokeWidth={1.5} />
             </button>
             <button className="text-navy hover:text-secondary transition-colors">
@@ -154,6 +176,7 @@ export default function Header() {
           </div>
         </nav>
       )}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <CartDrawer
         open={cartOpen}
         onClose={() => setCartOpen(false)}

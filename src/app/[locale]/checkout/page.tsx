@@ -41,7 +41,25 @@ export default function CheckoutPage() {
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="text-2xl font-bold text-navy mb-8">{t("title")}</h1>
+        <h1 className="text-2xl font-bold text-navy mb-6">{t("title")}</h1>
+
+        {/* Progress indicator */}
+        <div className="flex items-center justify-center gap-3 mb-8 text-sm">
+          <span className="flex items-center gap-1.5 text-navy font-semibold">
+            <span className="w-6 h-6 rounded-full bg-navy text-white flex items-center justify-center text-xs">1</span>
+            {t("stepInfo")}
+          </span>
+          <div className="w-8 h-px bg-border" />
+          <span className="flex items-center gap-1.5 text-muted">
+            <span className="w-6 h-6 rounded-full border border-border text-muted flex items-center justify-center text-xs">2</span>
+            {t("stepPayment")}
+          </span>
+          <div className="w-8 h-px bg-border" />
+          <span className="flex items-center gap-1.5 text-muted">
+            <span className="w-6 h-6 rounded-full border border-border text-muted flex items-center justify-center text-xs">3</span>
+            {t("stepConfirmation")}
+          </span>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left column: form */}

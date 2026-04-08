@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import CookieConsent from "@/components/ui/CookieConsent";
 import "../globals.css";
 
 const inter = Inter({
@@ -79,6 +80,7 @@ export default async function LocaleLayout({
           {children}
           <Footer />
           <WhatsAppButton />
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

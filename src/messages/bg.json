@@ -42,7 +42,11 @@
     "title": "Магазин",
     "allProducts": "Всички",
     "products": "продукта",
-    "noProducts": "Няма намерени продукти в тази категория."
+    "noProducts": "Няма намерени продукти в тази категория.",
+    "sortNewest": "Най-нови",
+    "sortPriceAsc": "Цена: ниска към висока",
+    "sortPriceDesc": "Цена: висока към ниска",
+    "sortNameAz": "Име А-Я"
   },
   "product": {
     "addToCart": "Добави в кошницата",
@@ -153,7 +157,14 @@
     "cardPaymentNote": "Плащането е обработено.",
     "continueShopping": "Продължи пазаруването",
     "backToHome": "Обратно към началната страница",
-    "stripeNotConfigured": "Плащането с карта все още не е налично. Моля, използвайте наложен платеж."
+    "stripeNotConfigured": "Плащането с карта все още не е налично. Моля, използвайте наложен платеж.",
+    "stepInfo": "Информация",
+    "stepPayment": "Плащане",
+    "stepConfirmation": "Потвърждение",
+    "termsAgreePrefix": "Съгласен/а съм с",
+    "termsLink": "Общите условия",
+    "termsAnd": "и",
+    "privacyLink": "Политиката за поверителност"
   },
   "orders": {
     "trackTitle": "Проследи поръчката си",
@@ -177,6 +188,21 @@
     "qty": "Кол",
     "price": "Цена",
     "lineTotal": "Сума"
+  },
+  "socialProof": {
+    "euBasedValue": "ЕС",
+    "euBasedLabel": "Доставка от Европа",
+    "purityValue": "≥98%",
+    "purityLabel": "HPLC верифицирана чистота",
+    "shippingValue": "24ч",
+    "shippingLabel": "Средно време за доставка",
+    "coaValue": "COA",
+    "coaLabel": "С всяка поръчка"
+  },
+  "legal": {
+    "termsTitle": "Общи условия",
+    "privacyTitle": "Политика за поверителност",
+    "comingSoon": "Очаквайте скоро."
   },
   "footer": {
     "description": "Research grade пептиди. HPLC тествани. COA включен.",

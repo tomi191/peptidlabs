@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { BestsellersSection } from "@/components/home/BestsellersSection";
 import { TrustBar } from "@/components/home/TrustBar";
+import { SocialProofBar } from "@/components/home/SocialProofBar";
 
 export default async function HomePage({
   params,
@@ -20,6 +21,7 @@ export default async function HomePage({
   return (
     <main className="w-full">
       <HeroSection />
+      <SocialProofBar />
       <CategoryGrid categories={categories} locale={locale} />
       <BestsellersSection products={bestsellers} locale={locale} />
       <TrustBar />

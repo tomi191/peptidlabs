@@ -15,8 +15,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getCategories, getPublishedProducts } from "@/lib/queries";
-import { ProductGrid } from "@/components/product/ProductGrid";
-import { ProductCard } from "@/components/product/ProductCard";
+import { SortableProductGrid } from "@/components/product/SortableProductGrid";
 
 const iconMap: Record<string, LucideIcon> = {
   activity: Activity,
@@ -106,18 +105,7 @@ export default async function ShopPage({
 
           {/* Product content */}
           <div className="min-w-0 flex-1">
-            <p className="mb-4 text-sm text-muted">
-              {products.length} {t("products")}
-            </p>
-            <ProductGrid>
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  locale={locale}
-                />
-              ))}
-            </ProductGrid>
+            <SortableProductGrid products={products} locale={locale} />
           </div>
         </div>
       </div>

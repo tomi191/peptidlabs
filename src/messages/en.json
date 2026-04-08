@@ -42,7 +42,11 @@
     "title": "Shop",
     "allProducts": "All",
     "products": "products",
-    "noProducts": "No products found in this category."
+    "noProducts": "No products found in this category.",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "sortNameAz": "Name A-Z"
   },
   "product": {
     "addToCart": "Add to Cart",
@@ -153,7 +157,14 @@
     "cardPaymentNote": "Payment has been processed.",
     "continueShopping": "Continue Shopping",
     "backToHome": "Back to Home",
-    "stripeNotConfigured": "Card payment is not available yet. Please use Cash on Delivery."
+    "stripeNotConfigured": "Card payment is not available yet. Please use Cash on Delivery.",
+    "stepInfo": "Information",
+    "stepPayment": "Payment",
+    "stepConfirmation": "Confirmation",
+    "termsAgreePrefix": "I agree to the",
+    "termsLink": "Terms & Conditions",
+    "termsAnd": "and",
+    "privacyLink": "Privacy Policy"
   },
   "orders": {
     "trackTitle": "Track Your Order",
@@ -177,6 +188,21 @@
     "qty": "Qty",
     "price": "Price",
     "lineTotal": "Total"
+  },
+  "socialProof": {
+    "euBasedValue": "EU-Based",
+    "euBasedLabel": "Shipped from Europe",
+    "purityValue": "≥98%",
+    "purityLabel": "HPLC Verified Purity",
+    "shippingValue": "24h",
+    "shippingLabel": "Average shipping time",
+    "coaValue": "COA",
+    "coaLabel": "With every order"
+  },
+  "legal": {
+    "termsTitle": "Terms & Conditions",
+    "privacyTitle": "Privacy Policy",
+    "comingSoon": "Coming soon."
   },
   "footer": {
     "description": "Research grade peptides. HPLC tested. COA included.",

@@ -23,8 +23,7 @@ import {
   getProductsByCategory,
 } from "@/lib/queries";
 import { createStaticSupabase } from "@/lib/supabase/static";
-import { ProductGrid } from "@/components/product/ProductGrid";
-import { ProductCard } from "@/components/product/ProductCard";
+import { SortableProductGrid } from "@/components/product/SortableProductGrid";
 
 const iconMap: Record<string, LucideIcon> = {
   activity: Activity,
@@ -158,19 +157,8 @@ export default async function CategoryPage({
 
           {/* Product content */}
           <div className="min-w-0 flex-1">
-            <p className="mb-4 text-sm text-muted">
-              {products.length} {t("products")}
-            </p>
             {products.length > 0 ? (
-              <ProductGrid>
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    locale={locale}
-                  />
-                ))}
-              </ProductGrid>
+              <SortableProductGrid products={products} locale={locale} />
             ) : (
               <p className="py-12 text-center text-sm text-muted">
                 {t("noProducts")}

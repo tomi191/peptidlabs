@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { CreditCard, Banknote, Loader2 } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/store/cart";
 
 const FREE_SHIPPING_THRESHOLD_BGN = 99;
@@ -24,7 +24,7 @@ type FormData = {
   country: string;
 };
 
-type FormErrors = Partial<Record<keyof FormData | "researchConfirm", string>>;
+type FormErrors = Partial<Record<keyof FormData | "researchConfirm" | "termsAccepted", string>>;
 
 const EU_COUNTRIES = [
   "Bulgaria",
@@ -90,6 +90,7 @@ export default function CheckoutForm() {
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
   const [researchConfirmed, setResearchConfirmed] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -136,6 +137,10 @@ export default function CheckoutForm() {
 
     if (!researchConfirmed) {
       errs.researchConfirm = t("required");
+    }
+
+    if (!termsAccepted) {
+      errs.termsAccepted = t("required");
     }
 
     return errs;
@@ -477,6 +482,44 @@ export default function CheckoutForm() {
         </label>
         {errors.researchConfirm && (
           <p className="text-xs text-red-500 mt-1">{errors.researchConfirm}</p>
+        )}
+      </section>
+
+      {/* Section 5: Terms & Conditions */}
+      <section>
+        <label
+          className={`flex items-start gap-3 cursor-pointer rounded-lg border p-4 ${
+            errors.termsAccepted ? "border-red-400" : "border-border"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(e) => {
+              setTermsAccepted(e.target.checked);
+              if (e.target.checked && errors.termsAccepted) {
+                setErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.termsAccepted;
+                  return next;
+                });
+              }
+            }}
+            className="mt-0.5 h-4 w-4 rounded border-border text-navy focus:ring-navy flex-shrink-0"
+          />
+          <span className="text-sm text-secondary leading-snug">
+            {t("termsAgreePrefix")}{" "}
+            <Link href="/terms" className="text-navy underline hover:no-underline" target="_blank">
+              {t("termsLink")}
+            </Link>{" "}
+            {t("termsAnd")}{" "}
+            <Link href="/privacy" className="text-navy underline hover:no-underline" target="_blank">
+              {t("privacyLink")}
+            </Link>
+          </span>
+        </label>
+        {errors.termsAccepted && (
+          <p className="text-xs text-red-500 mt-1">{errors.termsAccepted}</p>
         )}
       </section>
 
