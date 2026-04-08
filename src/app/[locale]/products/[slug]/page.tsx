@@ -27,6 +27,7 @@ import { ProductFaq } from "@/components/product/ProductFaq";
 import { ReviewsPlaceholder } from "@/components/product/ReviewsPlaceholder";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { StickyAddToCart } from "@/components/product/StickyAddToCart";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -430,6 +431,8 @@ export default async function ProductPage({ params }: PageProps) {
           </section>
         )}
       </div>
+
+      <StickyAddToCart product={product} locale={locale} />
     </main>
   );
 }

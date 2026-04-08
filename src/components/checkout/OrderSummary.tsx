@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
@@ -25,6 +26,16 @@ export default function OrderSummary() {
   const total = subtotal + shippingCost;
   const currencySymbol = currency === "BGN" ? "лв" : "EUR";
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+
+  const handleApplyPromo = async () => {
+    // TODO: Validate against /api/coupons/validate when coupons are added
+    setPromoError(t("invalidCode"));
+  };
 
   return (
     <div className="bg-surface rounded-xl p-6 lg:sticky lg:top-8">
@@ -60,6 +71,55 @@ export default function OrderSummary() {
             </div>
           );
         })}
+      </div>
+
+      {/* Promo code section */}
+      <div className="mt-3 border-t border-border pt-3">
+        {!promoApplied ? (
+          <>
+            <button
+              onClick={() => setPromoOpen(!promoOpen)}
+              className="text-sm text-accent hover:underline"
+            >
+              {promoOpen ? t("removeCode") : t("promoCode")}
+            </button>
+            {promoOpen && (
+              <div className="mt-2 flex gap-2">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  placeholder={t("promoCode")}
+                  className="flex-1 rounded-md border border-border px-3 py-2 font-mono text-sm uppercase text-navy placeholder:text-muted focus:border-navy focus:outline-none"
+                />
+                <button
+                  onClick={handleApplyPromo}
+                  className="rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {t("apply")}
+                </button>
+              </div>
+            )}
+            {promoError && (
+              <p className="mt-1 text-xs text-red-500">{promoError}</p>
+            )}
+          </>
+        ) : (
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium text-accent">
+              Code: {promoCode}
+            </span>
+            <button
+              onClick={() => {
+                setPromoApplied(false);
+                setPromoCode("");
+              }}
+              className="text-xs text-muted hover:text-red-500"
+            >
+              {t("removeCode")}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-border pt-4 space-y-2">
