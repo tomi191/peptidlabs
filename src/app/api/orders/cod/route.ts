@@ -125,6 +125,44 @@ export async function POST(request: Request) {
 
   const supabase = createAdminSupabase();
 
+  // Validate prices against database
+  for (const item of items) {
+    const { data: product } = await supabase
+      .from("products")
+      .select("price_bgn, price_eur, status, stock")
+      .eq("id", item.productId)
+      .single();
+
+    if (!product || product.status !== "published") {
+      return NextResponse.json(
+        { error: `Product ${item.productName} is no longer available` },
+        { status: 400 }
+      );
+    }
+
+    const expectedPrice = currency === "BGN" ? product.price_bgn : product.price_eur;
+    if (Math.abs(item.unitPrice - expectedPrice) > 0.01) {
+      return NextResponse.json(
+        { error: "Price has changed. Please refresh and try again." },
+        { status: 400 }
+      );
+    }
+
+    if (product.stock < item.quantity) {
+      return NextResponse.json(
+        { error: `Insufficient stock for ${item.productName}` },
+        { status: 400 }
+      );
+    }
+  }
+
+  // Recalculate totals from validated prices
+  const validatedSubtotal = items.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
+  const validatedTotal = validatedSubtotal + shippingCost;
+
   // Create the order
   const { data: order, error: orderError } = await supabase
     .from("orders")
@@ -137,9 +175,9 @@ export async function POST(request: Request) {
       shipping_city: shippingAddress.city,
       shipping_postal_code: shippingAddress.postalCode,
       shipping_country: shippingAddress.country,
-      subtotal,
+      subtotal: validatedSubtotal,
       shipping_cost: shippingCost,
-      total,
+      total: validatedTotal,
       currency,
       locale,
       payment_method: "cod",

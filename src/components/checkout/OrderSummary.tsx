@@ -4,11 +4,7 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
-
-const FREE_SHIPPING_THRESHOLD_BGN = 99;
-const FREE_SHIPPING_THRESHOLD_EUR = 49;
-const SHIPPING_COST_BGN = 5.99;
-const SHIPPING_COST_EUR = 4.99;
+import { SHIPPING } from "@/lib/constants";
 
 export default function OrderSummary() {
   const t = useTranslations("checkout");
@@ -17,10 +13,9 @@ export default function OrderSummary() {
 
   const currency = locale === "bg" ? "BGN" : "EUR";
   const subtotal = totalPrice(currency);
-  const threshold =
-    currency === "BGN" ? FREE_SHIPPING_THRESHOLD_BGN : FREE_SHIPPING_THRESHOLD_EUR;
-  const shippingBase =
-    currency === "BGN" ? SHIPPING_COST_BGN : SHIPPING_COST_EUR;
+  const shippingConfig = SHIPPING[currency as keyof typeof SHIPPING];
+  const threshold = shippingConfig.freeAbove;
+  const shippingBase = shippingConfig.cost;
   const isFreeShipping = subtotal >= threshold;
   const shippingCost = isFreeShipping ? 0 : shippingBase;
   const total = subtotal + shippingCost;

@@ -5,11 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { CreditCard, Banknote, Loader2 } from "lucide-react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/store/cart";
-
-const FREE_SHIPPING_THRESHOLD_BGN = 99;
-const FREE_SHIPPING_THRESHOLD_EUR = 49;
-const SHIPPING_COST_BGN = 5.99;
-const SHIPPING_COST_EUR = 4.99;
+import { SHIPPING } from "@/lib/constants";
 
 type PaymentMethod = "stripe" | "cod";
 
@@ -70,10 +66,9 @@ export default function CheckoutForm() {
 
   const currency = locale === "bg" ? "BGN" : "EUR";
   const subtotal = cart.totalPrice(currency as "BGN" | "EUR");
-  const threshold =
-    currency === "BGN" ? FREE_SHIPPING_THRESHOLD_BGN : FREE_SHIPPING_THRESHOLD_EUR;
-  const shippingBase =
-    currency === "BGN" ? SHIPPING_COST_BGN : SHIPPING_COST_EUR;
+  const shippingConfig = SHIPPING[currency as keyof typeof SHIPPING];
+  const threshold = shippingConfig.freeAbove;
+  const shippingBase = shippingConfig.cost;
   const shippingCost = subtotal >= threshold ? 0 : shippingBase;
   const total = subtotal + shippingCost;
 
@@ -265,6 +260,7 @@ export default function CheckoutForm() {
               id="email"
               type="email"
               required
+              autoComplete="email"
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
               className={errors.email ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -282,6 +278,7 @@ export default function CheckoutForm() {
               id="phone"
               type="tel"
               required
+              autoComplete="tel"
               value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
               className={errors.phone ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -306,6 +303,7 @@ export default function CheckoutForm() {
               id="fullName"
               type="text"
               required
+              autoComplete="name"
               value={formData.fullName}
               onChange={(e) => handleChange("fullName", e.target.value)}
               className={errors.fullName ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -323,6 +321,7 @@ export default function CheckoutForm() {
               id="address"
               type="text"
               required
+              autoComplete="address-line1"
               value={formData.address}
               onChange={(e) => handleChange("address", e.target.value)}
               className={errors.address ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -339,6 +338,7 @@ export default function CheckoutForm() {
             <input
               id="addressLine2"
               type="text"
+              autoComplete="address-line2"
               value={formData.addressLine2}
               onChange={(e) => handleChange("addressLine2", e.target.value)}
               className={INPUT_CLASS}
@@ -354,6 +354,7 @@ export default function CheckoutForm() {
                 id="city"
                 type="text"
                 required
+                autoComplete="address-level2"
                 value={formData.city}
                 onChange={(e) => handleChange("city", e.target.value)}
                 className={errors.city ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -371,6 +372,7 @@ export default function CheckoutForm() {
                 id="postalCode"
                 type="text"
                 required
+                autoComplete="postal-code"
                 value={formData.postalCode}
                 onChange={(e) => handleChange("postalCode", e.target.value)}
                 className={errors.postalCode ? INPUT_ERROR_CLASS : INPUT_CLASS}
@@ -388,6 +390,7 @@ export default function CheckoutForm() {
             <select
               id="country"
               required
+              autoComplete="country"
               value={formData.country}
               onChange={(e) => handleChange("country", e.target.value)}
               className={errors.country ? INPUT_ERROR_CLASS : INPUT_CLASS}
