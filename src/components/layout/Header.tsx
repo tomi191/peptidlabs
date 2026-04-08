@@ -38,10 +38,11 @@ function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
 }
 
 /* ── Nav links ── */
-const navKeys = ["shop", "encyclopedia", "blog", "about"] as const;
+const navKeys = ["shop", "encyclopedia", "calculator", "blog", "about"] as const;
 const navHrefs: Record<(typeof navKeys)[number], string> = {
   shop: "/shop",
   encyclopedia: "/encyclopedia",
+  calculator: "/calculator",
   blog: "/blog",
   about: "/about",
 };

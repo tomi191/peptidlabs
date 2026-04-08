@@ -3,7 +3,8 @@
     "shop": "Shop",
     "encyclopedia": "Encyclopedia",
     "blog": "Blog",
-    "about": "About Us"
+    "about": "About Us",
+    "calculator": "Calculator"
   },
   "common": {
     "addToCart": "Add to Cart",
@@ -399,6 +400,26 @@
     "socialMedia": "Follow us",
     "paymentMethods": "Visa · Mastercard · Apple Pay · COD",
     "disclaimer": "All products are sold strictly for in-vitro research purposes. Not approved for human consumption.",
-    "copyright": "© 2026 PeptideLab.bg. All rights reserved."
+    "copyright": "© 2026 PeptideLab.bg. All rights reserved.",
+    "calculator": "Calculator"
+  },
+  "calculator": {
+    "metaTitle": "Peptide Calculator — calculate reconstitution dose | PeptideLab",
+    "metaDescription": "Free peptide reconstitution calculator. Calculate the exact dose, volume, and syringe marking for your research.",
+    "title": "Peptide Calculator",
+    "subtitle": "Calculate the exact solution volume for your research work. Enter your vial data and desired dose.",
+    "step1": "Peptide amount in vial",
+    "step2": "Bacteriostatic water added",
+    "step3": "Desired dose",
+    "step4": "Syringe type",
+    "custom": "Custom",
+    "concentration": "Concentration",
+    "doseVolume": "Volume per dose",
+    "syringeUnits": "Syringe marking",
+    "units": "units",
+    "warning": "Warning: dose exceeds syringe capacity!",
+    "disclaimer": "This calculator is intended for research purposes only. It does not constitute medical advice.",
+    "howToUse": "How to use the calculator",
+    "howToUseText": "1. Enter the peptide amount in the vial (in mg).\n2. Enter how much bacteriostatic water you added (in ml).\n3. Enter the desired dose (in mcg).\n4. Select the syringe type.\n\nThe calculator will compute the exact volume and marking."
   }
 }
