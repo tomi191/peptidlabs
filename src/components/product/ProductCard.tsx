@@ -2,20 +2,10 @@ import { ShieldCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import type { Product } from "@/lib/types";
+import { getFormLabel, getCategoryLabel } from "@/lib/labels";
 
 function formatPrice(product: Product) {
   return `€${product.price_eur.toFixed(2)}`;
-}
-
-function formatForm(form: Product["form"]) {
-  const map: Record<Product["form"], string> = {
-    lyophilized: "Lyophilized",
-    solution: "Solution",
-    nasal_spray: "Nasal Spray",
-    capsule: "Capsule",
-    accessory: "Accessory",
-  };
-  return map[form];
 }
 
 export function ProductCard({
@@ -42,7 +32,7 @@ export function ProductCard({
 
         <div className="px-4 pt-4 pb-2">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-accent">
-            Research Peptide
+            {getCategoryLabel(locale)}
           </p>
           <h3 className="mt-1 text-sm font-semibold text-navy">
             {product.name}
@@ -50,7 +40,7 @@ export function ProductCard({
           <p className="mt-1 font-mono text-[11px] text-muted">
             {product.vial_size_mg ? `${product.vial_size_mg}mg` : ""}
             {product.vial_size_mg && product.form ? " · " : ""}
-            {formatForm(product.form)}
+            {getFormLabel(product.form, locale)}
             {` · ≥${product.purity_percent}%`}
           </p>
         </div>

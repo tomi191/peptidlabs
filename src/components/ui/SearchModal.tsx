@@ -15,16 +15,8 @@ type SearchProduct = {
   purity_percent: number;
 };
 
-function formatForm(form: string) {
-  const map: Record<string, string> = {
-    lyophilized: "Lyophilized",
-    solution: "Solution",
-    nasal_spray: "Nasal Spray",
-    capsule: "Capsule",
-    accessory: "Accessory",
-  };
-  return map[form] ?? form;
-}
+import { getFormLabel } from "@/lib/labels";
+import type { Product } from "@/lib/types";
 
 export default function SearchModal({
   open,
@@ -146,7 +138,7 @@ export default function SearchModal({
                           ? `${product.vial_size_mg}mg`
                           : ""}
                         {product.vial_size_mg && product.form ? " · " : ""}
-                        {formatForm(product.form)}
+                        {getFormLabel(product.form as Product["form"], locale)}
                         {` · ≥${product.purity_percent}%`}
                       </p>
                     </div>

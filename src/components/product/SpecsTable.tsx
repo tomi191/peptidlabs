@@ -1,23 +1,18 @@
 import type { Product } from "@/lib/types";
+import { getFormLabel } from "@/lib/labels";
 
 type SpecRow = {
   label: string;
   value: string | number | null | undefined;
 };
 
-const formLabels: Record<Product["form"], string> = {
-  lyophilized: "Lyophilized",
-  solution: "Solution",
-  nasal_spray: "Nasal Spray",
-  capsule: "Capsule",
-  accessory: "Accessory",
-};
-
 export function SpecsTable({
   product,
   translations,
+  locale = "en",
 }: {
   product: Product;
+  locale?: string;
   translations: {
     specifications: string;
     specName: string;
@@ -51,7 +46,7 @@ export function SpecsTable({
       label: translations.specPurity,
       value: `≥${product.purity_percent}%`,
     },
-    { label: translations.specForm, value: formLabels[product.form] },
+    { label: translations.specForm, value: getFormLabel(product.form, locale) },
     {
       label: translations.specAppearance,
       value: sd.appearance as string | undefined,

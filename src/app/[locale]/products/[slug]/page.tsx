@@ -28,6 +28,7 @@ import { ReviewsPlaceholder } from "@/components/product/ReviewsPlaceholder";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { StickyAddToCart } from "@/components/product/StickyAddToCart";
+import { getCategoryLabel } from "@/lib/labels";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -59,7 +60,9 @@ export async function generateMetadata({
     title: `${product.name} ${product.vial_size_mg}mg`,
     description:
       description ??
-      `${product.name} research peptide. HPLC tested \u2265${product.purity_percent}% purity.`,
+      locale === "bg"
+        ? `${product.name} изследователски пептид. HPLC тестван \u2265${product.purity_percent}% чистота.`
+        : `${product.name} research peptide. HPLC tested \u2265${product.purity_percent}% purity.`,
     openGraph: {
       title: `${product.name} | PeptideLab`,
       description: description ?? undefined,
@@ -274,7 +277,7 @@ export default async function ProductPage({ params }: PageProps) {
           <div>
             {/* Category label */}
             <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-              {categoryName ?? "Research Peptide"}
+              {categoryName ?? getCategoryLabel(locale)}
             </p>
 
             {/* Product name */}
@@ -284,13 +287,13 @@ export default async function ProductPage({ params }: PageProps) {
 
             {/* QuickSpecBar */}
             <div className="mt-3">
-              <QuickSpecBar product={product} />
+              <QuickSpecBar product={product} locale={locale} />
             </div>
 
             {/* Size selector pills */}
             {siblings.length > 0 && (
               <div className="mt-4 flex items-center gap-2">
-                <span className="text-xs text-muted">Size:</span>
+                <span className="text-xs text-muted">{locale === "bg" ? "Размер:" : "Size:"}</span>
                 <Link
                   href={`/products/${product.slug}`}
                   className="px-3 py-1.5 rounded-md border-2 border-navy bg-surface text-sm font-mono font-semibold text-navy"
@@ -375,7 +378,7 @@ export default async function ProductPage({ params }: PageProps) {
       {/* ─── BELOW THE FOLD CONTENT ─── */}
       <div className="mx-auto max-w-[1280px] px-6">
         {/* Specifications */}
-        <SpecsTable product={product} translations={specTranslations} />
+        <SpecsTable product={product} translations={specTranslations} locale={locale} />
 
         {/* Tabbed content */}
         <div className="mt-12">
@@ -416,7 +419,7 @@ export default async function ProductPage({ params }: PageProps) {
                   href={`/shop?category=${category.slug}`}
                   className="text-sm text-secondary hover:text-navy"
                 >
-                  {locale === "bg" ? "Виж всички" : "View all"} →
+                  {t("viewAll")} →
                 </Link>
               )}
             </div>

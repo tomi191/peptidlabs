@@ -1,14 +1,7 @@
 import type { Product } from "@/lib/types";
+import { getFormLabel } from "@/lib/labels";
 
-const formLabels: Record<Product["form"], string> = {
-  lyophilized: "Lyophilized",
-  solution: "Solution",
-  nasal_spray: "Nasal Spray",
-  capsule: "Capsule",
-  accessory: "Accessory",
-};
-
-export function QuickSpecBar({ product }: { product: Product }) {
+export function QuickSpecBar({ product, locale = "en" }: { product: Product; locale?: string }) {
   const specs: string[] = [];
 
   if (product.purity_percent != null) {
@@ -18,7 +11,7 @@ export function QuickSpecBar({ product }: { product: Product }) {
     specs.push(`${product.vial_size_mg}mg`);
   }
   if (product.form) {
-    specs.push(formLabels[product.form]);
+    specs.push(getFormLabel(product.form, locale));
   }
   if (product.molecular_weight != null) {
     specs.push(`MW: ${product.molecular_weight}`);

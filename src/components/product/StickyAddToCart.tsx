@@ -39,7 +39,7 @@ export function StickyAddToCart({
           className="flex shrink-0 items-center gap-2 rounded-lg bg-navy px-5 py-2.5 text-sm font-semibold text-white"
         >
           <ShoppingBag size={16} />
-          Add to Cart
+          {locale === "bg" ? "Добави" : "Add to Cart"}
         </button>
       </div>
     </div>
