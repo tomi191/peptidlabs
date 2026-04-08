@@ -31,7 +31,19 @@
       "Bash(node -e \"const s = require\\('stripe'\\); console.log\\(s.Stripe.prototype\\)\")",
       "Bash(npm ls:*)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
-      "Bash(node -e \"const l = require\\('lucide-react'\\); const keys = Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('inst'\\)\\); console.log\\(keys\\);\")"
+      "Bash(node -e \"const l = require\\('lucide-react'\\); const keys = Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('inst'\\)\\); console.log\\(keys\\);\")",
+      "Bash(claude mcp:*)",
+      "Bash(python3 \"C:/Users/caspe/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"research peptide ecommerce science medical clinical\" --design-system -p \"PeptideLab\")",
+      "mcp__magic__21st_magic_component_inspiration",
+      "Bash(py --version)",
+      "Bash(where python:*)",
+      "Bash(python \"C:/Users/caspe/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"research peptide ecommerce science medical clinical\" --design-system -p \"PeptideLab\")",
+      "Bash(python \"C:/Users/caspe/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/src/ui-ux-pro-max/scripts/search.py\" \"research peptide ecommerce science medical clinical white\" --design-system -p \"PeptideLab\")",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Bash(python -c ':*)",
+      "Bash(python -c \"import json; json.load\\(open\\('src/messages/bg.json','r',encoding='utf-8'\\)\\); print\\('bg.json: VALID'\\)\")",
+      "Bash(python -c \"import json; json.load\\(open\\('src/messages/en.json','r',encoding='utf-8'\\)\\); print\\('en.json: VALID'\\)\")"
     ]
   }
 }
