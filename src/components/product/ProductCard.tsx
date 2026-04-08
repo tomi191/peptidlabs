@@ -32,7 +32,7 @@ export function ProductCard({
 
         <div className="px-4 pt-4 pb-2">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-accent">
-            {getCategoryLabel(locale)}
+            {(locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || getCategoryLabel(locale)}
           </p>
           <h3 className="mt-1 text-sm font-semibold text-navy">
             {product.name}

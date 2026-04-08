@@ -24,6 +24,8 @@ export type Product = {
   stock: number;
   weight_grams: number | null;
   created_at: string;
+  use_case_tag_bg: string | null;
+  use_case_tag_en: string | null;
   updated_at: string;
 };
 

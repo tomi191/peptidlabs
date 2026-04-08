@@ -13,6 +13,8 @@ type SearchProduct = {
   price_eur: number;
   form: string;
   purity_percent: number;
+  use_case_tag_bg: string | null;
+  use_case_tag_en: string | null;
 };
 
 import { getFormLabel } from "@/lib/labels";
@@ -132,6 +134,10 @@ export default function SearchModal({
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-navy truncate">
                         {product.name}
+                        {(() => {
+                          const tag = locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
+                          return tag ? <span className="ml-1.5 text-[10px] font-medium text-accent">{tag}</span> : null;
+                        })()}
                       </p>
                       <p className="text-xs font-mono text-muted">
                         {product.vial_size_mg

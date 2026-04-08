@@ -55,14 +55,16 @@ export async function generateMetadata({
 
   const description =
     locale === "bg" ? product.description_bg : product.description_en;
+  const useCase =
+    locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
 
   return {
-    title: `${product.name} ${product.vial_size_mg}mg`,
+    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} | PeptideLab`,
     description:
       description ??
-      locale === "bg"
-        ? `${product.name} изследователски пептид. HPLC тестван \u2265${product.purity_percent}% чистота.`
-        : `${product.name} research peptide. HPLC tested \u2265${product.purity_percent}% purity.`,
+      (locale === "bg"
+        ? `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота ≥${product.purity_percent}%. COA включен. Доставка 1-3 дни.`
+        : `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ≥${product.purity_percent}%. COA included. 1-3 day delivery.`),
     openGraph: {
       title: `${product.name} | PeptideLab`,
       description: description ?? undefined,
@@ -121,6 +123,7 @@ export default async function ProductPage({ params }: PageProps) {
       "@type": "Brand",
       name: "PeptideLab",
     },
+    category: (locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || "Research Peptide",
     offers: {
       "@type": "Offer",
       price: product.price_eur,
@@ -277,7 +280,7 @@ export default async function ProductPage({ params }: PageProps) {
           <div>
             {/* Category label */}
             <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-              {categoryName ?? getCategoryLabel(locale)}
+              {(locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || categoryName || getCategoryLabel(locale)}
             </p>
 
             {/* Product name */}
