@@ -18,6 +18,7 @@ const infoLinks = [
   { label: "returns", href: "/returns" },
   { label: "faq", href: "/faq" },
   { label: "calculator", href: "/calculator" },
+  { label: "reconstitutionGuide", href: "/guides/reconstitution" },
   { label: "contactUs", href: "/contact" },
   { label: "trackOrder", href: "/orders" },
   { label: "terms", href: "/terms" },

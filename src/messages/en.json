@@ -401,7 +401,8 @@
     "paymentMethods": "Visa · Mastercard · Apple Pay · COD",
     "disclaimer": "All products are sold strictly for in-vitro research purposes. Not approved for human consumption.",
     "copyright": "© 2026 PeptideLab.bg. All rights reserved.",
-    "calculator": "Calculator"
+    "calculator": "Calculator",
+    "reconstitutionGuide": "Reconstitution Guide"
   },
   "calculator": {
     "metaTitle": "Peptide Calculator — calculate reconstitution dose | PeptideLab",
@@ -421,5 +422,71 @@
     "disclaimer": "This calculator is intended for research purposes only. It does not constitute medical advice.",
     "howToUse": "How to use the calculator",
     "howToUseText": "1. Enter the peptide amount in the vial (in mg).\n2. Enter how much bacteriostatic water you added (in ml).\n3. Enter the desired dose (in mcg).\n4. Select the syringe type.\n\nThe calculator will compute the exact volume and marking."
+  },
+  "reconstitution": {
+    "metaTitle": "How to Reconstitute Peptides — Step by Step Guide | PeptideLab",
+    "metaDescription": "Complete guide to peptide reconstitution with bacteriostatic water. Learn how to properly dissolve lyophilized peptides step by step — from preparation to storage.",
+    "title": "How to Reconstitute Peptides — Complete Guide",
+    "intro": "Reconstitution is the process of dissolving a lyophilized (freeze-dried) peptide with bacteriostatic water to create an injectable solution ready for research use. Proper reconstitution is critical for preserving the biological activity of the peptide and ensuring accurate, reproducible results in laboratory settings. In this guide you will find everything you need — from a materials checklist to detailed steps for safe dissolution and storage of reconstituted peptides.",
+    "checklistTitle": "What You Will Need",
+    "checklist": {
+      "peptideVial": "Peptide vial (lyophilized powder)",
+      "bacWater": "Bacteriostatic water (BAC water)",
+      "insulinSyringe": "Insulin syringe (29-31G)",
+      "mixingSyringe": "Mixing syringe (21G) for drawing BAC water",
+      "alcoholSwabs": "Alcohol swabs",
+      "cleanWorkspace": "Clean workspace"
+    },
+    "checklistCta": "Missing accessories? See our starter kit",
+    "stepsTitle": "Step-by-Step Guide",
+    "steps": {
+      "preparation": {
+        "title": "Prepare Your Workspace",
+        "body": "Wash your hands thoroughly with soap and water. Clean your work surface with a disinfectant. Prepare all materials and arrange them on the clean surface.\nAllow the peptide vial to reach room temperature (10-15 minutes if stored in the freezer). Do not open the vial until it has reached room temperature — condensation can damage the powder."
+      },
+      "disinfection": {
+        "title": "Disinfection",
+        "body": "Wipe the rubber stopper of the peptide vial with an alcohol swab (70% isopropyl alcohol). Wipe the rubber stopper of the bacteriostatic water vial in the same way.\nWait 30 seconds for the alcohol to dry completely before proceeding. Do not blow or pat dry — allow it to air dry naturally."
+      },
+      "drawWater": {
+        "title": "Draw Bacteriostatic Water",
+        "body": "Use a mixing syringe (21G needle) to draw the desired amount of bacteriostatic water. The typical amount is 1-2 ml for a 5 mg vial. For exact volume and dose calculations, use our peptide calculator.\nBefore drawing, inject air into the BAC water vial equal to the volume you plan to withdraw — this equalizes pressure and makes drawing easier."
+      },
+      "addWater": {
+        "title": "Add Water to the Peptide",
+        "body": "Tilt the peptide vial at approximately a 45-degree angle. Insert the needle through the rubber stopper and slowly inject the bacteriostatic water along the inner wall of the vial.\nDo NOT spray the water directly onto the powder — excessive pressure can denature the peptide chains and reduce their biological activity. Let the water trickle slowly down the wall and reach the powder naturally."
+      },
+      "dissolve": {
+        "title": "Dissolving",
+        "body": "Gently roll the vial between your fingers with light, circular motions. Do NOT shake the vial — vigorous shaking can damage the peptide chains through foaming and mechanical stress.\nIf the powder does not dissolve completely, place the vial in the refrigerator for 15-30 minutes and try again. The finished solution should be completely clear with no visible particles."
+      },
+      "storage": {
+        "title": "Storage",
+        "body": "Store the reconstituted solution at 2-8 degrees Celsius (in the refrigerator). Most peptides remain stable for 14-28 days after reconstitution when stored properly.\nNever freeze a reconstituted solution — freezing can denature the peptide. Label the vial with the reconstitution date and peptide type for tracking."
+      }
+    },
+    "calculatorLink": "Go to peptide calculator",
+    "tipsTitle": "Important Tips",
+    "tips": {
+      "useBacWater": "Always use bacteriostatic water, not plain sterile water. Bacteriostatic water contains 0.9% benzyl alcohol, which prevents microbial growth and allows multiple withdrawals from the vial. Sterile water is suitable for single use only.",
+      "dontTouchCap": "Do not touch the rubber stopper of the vial with your fingers after disinfection. Skin contact can introduce contaminants and compromise the sterility of the solution.",
+      "newSyringe": "Use a new, sterile syringe and needle for every withdrawal from the vial. Reusing syringes is a risk factor for bacterial contamination."
+    },
+    "faqTitle": "Frequently Asked Questions",
+    "faq": {
+      "bacVsSterileQ": "What is the difference between bacteriostatic and sterile water?",
+      "bacVsSterileA": "Bacteriostatic water (BAC water) contains 0.9% benzyl alcohol — a preservative that inhibits the growth of microorganisms. This allows multiple uses of the vial over a period of 28 days. Sterile water for injection contains no preservative and is intended for single use — after opening the vial, there is a risk of microbial contamination. For research work with multiple dosing, bacteriostatic water is the standard choice.",
+      "stabilityQ": "How long does a reconstituted peptide remain stable?",
+      "stabilityA": "Most reconstituted peptides remain stable for 14-28 days when stored in a refrigerator at 2-8 degrees Celsius. The exact duration depends on the peptide type and storage conditions. Some more stable peptides, such as BPC-157, may remain active for up to 30 days, while more sensitive molecules may require shorter storage periods. Always inspect the solution for cloudiness or color change before use.",
+      "freezeQ": "Can I freeze a reconstituted peptide?",
+      "freezeA": "Freezing a reconstituted peptide solution is not recommended. Freezing can cause denaturation of the peptide chains due to ice crystal formation and changes in solvent concentration. If you need long-term storage, keep the peptide in its lyophilized (dry) form at -20 degrees Celsius and reconstitute it immediately before use.",
+      "notDissolvingQ": "What should I do if the powder does not dissolve?",
+      "notDissolvingA": "If the powder does not dissolve completely, first place the vial in the refrigerator for 15-30 minutes — some peptides dissolve more easily at lower temperatures. Continue gently rolling the vial every 5-10 minutes. Never shake or vortex. If after 1 hour there are still undissolved particles, check whether the amount of water added is sufficient — you may need to add a little more bacteriostatic water. If dissolution problems persist, contact us for assistance."
+    },
+    "ctaTitle": "Next Steps",
+    "ctaCalculator": "Peptide Calculator",
+    "ctaStarterKit": "Reconstitution Starter Kit",
+    "ctaBacWater": "Bacteriostatic Water",
+    "disclaimer": "This guide is intended strictly for in-vitro research purposes. It does not constitute medical advice."
   }
 }
