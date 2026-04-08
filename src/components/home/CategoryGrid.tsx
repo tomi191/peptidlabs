@@ -57,7 +57,8 @@ export function CategoryGrid({
         <h2 className="mb-4 text-center text-2xl font-bold text-navy md:text-3xl">
           {t("title")}
         </h2>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {/* Horizontal scroll on mobile, grid on desktop */}
+        <div className="mt-8 flex gap-3 overflow-x-auto pb-4 scroll-hidden snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
           {categories.map((category) => {
             const Icon = category.icon
               ? iconMap[category.icon] ?? Package
@@ -70,7 +71,7 @@ export function CategoryGrid({
               <Link
                 key={category.id}
                 href={`/shop/${category.slug}`}
-                className="group rounded-xl border border-border bg-surface p-5 transition-colors hover:border-navy/20"
+                className="group shrink-0 snap-center rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-navy/20 w-40 lg:w-auto"
               >
                 <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white">
                   <Icon size={18} className="text-secondary" strokeWidth={1.5} />

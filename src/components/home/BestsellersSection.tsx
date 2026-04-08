@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductCard } from "@/components/product/ProductCard";
+import { BestsellerTabs } from "@/components/home/BestsellerTabs";
 import type { Product } from "@/lib/types";
 
 export function BestsellersSection({
@@ -16,10 +16,20 @@ export function BestsellersSection({
 
   if (products.length === 0) return null;
 
+  // Pre-render all product cards so the client component receives ReactNode[]
+  const productCards = products.map((product) => (
+    <ProductCard key={product.id} product={product} locale={locale} />
+  ));
+
+  // Extract filter tags from the products for the client-side filtering
+  const productTags = products.map((p) =>
+    locale === "bg" ? p.use_case_tag_bg : p.use_case_tag_en
+  );
+
   return (
     <section className="w-full px-6 py-12">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold text-navy">
             {t("bestsellers")}
           </h2>
@@ -31,11 +41,11 @@ export function BestsellersSection({
             <ArrowRight size={14} />
           </Link>
         </div>
-        <ProductGrid>
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} locale={locale} />
-          ))}
-        </ProductGrid>
+        <BestsellerTabs
+          productCards={productCards}
+          productTags={productTags}
+          locale={locale}
+        />
       </div>
     </section>
   );

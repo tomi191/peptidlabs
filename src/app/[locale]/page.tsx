@@ -11,6 +11,7 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { TrustBar } from "@/components/home/TrustBar";
 import { BlogPreview } from "@/components/home/BlogPreview";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { FadeIn } from "@/components/ui/FadeIn";
 
 export default async function HomePage({
   params,
@@ -29,15 +30,60 @@ export default async function HomePage({
     <main className="w-full">
       <HeroSection />
       <SocialProofBar />
-      <GoalNav />
-      <HowItWorks />
-      <BestsellersSection products={bestsellers} locale={locale} />
-      <CategoryGrid categories={categories} locale={locale} />
-      <IntroSection />
-      <TestimonialsSection />
-      <TrustBar />
-      <BlogPreview posts={blogPosts} locale={locale} />
-      <NewsletterSection />
+
+      <div className="bg-white">
+        <FadeIn>
+          <GoalNav />
+        </FadeIn>
+      </div>
+
+      <div className="bg-surface">
+        <FadeIn>
+          <HowItWorks />
+        </FadeIn>
+      </div>
+
+      <div className="bg-white">
+        <FadeIn>
+          <BestsellersSection products={bestsellers} locale={locale} />
+        </FadeIn>
+      </div>
+
+      <div className="bg-surface">
+        <FadeIn>
+          <CategoryGrid categories={categories} locale={locale} />
+        </FadeIn>
+      </div>
+
+      <div className="bg-white">
+        <FadeIn>
+          <IntroSection />
+        </FadeIn>
+      </div>
+
+      <div className="bg-surface">
+        <FadeIn>
+          <TestimonialsSection />
+        </FadeIn>
+      </div>
+
+      <div className="bg-white">
+        <FadeIn>
+          <TrustBar />
+        </FadeIn>
+      </div>
+
+      <div className="bg-surface">
+        <FadeIn>
+          <BlogPreview posts={blogPosts} locale={locale} />
+        </FadeIn>
+      </div>
+
+      <div className="bg-white">
+        <FadeIn>
+          <NewsletterSection />
+        </FadeIn>
+      </div>
     </main>
   );
 }
