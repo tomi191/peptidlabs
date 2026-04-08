@@ -23,8 +23,29 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PeptideLab.bg",
-  description: "Research peptides",
+  metadataBase: new URL("https://peptidelab.bg"),
+  title: {
+    default: "PeptideLab — Research Grade Peptides",
+    template: "%s | PeptideLab",
+  },
+  description:
+    "65+ HPLC-tested research peptides. COA included with every order. EU shipping.",
+  openGraph: {
+    type: "website",
+    siteName: "PeptideLab",
+    locale: "bg_BG",
+    alternateLocale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+  },
+  alternates: {
+    canonical: "https://peptidelab.bg",
+    languages: {
+      bg: "https://peptidelab.bg/bg",
+      en: "https://peptidelab.bg/en",
+    },
+  },
 };
 
 export function generateStaticParams() {

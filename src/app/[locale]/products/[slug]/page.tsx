@@ -54,8 +54,23 @@ export async function generateMetadata({
     locale === "bg" ? product.description_bg : product.description_en;
 
   return {
-    title: `${product.name} | PeptideLab.bg`,
-    description: description ?? undefined,
+    title: `${product.name} ${product.vial_size_mg}mg`,
+    description:
+      description ??
+      `${product.name} research peptide. HPLC tested \u2265${product.purity_percent}% purity.`,
+    openGraph: {
+      title: `${product.name} | PeptideLab`,
+      description: description ?? undefined,
+      type: "website",
+      url: `https://peptidelab.bg/${locale}/products/${slug}`,
+    },
+    alternates: {
+      canonical: `https://peptidelab.bg/${locale}/products/${slug}`,
+      languages: {
+        bg: `https://peptidelab.bg/bg/products/${slug}`,
+        en: `https://peptidelab.bg/en/products/${slug}`,
+      },
+    },
   };
 }
 
