@@ -99,3 +99,16 @@ export type Review = {
   verified_purchase: boolean;
   created_at: string;
 };
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title_bg: string;
+  title_en: string;
+  content_bg: string | null;
+  content_en: string | null;
+  tags: string[];
+  published_at: string | null;
+  status: "draft" | "published";
+  author: string | null;
+};

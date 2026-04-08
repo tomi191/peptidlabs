@@ -377,7 +377,23 @@
     "emailPlaceholder": "your@email.com",
     "subscribeButton": "Subscribe",
     "subscribed": "Subscribed successfully. We will notify you when we publish.",
-    "subscribeError": "Subscription failed. Please try again."
+    "subscribeError": "Subscription failed. Please try again.",
+    "readMore": "Read more",
+    "backToBlog": "Back to Blog",
+    "relatedProducts": "Related Products",
+    "publishedOn": "Published on",
+    "by": "by",
+    "noPosts": "No articles published yet."
+  },
+  "coaVault": {
+    "title": "Certificates of Analysis (COA)",
+    "intro": "Transparency is at the core of our business. Here you will find a Certificate of Analysis for every batch of our products. Each COA contains an HPLC chromatogram, purity data, and endotoxin test results.",
+    "available": "COA available",
+    "onRequest": "COA on request",
+    "download": "Download COA",
+    "purity": "Purity",
+    "contactForCoa": "Contact us",
+    "noProducts": "No products available at this time."
   },
   "footer": {
     "description": "Research grade peptides with HPLC verified purity. Certificate of Analysis with every order.",
@@ -402,7 +418,8 @@
     "disclaimer": "All products are sold strictly for in-vitro research purposes. Not approved for human consumption.",
     "copyright": "© 2026 PeptideLab.bg. All rights reserved.",
     "calculator": "Calculator",
-    "reconstitutionGuide": "Reconstitution Guide"
+    "reconstitutionGuide": "Reconstitution Guide",
+    "coaVault": "COA Vault"
   },
   "calculator": {
     "metaTitle": "Peptide Calculator — calculate reconstitution dose | PeptideLab",

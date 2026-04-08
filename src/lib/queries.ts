@@ -1,5 +1,5 @@
 import { createServerSupabase } from "./supabase/server";
-import type { Product, Category, Peptide } from "./types";
+import type { Product, Category, Peptide, BlogPost } from "./types";
 
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createServerSupabase();
@@ -202,6 +202,50 @@ export async function getSiblingProducts(
     .eq("status", "published")
     .order("vial_size_mg");
   return (data as Product[]) ?? [];
+}
+
+export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
+  const supabase = await createServerSupabase();
+  const { data } = await supabase
+    .from("blog_posts")
+    .select("*")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+  return (data as BlogPost[]) ?? [];
+}
+
+export async function getBlogPostBySlug(
+  slug: string
+): Promise<BlogPost | null> {
+  const supabase = await createServerSupabase();
+  const { data } = await supabase
+    .from("blog_posts")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+  return data as BlogPost | null;
+}
+
+export async function getBlogPostProducts(
+  postId: string
+): Promise<Product[]> {
+  const supabase = await createServerSupabase();
+  const { data: links } = await supabase
+    .from("blog_post_products")
+    .select("product_id")
+    .eq("blog_post_id", postId);
+
+  if (!links || links.length === 0) return [];
+
+  const productIds = links.map((row) => row.product_id);
+  const { data: products } = await supabase
+    .from("products")
+    .select("*")
+    .in("id", productIds)
+    .eq("status", "published");
+
+  return (products as Product[]) ?? [];
 }
 
 export async function getProductCategory(
