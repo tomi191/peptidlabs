@@ -151,9 +151,7 @@ export default function SearchModal({
                       </p>
                     </div>
                     <span className="text-sm font-bold text-navy shrink-0">
-                      {locale === "bg"
-                        ? `${product.price_bgn.toFixed(2)} лв`
-                        : `€${product.price_eur.toFixed(2)}`}
+                      €{product.price_eur.toFixed(2)}
                     </span>
                   </button>
                 </li>

@@ -63,10 +63,10 @@ export default async function DeliveryPage({
                     {t("bg1to2days")}
                   </td>
                   <td className="px-4 py-3 text-secondary font-mono">
-                    5.99 лв
+                    &euro;4.99
                   </td>
                   <td className="px-4 py-3 text-secondary font-mono">
-                    99 лв
+                    &euro;49
                   </td>
                 </tr>
                 <tr>

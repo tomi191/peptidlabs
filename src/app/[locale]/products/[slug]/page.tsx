@@ -76,13 +76,7 @@ export async function generateMetadata({
   };
 }
 
-function formatPrice(
-  product: { price_bgn: number; price_eur: number },
-  locale: string
-) {
-  if (locale === "bg") {
-    return `${product.price_bgn.toFixed(2)} лв`;
-  }
+function formatPrice(product: { price_eur: number }) {
   return `\u20AC${product.price_eur.toFixed(2)}`;
 }
 
@@ -126,8 +120,8 @@ export default async function ProductPage({ params }: PageProps) {
     },
     offers: {
       "@type": "Offer",
-      price: locale === "bg" ? product.price_bgn : product.price_eur,
-      priceCurrency: locale === "bg" ? "BGN" : "EUR",
+      price: product.price_eur,
+      priceCurrency: "EUR",
       availability:
         product.stock > 0
           ? "https://schema.org/InStock"
@@ -317,7 +311,7 @@ export default async function ProductPage({ params }: PageProps) {
 
             {/* Price */}
             <p className="mt-6 text-3xl font-bold text-navy">
-              {formatPrice(product, locale)}
+              {formatPrice(product)}
             </p>
 
             {/* Bulk discount note */}

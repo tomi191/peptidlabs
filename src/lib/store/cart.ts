@@ -14,7 +14,7 @@ type CartStore = {
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: () => number;
-  totalPrice: (currency: "BGN" | "EUR") => number;
+  totalPrice: (currency?: "BGN" | "EUR") => number;
 };
 
 export const useCart = create<CartStore>()(
@@ -59,14 +59,9 @@ export const useCart = create<CartStore>()(
       totalItems: () =>
         get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-      totalPrice: (currency) =>
+      totalPrice: () =>
         get().items.reduce(
-          (sum, i) =>
-            sum +
-            (currency === "EUR"
-              ? i.product.price_eur
-              : i.product.price_bgn) *
-              i.quantity,
+          (sum, i) => sum + i.product.price_eur * i.quantity,
           0
         ),
     }),

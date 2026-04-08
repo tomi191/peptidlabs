@@ -27,23 +27,15 @@ export function SortableProductGrid({
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       case "price-asc":
-        return copy.sort((a, b) =>
-          locale === "bg"
-            ? a.price_bgn - b.price_bgn
-            : a.price_eur - b.price_eur
-        );
+        return copy.sort((a, b) => a.price_eur - b.price_eur);
       case "price-desc":
-        return copy.sort((a, b) =>
-          locale === "bg"
-            ? b.price_bgn - a.price_bgn
-            : b.price_eur - a.price_eur
-        );
+        return copy.sort((a, b) => b.price_eur - a.price_eur);
       case "name-az":
         return copy.sort((a, b) => a.name.localeCompare(b.name));
       default:
         return copy;
     }
-  }, [products, sort, locale]);
+  }, [products, sort]);
 
   return (
     <div>

@@ -64,9 +64,9 @@ export default function CheckoutForm() {
   const router = useRouter();
   const cart = useCart();
 
-  const currency = locale === "bg" ? "BGN" : "EUR";
-  const subtotal = cart.totalPrice(currency as "BGN" | "EUR");
-  const shippingConfig = SHIPPING[currency as keyof typeof SHIPPING];
+  const currency = "EUR";
+  const subtotal = cart.totalPrice("EUR");
+  const shippingConfig = SHIPPING.EUR;
   const threshold = shippingConfig.freeAbove;
   const shippingBase = shippingConfig.cost;
   const shippingCost = subtotal >= threshold ? 0 : shippingBase;
@@ -171,10 +171,7 @@ export default function CheckoutForm() {
               productId: i.product.id,
               productName: i.product.name,
               quantity: i.quantity,
-              unitPrice:
-                currency === "EUR"
-                  ? i.product.price_eur
-                  : i.product.price_bgn,
+              unitPrice: i.product.price_eur,
             })),
             subtotal,
             shippingCost,
@@ -214,10 +211,7 @@ export default function CheckoutForm() {
               productId: i.product.id,
               productName: i.product.name,
               quantity: i.quantity,
-              unitPrice:
-                currency === "EUR"
-                  ? i.product.price_eur
-                  : i.product.price_bgn,
+              unitPrice: i.product.price_eur,
             })),
             subtotal,
             shippingCost,

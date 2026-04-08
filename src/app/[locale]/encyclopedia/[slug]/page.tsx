@@ -160,9 +160,7 @@ export default async function EncyclopediaDetailPage({
                       </p>
                     )}
                     <p className="font-mono text-sm text-teal-600 mt-1">
-                      {locale === "bg"
-                        ? `${product.price_bgn.toFixed(2)} лв`
-                        : `€${product.price_eur.toFixed(2)}`}
+                      €{product.price_eur.toFixed(2)}
                     </p>
                   </Link>
                 ))}

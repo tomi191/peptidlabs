@@ -11,15 +11,13 @@ export default function OrderSummary() {
   const locale = useLocale();
   const { items, totalPrice } = useCart();
 
-  const currency = locale === "bg" ? "BGN" : "EUR";
-  const subtotal = totalPrice(currency);
-  const shippingConfig = SHIPPING[currency as keyof typeof SHIPPING];
+  const subtotal = totalPrice("EUR");
+  const shippingConfig = SHIPPING.EUR;
   const threshold = shippingConfig.freeAbove;
   const shippingBase = shippingConfig.cost;
   const isFreeShipping = subtotal >= threshold;
   const shippingCost = isFreeShipping ? 0 : shippingBase;
   const total = subtotal + shippingCost;
-  const currencySymbol = currency === "BGN" ? "лв" : "EUR";
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   const [promoOpen, setPromoOpen] = useState(false);
@@ -45,10 +43,7 @@ export default function OrderSummary() {
             locale === "bg" && item.product.name_bg
               ? item.product.name_bg
               : item.product.name;
-          const price =
-            currency === "BGN"
-              ? item.product.price_bgn
-              : item.product.price_eur;
+          const price = item.product.price_eur;
 
           return (
             <div key={item.product.id} className="flex justify-between gap-3">
@@ -61,7 +56,7 @@ export default function OrderSummary() {
                 )}
               </div>
               <p className="text-sm text-navy whitespace-nowrap">
-                {item.quantity} x {price.toFixed(2)} {currencySymbol}
+                {item.quantity} x €{price.toFixed(2)}
               </p>
             </div>
           );
@@ -121,7 +116,7 @@ export default function OrderSummary() {
         <div className="flex justify-between text-sm">
           <span className="text-secondary">{t("subtotal")}</span>
           <span className="text-navy">
-            {subtotal.toFixed(2)} {currencySymbol}
+            €{subtotal.toFixed(2)}
           </span>
         </div>
 
@@ -134,7 +129,7 @@ export default function OrderSummary() {
             <span className="text-accent font-medium">{t("freeShipping")}</span>
           ) : (
             <span className="text-navy">
-              {shippingCost.toFixed(2)} {currencySymbol}
+              €{shippingCost.toFixed(2)}
             </span>
           )}
         </div>
@@ -142,7 +137,7 @@ export default function OrderSummary() {
         <div className="border-t border-border pt-3 flex justify-between">
           <span className="font-bold text-lg text-navy">{t("total")}</span>
           <span className="font-bold text-lg text-navy">
-            {total.toFixed(2)} {currencySymbol}
+            €{total.toFixed(2)}
           </span>
         </div>
       </div>

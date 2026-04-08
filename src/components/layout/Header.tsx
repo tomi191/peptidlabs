@@ -55,7 +55,7 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const currencyLabel = locale === "bg" ? "BGN" : "EUR";
+  const currencyLabel = "EUR";
 
   // Ctrl+K / Cmd+K to open search
   useEffect(() => {

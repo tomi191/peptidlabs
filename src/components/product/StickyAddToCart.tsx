@@ -23,10 +23,7 @@ export function StickyAddToCart({
 
   if (!visible) return null;
 
-  const price =
-    locale === "bg"
-      ? `${product.price_bgn.toFixed(2)} лв`
-      : `\u20AC${product.price_eur.toFixed(2)}`;
+  const price = `\u20AC${product.price_eur.toFixed(2)}`;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-white px-4 py-3 shadow-lg lg:hidden">

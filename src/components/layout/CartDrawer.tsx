@@ -54,20 +54,14 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
 
   if (!mounted) return null;
 
-  const currency = locale === "bg" ? "BGN" : "EUR";
-  const subtotal = totalPrice(currency);
+  const subtotal = totalPrice("EUR");
 
   function formatPrice(amount: number): string {
-    if (currency === "BGN") {
-      return `${amount.toFixed(2)} лв`;
-    }
     return `€${amount.toFixed(2)}`;
   }
 
   function getItemPrice(item: (typeof items)[number]): number {
-    return currency === "EUR"
-      ? item.product.price_eur
-      : item.product.price_bgn;
+    return item.product.price_eur;
   }
 
   return (

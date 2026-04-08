@@ -3,10 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import type { Product } from "@/lib/types";
 
-function formatPrice(product: Product, locale: string) {
-  if (locale === "bg") {
-    return `${product.price_bgn.toFixed(2)} лв`;
-  }
+function formatPrice(product: Product) {
   return `€${product.price_eur.toFixed(2)}`;
 }
 
@@ -61,7 +58,7 @@ export function ProductCard({
 
       <div className="flex items-center justify-between px-4 pb-4 pt-1">
         <span className="text-base font-bold text-navy">
-          {formatPrice(product, locale)}
+          {formatPrice(product)}
         </span>
         <AddToCartButton product={product} />
       </div>

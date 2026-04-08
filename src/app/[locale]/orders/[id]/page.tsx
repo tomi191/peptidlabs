@@ -41,9 +41,8 @@ function formatDate(iso: string) {
   });
 }
 
-function formatCurrency(amount: number, currency: string) {
-  const symbol = currency === "BGN" ? " лв" : " EUR";
-  return amount.toFixed(2) + symbol;
+function formatCurrency(amount: number, _currency?: string) {
+  return `€${amount.toFixed(2)}`;
 }
 
 export default function OrderDetailPage({

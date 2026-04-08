@@ -140,7 +140,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const expectedPrice = currency === "BGN" ? product.price_bgn : product.price_eur;
+    const expectedPrice = product.price_eur;
     if (Math.abs(item.unitPrice - expectedPrice) > 0.01) {
       return NextResponse.json(
         { error: "Price has changed. Please refresh and try again." },
