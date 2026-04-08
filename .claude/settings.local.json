@@ -30,7 +30,8 @@
       "Bash(npx eslint:*)",
       "Bash(node -e \"const s = require\\('stripe'\\); console.log\\(s.Stripe.prototype\\)\")",
       "Bash(npm ls:*)",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(node -e \"const l = require\\('lucide-react'\\); const keys = Object.keys\\(l\\).filter\\(k => k.toLowerCase\\(\\).includes\\('inst'\\)\\); console.log\\(keys\\);\")"
     ]
   }
 }

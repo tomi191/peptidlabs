@@ -5,15 +5,18 @@ import {
   getPeptideBySlug,
   getProductsForPeptide,
 } from "@/lib/queries";
+import { createStaticSupabase } from "@/lib/supabase/static";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export async function generateStaticParams() {
-  const peptides = await getPeptides();
+  const supabase = createStaticSupabase();
+  const { data } = await supabase.from("peptides").select("slug");
+  const slugs = (data ?? []).map((p) => p.slug);
   return routing.locales.flatMap((locale) =>
-    peptides.map((p) => ({ locale, slug: p.slug }))
+    slugs.map((slug) => ({ locale, slug }))
   );
 }
 
