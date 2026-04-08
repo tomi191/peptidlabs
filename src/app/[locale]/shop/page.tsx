@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import {
@@ -29,6 +30,22 @@ const iconMap: Record<string, LucideIcon> = {
   layers: Layers,
   package: Package,
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const title = locale === "bg" ? "Магазин — Research пептиди" : "Shop — Research Peptides";
+  const description = locale === "bg"
+    ? "Купете research пептиди с HPLC верифицирана чистота. BPC-157, Semaglutide, Ipamorelin и още."
+    : "Buy HPLC-verified research peptides. BPC-157, Semaglutide, Ipamorelin and more.";
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `https://peptidelab.bg/${locale}/shop`,
+      languages: { bg: "https://peptidelab.bg/bg/shop", en: "https://peptidelab.bg/en/shop" },
+    },
+  };
+}
 
 export default async function ShopPage({
   params,

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -45,6 +46,22 @@ export async function generateStaticParams() {
   return routing.locales.flatMap((locale) =>
     slugs.map((category) => ({ locale, category }))
   );
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; category: string }> }): Promise<Metadata> {
+  const { locale, category: slug } = await params;
+  const category = await getCategoryBySlug(slug);
+  if (!category) return {};
+  const name = locale === "bg" ? category.name_bg : category.name_en;
+  const desc = locale === "bg" ? category.description_bg : category.description_en;
+  return {
+    title: `${name} — PeptideLab`,
+    description: desc || `${name} research peptides at PeptideLab.bg`,
+    alternates: {
+      canonical: `https://peptidelab.bg/${locale}/shop/${slug}`,
+      languages: { bg: `https://peptidelab.bg/bg/shop/${slug}`, en: `https://peptidelab.bg/en/shop/${slug}` },
+    },
+  };
 }
 
 export default async function CategoryPage({

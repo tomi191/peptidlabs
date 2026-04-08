@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
@@ -51,6 +51,7 @@ export default function OrderDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const t = useTranslations("orders");
   const ct = useTranslations("checkout");
   const [order, setOrder] = useState<Order | null>(null);
@@ -60,7 +61,6 @@ export default function OrderDetailPage({
   useEffect(() => {
     let cancelled = false;
     async function fetchOrder() {
-      const { id } = await params;
       try {
         const res = await fetch(`/api/orders/${id}`);
         if (!res.ok) {
@@ -79,7 +79,7 @@ export default function OrderDetailPage({
     return () => {
       cancelled = true;
     };
-  }, [params]);
+  }, [id]);
 
   if (loading) {
     return (

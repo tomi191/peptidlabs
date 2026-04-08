@@ -119,6 +119,11 @@ export default async function ProductPage({ params }: PageProps) {
     name: product.name,
     description,
     sku: product.sku,
+    image: product.images?.[0] || `https://peptidelab.bg/placeholder-vial.svg`,
+    brand: {
+      "@type": "Brand",
+      name: "PeptideLab",
+    },
     offers: {
       "@type": "Offer",
       price: locale === "bg" ? product.price_bgn : product.price_eur,
