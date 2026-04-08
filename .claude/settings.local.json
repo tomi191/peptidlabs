@@ -43,7 +43,23 @@
       "mcp__plugin_playwright_playwright__browser_take_screenshot",
       "Bash(python -c ':*)",
       "Bash(python -c \"import json; json.load\\(open\\('src/messages/bg.json','r',encoding='utf-8'\\)\\); print\\('bg.json: VALID'\\)\")",
-      "Bash(python -c \"import json; json.load\\(open\\('src/messages/en.json','r',encoding='utf-8'\\)\\); print\\('en.json: VALID'\\)\")"
+      "Bash(python -c \"import json; json.load\\(open\\('src/messages/en.json','r',encoding='utf-8'\\)\\); print\\('en.json: VALID'\\)\")",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "Bash(python3 /tmp/count_words.py)",
+      "Read(//tmp/**)",
+      "WebFetch(domain:peptidishop.com)",
+      "WebFetch(domain:www.peptidesciences.com)",
+      "WebFetch(domain:particlepeptides.com)",
+      "WebFetch(domain:novumlab.eu)",
+      "WebFetch(domain:biotechpeptides.com)",
+      "WebFetch(domain:bulgaria.direct-peptides.com)",
+      "Bash(grep -oP '\"children\":\"[^\"]{5,100}\"')",
+      "Bash(grep -E \"^[А-Яа-яA-Za-z].{5,}\")",
+      "Bash(grep -E \".{8,}\")",
+      "Bash(grep -oE '[А-Яа-я][А-Яа-яA-Za-z0-9 .,\\\\-/\\(\\)!?€%+]{10,200}')",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/bg.json','utf8'\\)\\); console.log\\('bg.json: valid'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/messages/en.json','utf8'\\)\\); console.log\\('en.json: valid'\\)\")",
+      "Bash(node -e \"const lucide = require\\('lucide-react'\\); const icons = ['Beaker','Droplets','ShieldCheck','Thermometer','Syringe','FlaskConical','ArrowRight','CircleAlert','Calculator','ShoppingCart']; icons.forEach\\(i => { if \\(lucide[i]\\) console.log\\(i + ': found'\\); else console.log\\(i + ': MISSING'\\); }\\)\")"
     ]
   }
 }
