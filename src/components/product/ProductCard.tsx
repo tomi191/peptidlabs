@@ -43,7 +43,7 @@ export function ProductCard({
           )}
         </div>
 
-        <div className="p-4">
+        <div className="px-4 pt-4 pb-2">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-accent">
             Research Peptide
           </p>
@@ -56,15 +56,15 @@ export function ProductCard({
             {formatForm(product.form)}
             {` · ≥${product.purity_percent}%`}
           </p>
-
-          <div className="mt-3 flex items-center justify-between">
-            <span className="text-base font-bold text-navy">
-              {formatPrice(product, locale)}
-            </span>
-            <AddToCartButton product={product} />
-          </div>
         </div>
       </Link>
+
+      <div className="flex items-center justify-between px-4 pb-4 pt-1">
+        <span className="text-base font-bold text-navy">
+          {formatPrice(product, locale)}
+        </span>
+        <AddToCartButton product={product} />
+      </div>
     </div>
   );
 }

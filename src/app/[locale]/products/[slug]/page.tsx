@@ -15,6 +15,7 @@ import {
   getProductBySlug,
   getRelatedProducts,
   getProductCategory,
+  getSiblingProducts,
 } from "@/lib/queries";
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { QuickSpecBar } from "@/components/product/QuickSpecBar";
@@ -96,9 +97,10 @@ export default async function ProductPage({ params }: PageProps) {
 
   if (!product) notFound();
 
-  const [relatedProducts, category] = await Promise.all([
+  const [relatedProducts, category, siblings] = await Promise.all([
     getRelatedProducts(product.id),
     getProductCategory(product.id),
+    getSiblingProducts(product.name, product.slug),
   ]);
 
   const categoryName =
@@ -280,17 +282,32 @@ export default async function ProductPage({ params }: PageProps) {
               {product.name}
             </h1>
 
-            {/* Star rating placeholder */}
-            <p className="mt-2 text-sm text-muted">
-              <span className="text-amber-500">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-              {" "}
-              <span>(47 {t("reviewsCount")})</span>
-            </p>
-
             {/* QuickSpecBar */}
             <div className="mt-3">
               <QuickSpecBar product={product} />
             </div>
+
+            {/* Size selector pills */}
+            {siblings.length > 0 && (
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-xs text-muted">Size:</span>
+                <Link
+                  href={`/products/${product.slug}`}
+                  className="px-3 py-1.5 rounded-md border-2 border-navy bg-surface text-sm font-mono font-semibold text-navy"
+                >
+                  {product.vial_size_mg}mg
+                </Link>
+                {siblings.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/products/${s.slug}`}
+                    className="px-3 py-1.5 rounded-md border border-border text-sm font-mono text-secondary hover:border-navy hover:text-navy"
+                  >
+                    {s.vial_size_mg}mg
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {/* Price */}
             <p className="mt-6 text-3xl font-bold text-navy">

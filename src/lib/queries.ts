@@ -189,6 +189,21 @@ export async function getRelatedProducts(
   return (products as Product[]) ?? [];
 }
 
+export async function getSiblingProducts(
+  productName: string,
+  currentSlug: string
+): Promise<Product[]> {
+  const supabase = await createServerSupabase();
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("name", productName)
+    .neq("slug", currentSlug)
+    .eq("status", "published")
+    .order("vial_size_mg");
+  return (data as Product[]) ?? [];
+}
+
 export async function getProductCategory(
   productId: string
 ): Promise<Category | null> {
