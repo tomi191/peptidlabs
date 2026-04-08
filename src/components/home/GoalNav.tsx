@@ -1,43 +1,88 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Scale, Activity, Dumbbell, Brain } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-const goals = [
-  { titleKey: "weightTitle", subKey: "weightSub", href: "/shop/weight-loss" },
-  { titleKey: "healingTitle", subKey: "healingSub", href: "/shop/healing" },
-  { titleKey: "performanceTitle", subKey: "performanceSub", href: "/shop/gh-muscle" },
-  { titleKey: "cognitiveTitle", subKey: "cognitiveSub", href: "/shop/nootropic" },
-] as const;
+type Goal = {
+  titleKey: string;
+  descKey: string;
+  popularKey: string;
+  href: string;
+  icon: LucideIcon;
+};
+
+const goals: Goal[] = [
+  {
+    titleKey: "weightTitle",
+    descKey: "weightDesc",
+    popularKey: "weightPopular",
+    href: "/shop/weight-loss",
+    icon: Scale,
+  },
+  {
+    titleKey: "healingTitle",
+    descKey: "healingDesc",
+    popularKey: "healingPopular",
+    href: "/shop/healing",
+    icon: Activity,
+  },
+  {
+    titleKey: "performanceTitle",
+    descKey: "performanceDesc",
+    popularKey: "performancePopular",
+    href: "/shop/gh-muscle",
+    icon: Dumbbell,
+  },
+  {
+    titleKey: "cognitiveTitle",
+    descKey: "cognitiveDesc",
+    popularKey: "cognitivePopular",
+    href: "/shop/nootropic",
+    icon: Brain,
+  },
+];
 
 export function GoalNav() {
   const t = useTranslations("goals");
 
   return (
-    <section className="w-full px-6 py-12">
+    <section className="w-full px-6 py-16">
       <div className="mx-auto max-w-[1280px]">
-        <h2 className="mb-6 text-lg font-semibold text-navy">{t("title")}</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {goals.map((goal) => (
-            <Link
-              key={goal.titleKey}
-              href={goal.href}
-              className="group flex flex-col justify-between rounded-xl border border-border bg-surface p-6 transition-colors hover:border-navy/20"
-            >
-              <div>
-                <h3 className="text-base font-semibold text-navy">
-                  {t(goal.titleKey)}
-                </h3>
-                <p className="mt-1 text-sm text-secondary">{t(goal.subKey)}</p>
-              </div>
-              <div className="mt-4 flex items-center text-accent">
-                <ArrowRight
-                  size={16}
-                  strokeWidth={1.5}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </div>
-            </Link>
-          ))}
+        <h2 className="mb-4 text-center text-2xl font-bold text-navy md:text-3xl">
+          {t("title")}
+        </h2>
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {goals.map((goal) => {
+            const Icon = goal.icon;
+            return (
+              <Link
+                key={goal.titleKey}
+                href={goal.href}
+                className="group flex flex-col justify-between rounded-xl border border-border bg-surface p-8 transition-colors hover:border-navy/20"
+              >
+                <div>
+                  <Icon size={24} className="text-accent" strokeWidth={1.5} />
+                  <h3 className="mt-4 text-base font-semibold text-navy">
+                    {t(goal.titleKey)}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-secondary">
+                    {t(goal.descKey)}
+                  </p>
+                  <p className="mt-3 text-xs text-muted">
+                    <span className="font-semibold">{t("popularLabel")}</span>{" "}
+                    <span className="font-mono">{t(goal.popularKey)}</span>
+                  </p>
+                </div>
+                <div className="mt-5 flex items-center text-accent">
+                  <ArrowRight
+                    size={16}
+                    strokeWidth={1.5}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -9,6 +9,7 @@ import {
   Shield,
   Layers,
   Package,
+  ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -28,6 +29,19 @@ const iconMap: Record<string, LucideIcon> = {
   package: Package,
 };
 
+const countMap: Record<string, number> = {
+  healing: 6,
+  "weight-loss": 8,
+  "gh-muscle": 11,
+  "anti-aging": 7,
+  nootropic: 6,
+  "sexual-health": 4,
+  "hair-growth": 3,
+  immune: 3,
+  blends: 4,
+  accessories: 7,
+};
+
 export function CategoryGrid({
   categories,
   locale,
@@ -38,30 +52,39 @@ export function CategoryGrid({
   const t = useTranslations("categories");
 
   return (
-    <section className="w-full px-6 py-12">
+    <section className="w-full px-6 py-16">
       <div className="mx-auto max-w-[1280px]">
-        <h2 className="mb-4 text-lg font-semibold text-navy">{t("title")}</h2>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        <h2 className="mb-4 text-center text-2xl font-bold text-navy md:text-3xl">
+          {t("title")}
+        </h2>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {categories.map((category) => {
             const Icon = category.icon
               ? iconMap[category.icon] ?? Package
               : Package;
             const name =
               locale === "bg" ? category.name_bg : category.name_en;
+            const count = countMap[category.slug] ?? 0;
 
             return (
               <Link
                 key={category.id}
                 href={`/shop/${category.slug}`}
-                className="rounded-lg border border-border bg-surface p-4 transition-colors hover:border-secondary/30"
+                className="group rounded-xl border border-border bg-surface p-5 transition-colors hover:border-navy/20"
               >
-                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-md bg-white">
-                  <Icon size={16} className="text-secondary" />
+                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white">
+                  <Icon size={18} className="text-secondary" strokeWidth={1.5} />
                 </div>
                 <p className="text-sm font-semibold text-navy">{name}</p>
-                <p className="text-xs text-muted">
-                  {locale === "bg" ? "Продукти" : "Products"}
-                </p>
+                {count > 0 && (
+                  <p className="mt-1 text-xs text-muted">
+                    {count} {locale === "bg" ? "продукта" : "products"}
+                  </p>
+                )}
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                  {locale === "bg" ? "Виж" : "View"}
+                  <ArrowRight size={12} />
+                </span>
               </Link>
             );
           })}
