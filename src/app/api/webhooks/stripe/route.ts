@@ -2,13 +2,17 @@ import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) return null;
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
+  const stripe = getStripe();
 
-  if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
+  if (!stripe || !sig || !process.env.STRIPE_WEBHOOK_SECRET) {
     return NextResponse.json({ error: "Not configured" }, { status: 500 });
   }
 
