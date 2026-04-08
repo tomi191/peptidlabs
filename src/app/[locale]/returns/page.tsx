@@ -24,7 +24,10 @@ export default async function ReturnsPage({
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto max-w-[1280px] px-6 py-16">
-        <h1 className="text-3xl font-bold text-navy mb-10">{t("title")}</h1>
+        <h1 className="text-3xl font-bold text-navy mb-4">{t("title")}</h1>
+        <p className="mb-10 max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("intro")}
+        </p>
 
         {/* Policy overview */}
         <section className="mb-10">
@@ -63,6 +66,26 @@ export default async function ReturnsPage({
           </h2>
           <p className="text-sm text-secondary leading-relaxed max-w-2xl">
             {t("refundDesc")}
+          </p>
+        </section>
+
+        {/* Damaged product */}
+        <section className="mb-10">
+          <h2 className="text-lg font-semibold text-navy mb-3">
+            {t("damagedTitle")}
+          </h2>
+          <p className="text-sm text-secondary leading-relaxed max-w-3xl">
+            {t("damagedText")}
+          </p>
+        </section>
+
+        {/* Wrong product */}
+        <section className="mb-10">
+          <h2 className="text-lg font-semibold text-navy mb-3">
+            {t("wrongItemTitle")}
+          </h2>
+          <p className="text-sm text-secondary leading-relaxed max-w-3xl">
+            {t("wrongItemText")}
           </p>
         </section>
 

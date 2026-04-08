@@ -25,7 +25,20 @@ export default async function DeliveryPage({
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto max-w-[1280px] px-6 py-16">
-        <h1 className="text-3xl font-bold text-navy mb-10">{t("title")}</h1>
+        <h1 className="text-3xl font-bold text-navy mb-4">{t("title")}</h1>
+        <p className="mb-10 max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("intro")}
+        </p>
+
+        {/* How delivery works */}
+        <section className="mb-14">
+          <h2 className="text-lg font-semibold text-navy mb-3">
+            {t("processTitle")}
+          </h2>
+          <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+            {t("processText")}
+          </p>
+        </section>
 
         {/* Shipping */}
         <section className="mb-14">
@@ -99,7 +112,7 @@ export default async function DeliveryPage({
         </section>
 
         {/* Payment */}
-        <section>
+        <section className="mb-14">
           <h2 className="text-xl font-semibold text-navy mb-6">
             {t("paymentTitle")}
           </h2>
@@ -117,6 +130,16 @@ export default async function DeliveryPage({
               <p className="text-sm text-muted">{t("codDesc")}</p>
             </div>
           </div>
+        </section>
+
+        {/* Tracking */}
+        <section>
+          <h2 className="text-lg font-semibold text-navy mb-3">
+            {t("trackingTitle")}
+          </h2>
+          <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+            {t("trackingText")}
+          </p>
         </section>
       </div>
     </main>

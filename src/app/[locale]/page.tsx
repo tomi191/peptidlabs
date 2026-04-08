@@ -5,6 +5,7 @@ import { SocialProofBar } from "@/components/home/SocialProofBar";
 import { GoalNav } from "@/components/home/GoalNav";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { BestsellersSection } from "@/components/home/BestsellersSection";
+import { IntroSection } from "@/components/home/IntroSection";
 import { TrustBar } from "@/components/home/TrustBar";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 
@@ -27,6 +28,7 @@ export default async function HomePage({
       <GoalNav />
       <CategoryGrid categories={categories} locale={locale} />
       <BestsellersSection products={bestsellers} locale={locale} />
+      <IntroSection />
       <TrustBar />
       <NewsletterSection />
     </main>

@@ -32,6 +32,9 @@ export default async function EncyclopediaPage({
       <div className="mx-auto max-w-[1280px] px-6 py-16">
         <h1 className="text-3xl font-bold text-navy">{t("title")}</h1>
         <p className="mt-3 text-secondary max-w-xl">{t("subtitle")}</p>
+        <p className="mt-4 max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("intro")}
+        </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {peptides.map((peptide) => {

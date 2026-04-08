@@ -64,7 +64,10 @@ export default async function ShopPage({
   return (
     <main className="w-full">
       <div className="mx-auto max-w-[1280px] px-6 py-12">
-        <h1 className="mb-6 text-2xl font-bold text-navy">{t("title")}</h1>
+        <h1 className="mb-3 text-2xl font-bold text-navy">{t("title")}</h1>
+        <p className="mb-8 max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("intro")}
+        </p>
 
         {/* Mobile category chips */}
         <div className="flex gap-2 overflow-x-auto pb-4 lg:hidden">

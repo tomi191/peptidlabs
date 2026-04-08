@@ -78,8 +78,40 @@ export default async function AboutPage({
         </div>
       </section>
 
+      {/* Our Story */}
+      <section className="mx-auto max-w-[1280px] px-6 py-16">
+        <h2 className="text-lg font-semibold text-navy mb-3">
+          {t("storyTitle")}
+        </h2>
+        <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("storyText")}
+        </p>
+      </section>
+
+      {/* Quality Standards */}
+      <section className="bg-surface border-y border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-16">
+          <h2 className="text-lg font-semibold text-navy mb-3">
+            {t("qualityStandardsTitle")}
+          </h2>
+          <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+            {t("qualityStandardsText")}
+          </p>
+        </div>
+      </section>
+
+      {/* Shipping & Packaging */}
+      <section className="mx-auto max-w-[1280px] px-6 py-16">
+        <h2 className="text-lg font-semibold text-navy mb-3">
+          {t("shippingInfoTitle")}
+        </h2>
+        <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("shippingInfoText")}
+        </p>
+      </section>
+
       {/* Research disclaimer */}
-      <section className="mx-auto max-w-[1280px] px-6 py-10">
+      <section className="mx-auto max-w-[1280px] px-6 py-10 border-t border-border">
         <p className="text-xs text-muted">{t("disclaimer")}</p>
       </section>
     </main>

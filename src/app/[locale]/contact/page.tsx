@@ -26,7 +26,10 @@ export default async function ContactPage({
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto max-w-[1280px] px-6 py-16">
-        <h1 className="text-3xl font-bold text-navy mb-10">{t("title")}</h1>
+        <h1 className="text-3xl font-bold text-navy mb-4">{t("title")}</h1>
+        <p className="mb-10 max-w-3xl text-sm text-secondary leading-relaxed">
+          {t("intro")}
+        </p>
 
         <div className="grid gap-12 lg:grid-cols-2">
           {/* Contact info */}
@@ -60,6 +63,16 @@ export default async function ContactPage({
                 </p>
                 <p className="text-sm text-muted">{t("hoursValue")}</p>
               </div>
+            </div>
+
+            {/* When to contact */}
+            <div className="mt-8 pt-6 border-t border-border">
+              <h2 className="text-lg font-semibold text-navy mb-3">
+                {t("whenToContact")}
+              </h2>
+              <p className="text-sm text-secondary leading-relaxed">
+                {t("whenToContactText")}
+              </p>
             </div>
           </div>
 
