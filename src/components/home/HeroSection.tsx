@@ -42,18 +42,18 @@ export function HeroSection() {
           <div className="rounded-xl border border-border bg-surface p-8">
             <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
-                <p className="font-mono text-2xl font-bold text-navy">65+</p>
-                <p className="mt-1 text-xs text-muted">Peptides in stock</p>
+                <p className="font-mono text-2xl font-bold text-navy">{t("statPeptides")}</p>
+                <p className="mt-1 text-xs text-muted">{t("statPeptidesLabel")}</p>
               </div>
               <div className="text-center">
                 <p className="font-mono text-2xl font-bold text-navy">
-                  ≥98%
+                  {t("statPurity")}
                 </p>
-                <p className="mt-1 text-xs text-muted">HPLC purity</p>
+                <p className="mt-1 text-xs text-muted">{t("statPurityLabel")}</p>
               </div>
               <div className="text-center">
-                <p className="font-mono text-2xl font-bold text-navy">1-3d</p>
-                <p className="mt-1 text-xs text-muted">EU delivery</p>
+                <p className="font-mono text-2xl font-bold text-navy">{t("statDelivery")}</p>
+                <p className="mt-1 text-xs text-muted">{t("statDeliveryLabel")}</p>
               </div>
             </div>
           </div>

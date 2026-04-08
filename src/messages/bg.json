@@ -25,7 +25,32 @@
     "title": "Тествани от трета страна.\nДоставка от ЕС.\nВсеки batch верифициран.",
     "subtitle": "65+ research пептида с HPLC-верифицирана чистота. Certificate of Analysis с всяка поръчка.",
     "browsePeptides": "Разгледай пептиди",
-    "viewCoa": "Виж COA доклади"
+    "viewCoa": "Виж COA доклади",
+    "statPeptides": "65+",
+    "statPeptidesLabel": "Пептида в наличност",
+    "statPurity": "≥98%",
+    "statPurityLabel": "HPLC чистота",
+    "statDelivery": "1-3 дни",
+    "statDeliveryLabel": "Доставка в ЕС"
+  },
+  "goals": {
+    "title": "Какво търсите?",
+    "weightTitle": "Управление на теглото",
+    "weightSub": "Пептиди за метаболизъм и телесен състав",
+    "healingTitle": "Възстановяване",
+    "healingSub": "Пептиди за регенерация и заздравяване",
+    "performanceTitle": "Представяне",
+    "performanceSub": "Пептиди за растежен хормон и мускулна маса",
+    "cognitiveTitle": "Когнитивен фокус",
+    "cognitiveSub": "Ноотропни пептиди за когнитивни функции"
+  },
+  "newsletter": {
+    "title": "Бъдете информирани",
+    "subtitle": "Нови пептиди, научни новини и специални оферти.",
+    "placeholder": "вашият@имейл.бг",
+    "subscribe": "Абониране",
+    "success": "Благодарим! Вие сте абонирани.",
+    "error": "Грешка при абониране. Моля, опитайте отново."
   },
   "categories": {
     "title": "Категории"

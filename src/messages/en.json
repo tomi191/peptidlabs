@@ -25,7 +25,32 @@
     "title": "Third-party tested.\nEU shipping.\nEvery batch verified.",
     "subtitle": "65+ research peptides with HPLC-verified purity. Certificate of Analysis with every order.",
     "browsePeptides": "Browse Peptides",
-    "viewCoa": "View COA Reports"
+    "viewCoa": "View COA Reports",
+    "statPeptides": "65+",
+    "statPeptidesLabel": "Peptides in stock",
+    "statPurity": "≥98%",
+    "statPurityLabel": "HPLC purity",
+    "statDelivery": "1-3d",
+    "statDeliveryLabel": "EU delivery"
+  },
+  "goals": {
+    "title": "What are you looking for?",
+    "weightTitle": "Weight Management",
+    "weightSub": "Peptides for metabolism and body composition",
+    "healingTitle": "Recovery & Healing",
+    "healingSub": "Peptides for regeneration and tissue repair",
+    "performanceTitle": "Performance",
+    "performanceSub": "Growth hormone and muscle mass peptides",
+    "cognitiveTitle": "Cognitive Focus",
+    "cognitiveSub": "Nootropic peptides for cognitive function"
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "subtitle": "New peptides, research updates, and exclusive offers.",
+    "placeholder": "your@email.com",
+    "subscribe": "Subscribe",
+    "success": "Thank you! You're subscribed.",
+    "error": "Error subscribing. Please try again."
   },
   "categories": {
     "title": "Categories"

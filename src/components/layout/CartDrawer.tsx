@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 
@@ -14,6 +14,7 @@ type CartDrawerProps = {
 
 export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
   const t = useTranslations("cart");
+  const router = useRouter();
   const items = useCart((s) => s.items);
   const removeItem = useCart((s) => s.removeItem);
   const updateQuantity = useCart((s) => s.updateQuantity);
@@ -222,7 +223,13 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
               <p className="text-xs text-muted mt-1">
                 {t("freeShippingNote")}
               </p>
-              <button className="w-full bg-navy text-white py-3 rounded-lg font-semibold text-sm mt-4 hover:bg-navy/90 transition-colors">
+              <button
+                onClick={() => {
+                  onClose();
+                  router.push("/checkout");
+                }}
+                className="w-full bg-navy text-white py-3 rounded-lg font-semibold text-sm mt-4 hover:bg-navy/90 transition-colors"
+              >
                 {t("checkout")}
               </button>
             </div>
