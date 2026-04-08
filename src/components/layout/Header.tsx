@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu, X, Phone } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
 import CartDrawer from "@/components/layout/CartDrawer";
@@ -55,6 +55,8 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const currencyLabel = locale === "bg" ? "BGN" : "EUR";
+
   // Ctrl+K / Cmd+K to open search
   useEffect(() => {
     function handleGlobalKey(e: KeyboardEvent) {
@@ -74,8 +76,17 @@ export default function Header() {
         <div className="flex items-center justify-between text-muted text-xs py-2 px-6">
           <span>{tc("freeShipping")}</span>
           <div className="flex items-center gap-3">
+            <a
+              href="https://wa.me/359XXXXXXXXX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted text-xs hover:text-navy transition-colors inline-flex items-center gap-1"
+            >
+              <Phone size={14} strokeWidth={1.5} />
+              {tc("whatsapp")}
+            </a>
             <LocaleSwitch />
-            <span className="text-muted text-xs font-mono">EUR</span>
+            <span className="text-muted text-xs font-mono">{currencyLabel}</span>
           </div>
         </div>
       </div>
@@ -107,7 +118,7 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Right icons */}
+        {/* Right icons — Search + Cart only */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setSearchOpen(true)}
@@ -115,12 +126,6 @@ export default function Header() {
             aria-label="Search"
           >
             <Search size={20} strokeWidth={1.5} />
-          </button>
-          <button className="text-navy hover:text-secondary transition-colors hidden sm:block">
-            <Heart size={20} strokeWidth={1.5} />
-          </button>
-          <button className="text-navy hover:text-secondary transition-colors hidden sm:block">
-            <User size={20} strokeWidth={1.5} />
           </button>
           <CartIcon onClick={() => setCartOpen(true)} />
 
@@ -153,6 +158,15 @@ export default function Header() {
             </Link>
           ))}
 
+          {/* Track Order — mobile only */}
+          <Link
+            href="/orders"
+            onClick={() => setMobileOpen(false)}
+            className="text-secondary text-sm hover:text-navy transition-colors"
+          >
+            {tc("trackOrder")}
+          </Link>
+
           {/* Mobile-only icon row */}
           <div className="flex items-center gap-4 pt-2 border-t border-border sm:hidden">
             <button
@@ -161,12 +175,6 @@ export default function Header() {
               aria-label="Search"
             >
               <Search size={20} strokeWidth={1.5} />
-            </button>
-            <button className="text-navy hover:text-secondary transition-colors">
-              <Heart size={20} strokeWidth={1.5} />
-            </button>
-            <button className="text-navy hover:text-secondary transition-colors">
-              <User size={20} strokeWidth={1.5} />
             </button>
           </div>
 

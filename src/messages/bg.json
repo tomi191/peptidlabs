@@ -16,7 +16,9 @@
   },
   "header": {
     "freeShipping": "Безплатна доставка над 99 лв",
-    "allTested": "Всички пептиди HPLC тествани ≥98%"
+    "allTested": "Всички пептиди HPLC тествани ≥98%",
+    "trackOrder": "Проследи поръчка",
+    "whatsapp": "WhatsApp"
   },
   "hero": {
     "tag": "Research Grade Peptides",
@@ -328,6 +330,11 @@
     "returns": "Връщане и рекламации",
     "faq": "Често задавани въпроси",
     "contactUs": "Свържете се с нас",
+    "terms": "Общи условия",
+    "privacy": "Политика за поверителност",
+    "trackOrder": "Проследи поръчка",
+    "socialMedia": "Последвайте ни",
+    "paymentMethods": "Visa · Mastercard · Apple Pay · Наложен платеж",
     "disclaimer": "Всички продукти се продават само за in-vitro изследователски цели. Не са предназначени за консумация от хора.",
     "copyright": "© 2026 PeptideLab.bg. Всички права запазени."
   }

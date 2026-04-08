@@ -2,6 +2,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Mail, MessageCircle } from "lucide-react";
 
+// NOTE: These category slugs are coupled to the database seed data.
+// If category slugs change in the DB, these must be updated to match.
 const shopLinks = [
   { label: "healing", href: "/shop/healing" },
   { label: "weightLoss", href: "/shop/weight-loss" },
@@ -16,6 +18,9 @@ const infoLinks = [
   { label: "returns", href: "/returns" },
   { label: "faq", href: "/faq" },
   { label: "contactUs", href: "/contact" },
+  { label: "trackOrder", href: "/orders" },
+  { label: "terms", href: "/terms" },
+  { label: "privacy", href: "/privacy" },
 ] as const;
 
 export default function Footer() {
@@ -79,7 +84,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4 — Contact */}
+          {/* Column 4 — Contact + Social */}
           <div>
             <h3 className="text-navy font-semibold text-sm mb-3">
               {t("contact")}
@@ -96,7 +101,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://wa.me/message/peptidelab"
+                  href="https://wa.me/359XXXXXXXXX"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-secondary text-sm hover:text-navy transition-colors inline-flex items-center gap-2"
@@ -106,12 +111,38 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
+
+            {/* Social media */}
+            <h3 className="text-navy font-semibold text-sm mt-6 mb-3">
+              {t("socialMedia")}
+            </h3>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://instagram.com/peptidelab.bg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary text-sm hover:text-navy transition-colors"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://facebook.com/peptidelab.bg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary text-sm hover:text-navy transition-colors"
+              >
+                Facebook
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Disclaimer bar */}
+      {/* Disclaimer bar + payment methods */}
       <div className="border-t border-border py-4 px-6 text-center">
+        <div className="flex items-center justify-center gap-1.5 text-muted text-xs font-medium mb-2">
+          {t("paymentMethods")}
+        </div>
         <p className="text-muted text-xs">{t("disclaimer")}</p>
         <p className="text-muted text-xs mt-1">{t("copyright")}</p>
       </div>

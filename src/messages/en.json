@@ -16,7 +16,9 @@
   },
   "header": {
     "freeShipping": "Free shipping over €49",
-    "allTested": "All peptides HPLC tested ≥98%"
+    "allTested": "All peptides HPLC tested ≥98%",
+    "trackOrder": "Track Order",
+    "whatsapp": "WhatsApp"
   },
   "hero": {
     "tag": "Research Grade Peptides",
@@ -328,6 +330,11 @@
     "returns": "Returns & Refunds",
     "faq": "FAQ",
     "contactUs": "Contact Us",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "trackOrder": "Track Order",
+    "socialMedia": "Follow us",
+    "paymentMethods": "Visa · Mastercard · Apple Pay · COD",
     "disclaimer": "All products are sold strictly for in-vitro research purposes only. Not for human consumption.",
     "copyright": "© 2026 PeptideLab.bg. All rights reserved."
   }
