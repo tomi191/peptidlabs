@@ -6,6 +6,8 @@ export type Product = {
   name_bg: string | null;
   description_bg: string | null;
   description_en: string | null;
+  summary_bg: string | null;
+  summary_en: string | null;
   price_bgn: number;
   price_eur: number;
   images: string[];
@@ -42,6 +44,8 @@ export type Peptide = {
   name: string;
   full_name_bg: string | null;
   full_name_en: string | null;
+  summary_bg: string | null;
+  summary_en: string | null;
   formula: string | null;
   mechanism_bg: string | null;
   mechanism_en: string | null;

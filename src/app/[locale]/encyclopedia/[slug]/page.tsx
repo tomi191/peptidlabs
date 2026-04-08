@@ -62,6 +62,11 @@ export default async function EncyclopediaDetailPage({
       ? peptide.full_name_bg || peptide.full_name_en
       : peptide.full_name_en || peptide.full_name_bg;
 
+  const summary =
+    locale === "bg"
+      ? peptide.summary_bg || peptide.summary_en
+      : peptide.summary_en || peptide.summary_bg;
+
   const mechanism =
     locale === "bg"
       ? peptide.mechanism_bg || peptide.mechanism_en
@@ -90,6 +95,18 @@ export default async function EncyclopediaDetailPage({
         {/* Data */}
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-8">
+            {/* Plain language summary — for regular users */}
+            {summary && (
+              <section className="rounded-xl bg-surface p-6">
+                <h2 className="text-lg font-semibold text-navy mb-3">
+                  {locale === "bg" ? "Накратко" : "At a Glance"}
+                </h2>
+                <p className="text-secondary text-base leading-relaxed">
+                  {summary}
+                </p>
+              </section>
+            )}
+
             {/* Formula */}
             {peptide.formula && (
               <section>
@@ -102,11 +119,11 @@ export default async function EncyclopediaDetailPage({
               </section>
             )}
 
-            {/* Mechanism */}
+            {/* Scientific mechanism — for researchers */}
             {mechanism && (
               <section>
                 <h2 className="text-sm font-semibold text-navy mb-2">
-                  {t("mechanism")}
+                  {locale === "bg" ? "Механизъм на действие" : "Mechanism of Action"}
                 </h2>
                 <p className="text-sm text-secondary leading-relaxed">
                   {mechanism}

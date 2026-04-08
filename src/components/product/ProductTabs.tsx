@@ -88,6 +88,8 @@ function OverviewTab({
   locale: string;
   translations: Props["translations"];
 }) {
+  const summary =
+    locale === "bg" ? product.summary_bg : product.summary_en;
   const description =
     locale === "bg" ? product.description_bg : product.description_en;
 
@@ -97,6 +99,15 @@ function OverviewTab({
 
   return (
     <div className="space-y-6">
+      {summary && (
+        <div className="rounded-xl bg-surface p-5">
+          <h3 className="text-sm font-semibold text-navy mb-2">
+            {locale === "bg" ? "Накратко" : "At a Glance"}
+          </h3>
+          <p className="text-base leading-relaxed text-secondary">{summary}</p>
+        </div>
+      )}
+
       {description && (
         <p className="text-sm leading-relaxed text-secondary">{description}</p>
       )}
