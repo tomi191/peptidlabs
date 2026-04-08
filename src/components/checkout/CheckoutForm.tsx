@@ -261,12 +261,14 @@ export default function CheckoutForm() {
               type="email"
               required
               autoComplete="email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
               className={errors.email ? INPUT_ERROR_CLASS : INPUT_CLASS}
             />
             {errors.email && (
-              <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+              <p id="email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email}</p>
             )}
           </div>
 
@@ -279,13 +281,15 @@ export default function CheckoutForm() {
               type="tel"
               required
               autoComplete="tel"
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? "phone-error phone-note" : "phone-note"}
               value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
               className={errors.phone ? INPUT_ERROR_CLASS : INPUT_CLASS}
             />
-            <p className="text-xs text-muted mt-1">{t("phoneNote")}</p>
+            <p id="phone-note" className="text-xs text-muted mt-1">{t("phoneNote")}</p>
             {errors.phone && (
-              <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
+              <p id="phone-error" role="alert" className="text-xs text-red-500 mt-1">{errors.phone}</p>
             )}
           </div>
         </div>
@@ -304,12 +308,14 @@ export default function CheckoutForm() {
               type="text"
               required
               autoComplete="name"
+              aria-invalid={!!errors.fullName}
+              aria-describedby={errors.fullName ? "fullName-error" : undefined}
               value={formData.fullName}
               onChange={(e) => handleChange("fullName", e.target.value)}
               className={errors.fullName ? INPUT_ERROR_CLASS : INPUT_CLASS}
             />
             {errors.fullName && (
-              <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
+              <p id="fullName-error" role="alert" className="text-xs text-red-500 mt-1">{errors.fullName}</p>
             )}
           </div>
 
@@ -537,7 +543,7 @@ export default function CheckoutForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-navy text-white py-4 rounded-lg font-semibold text-base mt-6 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-navy text-white py-4 rounded-lg font-semibold text-base mt-6 hover:bg-navy/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
         {paymentMethod === "stripe" ? t("proceedToPayment") : t("placeOrder")}

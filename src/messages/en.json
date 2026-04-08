@@ -18,7 +18,11 @@
     "freeShipping": "Free shipping over €49",
     "allTested": "All peptides HPLC tested ≥98%",
     "trackOrder": "Track Order",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "searchLabel": "Search products",
+    "cartLabel": "Open cart",
+    "menuLabel": "Open menu",
+    "closeMenuLabel": "Close menu"
   },
   "hero": {
     "tag": "Research Grade Peptides",

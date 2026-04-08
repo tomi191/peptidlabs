@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={!password || loading}
-            className="w-full inline-flex items-center justify-center gap-2 bg-navy text-white py-3 px-6 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-navy text-white py-3 px-6 rounded-lg font-medium text-sm hover:bg-navy/90 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? "Authenticating..." : "Sign in"}
             {!loading && <ArrowRight className="h-4 w-4" />}

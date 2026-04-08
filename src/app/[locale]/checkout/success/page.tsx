@@ -55,7 +55,7 @@ export default function CheckoutSuccessPage() {
         <div className="flex flex-col gap-3 pt-2">
           <Link
             href="/shop"
-            className="inline-flex items-center justify-center gap-2 bg-navy text-white py-3 px-6 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center gap-2 bg-navy text-white py-3 px-6 rounded-lg font-medium text-sm hover:bg-navy/90 transition-colors duration-200"
           >
             <ShoppingBag className="h-4 w-4" />
             {t("continueShopping")}

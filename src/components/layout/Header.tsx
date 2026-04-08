@@ -11,7 +11,7 @@ import CartDrawer from "@/components/layout/CartDrawer";
 import SearchModal from "@/components/ui/SearchModal";
 
 /* ── Cart icon with badge (reads Zustand) ── */
-function CartIcon({ onClick }: { onClick: () => void }) {
+function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
   const totalItems = useCart((s) => s.totalItems);
   const [mounted, setMounted] = useState(false);
 
@@ -24,8 +24,8 @@ function CartIcon({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="relative text-navy hover:text-secondary transition-colors"
-      aria-label="Open cart"
+      className="relative text-navy hover:text-secondary transition-colors duration-150"
+      aria-label={label}
     >
       <ShoppingBag size={20} strokeWidth={1.5} />
       {count > 0 && (
@@ -122,18 +122,18 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setSearchOpen(true)}
-            className="text-navy hover:text-secondary transition-colors hidden sm:block"
-            aria-label="Search"
+            className="text-navy hover:text-secondary transition-colors duration-150 hidden sm:block"
+            aria-label={tc("searchLabel")}
           >
             <Search size={20} strokeWidth={1.5} />
           </button>
-          <CartIcon onClick={() => setCartOpen(true)} />
+          <CartIcon onClick={() => setCartOpen(true)} label={tc("cartLabel")} />
 
           {/* Hamburger — visible below lg */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden text-navy hover:text-secondary transition-colors"
-            aria-label="Toggle menu"
+            className="lg:hidden text-navy hover:text-secondary transition-colors duration-150"
+            aria-label={mobileOpen ? tc("closeMenuLabel") : tc("menuLabel")}
           >
             {mobileOpen ? (
               <X size={22} strokeWidth={1.5} />
@@ -171,8 +171,8 @@ export default function Header() {
           <div className="flex items-center gap-4 pt-2 border-t border-border sm:hidden">
             <button
               onClick={() => { setSearchOpen(true); setMobileOpen(false); }}
-              className="text-navy hover:text-secondary transition-colors"
-              aria-label="Search"
+              className="text-navy hover:text-secondary transition-colors duration-150"
+              aria-label={tc("searchLabel")}
             >
               <Search size={20} strokeWidth={1.5} />
             </button>

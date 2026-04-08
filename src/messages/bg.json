@@ -18,7 +18,11 @@
     "freeShipping": "Безплатна доставка над 99 лв",
     "allTested": "Всички пептиди HPLC тествани ≥98%",
     "trackOrder": "Проследи поръчка",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "searchLabel": "Търси продукти",
+    "cartLabel": "Отвори кошницата",
+    "menuLabel": "Отвори менюто",
+    "closeMenuLabel": "Затвори менюто"
   },
   "hero": {
     "tag": "Research Grade Peptides",

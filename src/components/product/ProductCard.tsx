@@ -31,7 +31,7 @@ export function ProductCard({
   return (
     <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
       <Link href={`/products/${product.slug}`}>
-        <div className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface">
+        <div className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface" role="img" aria-label={`${product.name} product image`}>
           {/* Placeholder vial */}
           <div className="h-16 w-6 rounded-sm border border-border bg-white" />
 
