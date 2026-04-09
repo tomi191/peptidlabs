@@ -28,7 +28,7 @@ export function FrequentlyBoughtTogether({
   }
 
   return (
-    <section className="mt-16">
+    <section>
       <h2 className="text-lg font-bold text-navy">{heading}</h2>
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {displayed.map((product) => (

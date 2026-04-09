@@ -216,10 +216,12 @@ export default async function ProductPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      {/* ─── ABOVE THE FOLD ─── */}
-      <div className="mx-auto max-w-[1280px] px-6 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-8 text-sm text-muted" aria-label="Breadcrumb">
+      {/* ─── BREADCRUMB BAR ─── */}
+      <div className="bg-surface border-b border-border">
+        <nav
+          className="mx-auto max-w-[1280px] px-6 py-3 text-sm text-muted"
+          aria-label="Breadcrumb"
+        >
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
               <Link href="/" className="hover:text-secondary">
@@ -237,7 +239,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <li aria-hidden="true">/</li>
                 <li>
                   <Link
-                    href={`/shop?category=${category.slug}`}
+                    href={`/shop/${category.slug}`}
                     className="hover:text-secondary"
                   >
                     {categoryName}
@@ -249,14 +251,32 @@ export default async function ProductPage({ params }: PageProps) {
             <li className="font-medium text-navy">{product.name}</li>
           </ol>
         </nav>
+      </div>
+
+      {/* ─── ABOVE THE FOLD ─── */}
+      <div className="mx-auto max-w-[1280px] px-6 py-8">
 
         {/* Two-column layout */}
         <div className="grid gap-12 lg:grid-cols-2">
           {/* LEFT COLUMN */}
           <div>
             {/* Product image placeholder */}
-            <div className="flex aspect-square items-center justify-center rounded-xl bg-surface">
+            <div className="relative flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-surface to-white">
               <div className="h-32 w-12 rounded border border-border bg-white" />
+
+              {/* Badges */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-semibold text-navy shadow-sm backdrop-blur-sm">
+                  <ShieldCheck size={14} className="text-accent" />
+                  COA Verified
+                </span>
+                {product.is_bestseller && (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
+                    <FlaskConical size={14} />
+                    Bestseller
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Trust strip below image */}
@@ -291,6 +311,34 @@ export default async function ProductPage({ params }: PageProps) {
             {/* QuickSpecBar */}
             <div className="mt-3">
               <QuickSpecBar product={product} locale={locale} />
+            </div>
+
+            {/* Quick facts */}
+            <div className="flex gap-3 mt-4">
+              <div className="flex-1 rounded-lg bg-surface p-3 text-center">
+                <p className="font-mono text-lg font-bold text-navy">
+                  &ge;{product.purity_percent}%
+                </p>
+                <p className="text-[10px] text-muted uppercase">
+                  {locale === "bg" ? "Чистота" : "Purity"}
+                </p>
+              </div>
+              {product.vial_size_mg != null && (
+                <div className="flex-1 rounded-lg bg-surface p-3 text-center">
+                  <p className="font-mono text-lg font-bold text-navy">
+                    {product.vial_size_mg}mg
+                  </p>
+                  <p className="text-[10px] text-muted uppercase">
+                    {locale === "bg" ? "Количество" : "Amount"}
+                  </p>
+                </div>
+              )}
+              <div className="flex-1 rounded-lg bg-surface p-3 text-center">
+                <p className="font-mono text-lg font-bold text-accent">COA</p>
+                <p className="text-[10px] text-muted uppercase">
+                  {locale === "bg" ? "Включен" : "Included"}
+                </p>
+              </div>
             </div>
 
             {/* Size selector pills */}
@@ -378,51 +426,68 @@ export default async function ProductPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* ─── BELOW THE FOLD CONTENT ─── */}
-      <div className="mx-auto max-w-[1280px] px-6">
-        {/* Specifications */}
-        <SpecsTable product={product} translations={specTranslations} locale={locale} />
+      {/* ─── SPECIFICATIONS ─── */}
+      <div className="bg-surface py-12 mt-12">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <SpecsTable product={product} translations={specTranslations} locale={locale} />
+        </div>
+      </div>
 
-        {/* Tabbed content */}
-        <div className="mt-12">
+      {/* ─── TABBED CONTENT ─── */}
+      <div className="py-12">
+        <div className="mx-auto max-w-[1280px] px-6">
           <ProductTabs
             product={product}
             locale={locale}
             translations={tabTranslations}
           />
         </div>
+      </div>
 
-        {/* Frequently Bought Together */}
-        <FrequentlyBoughtTogether
-          products={frequentlyBought}
-          locale={locale}
-          heading={t("frequentlyBought")}
-          addAllLabel={t("addAllToCart")}
-        />
+      {/* ─── FREQUENTLY BOUGHT TOGETHER ─── */}
+      <div className="bg-surface py-12">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <FrequentlyBoughtTogether
+            products={frequentlyBought}
+            locale={locale}
+            heading={t("frequentlyBought")}
+            addAllLabel={t("addAllToCart")}
+          />
+        </div>
+      </div>
 
-        {/* FAQ */}
-        <ProductFaq heading={t("faq")} items={faqItems} />
+      {/* ─── FAQ ─── */}
+      <div className="py-12">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <ProductFaq heading={t("faq")} items={faqItems} />
+        </div>
+      </div>
 
-        {/* Reviews placeholder */}
-        <ReviewsPlaceholder
-          heading={t("reviews")}
-          noReviews={t("noReviews")}
-          writeReview={t("writeReview")}
-        />
+      {/* ─── REVIEWS ─── */}
+      <div className="bg-surface py-12">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <ReviewsPlaceholder
+            heading={t("reviews")}
+            noReviews={t("noReviews")}
+            writeReview={t("writeReview")}
+          />
+        </div>
+      </div>
 
-        {/* Related Products */}
-        {relatedForGrid.length > 0 && (
-          <section className="mt-16 pb-16">
+      {/* ─── RELATED PRODUCTS ─── */}
+      {relatedForGrid.length > 0 && (
+        <div className="py-12">
+          <div className="mx-auto max-w-[1280px] px-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-navy">
+              <h2 className="text-xl font-bold text-navy">
                 {t("relatedProducts")}
               </h2>
               {category && (
                 <Link
-                  href={`/shop?category=${category.slug}`}
+                  href={`/shop/${category.slug}`}
                   className="text-sm text-secondary hover:text-navy"
                 >
-                  {t("viewAll")} →
+                  {t("viewAll")} &rarr;
                 </Link>
               )}
             </div>
@@ -433,9 +498,9 @@ export default async function ProductPage({ params }: PageProps) {
                 ))}
               </ProductGrid>
             </div>
-          </section>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
       <StickyAddToCart product={product} locale={locale} />
     </main>

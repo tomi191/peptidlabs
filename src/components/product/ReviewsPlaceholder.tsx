@@ -8,7 +8,7 @@ export function ReviewsPlaceholder({
   writeReview: string;
 }) {
   return (
-    <section className="mt-16">
+    <section>
       <h2 className="text-lg font-bold text-navy">{heading}</h2>
       <div className="mt-6 rounded-lg border border-border p-8 text-center">
         <p className="text-sm text-secondary">{noReviews}</p>

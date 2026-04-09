@@ -74,6 +74,42 @@ export async function getProductsByCategory(
   return (products as Product[]) ?? [];
 }
 
+export async function getCategoriesWithCounts(): Promise<
+  (Category & { product_count: number })[]
+> {
+  const supabase = await createServerSupabase();
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("*")
+    .order("sort_order");
+
+  if (!categories || categories.length === 0) return [];
+
+  const { data: links } = await supabase
+    .from("product_categories")
+    .select("category_id, product_id");
+
+  // Count published products per category
+  const { data: publishedProducts } = await supabase
+    .from("products")
+    .select("id")
+    .eq("status", "published");
+
+  const publishedIds = new Set((publishedProducts ?? []).map((p) => p.id));
+
+  const countMap: Record<string, number> = {};
+  for (const link of links ?? []) {
+    if (publishedIds.has(link.product_id)) {
+      countMap[link.category_id] = (countMap[link.category_id] ?? 0) + 1;
+    }
+  }
+
+  return (categories as Category[]).map((cat) => ({
+    ...cat,
+    product_count: countMap[cat.id] ?? 0,
+  }));
+}
+
 export async function getPeptides(): Promise<Peptide[]> {
   const supabase = await createServerSupabase();
   const { data } = await supabase

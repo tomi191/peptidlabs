@@ -19,7 +19,7 @@ import type { LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import {
-  getCategories,
+  getCategoriesWithCounts,
   getCategoryBySlug,
   getProductsByCategory,
 } from "@/lib/queries";
@@ -76,7 +76,7 @@ export default async function CategoryPage({
 
   const [category, categories, products] = await Promise.all([
     getCategoryBySlug(categorySlug),
-    getCategories(),
+    getCategoriesWithCounts(),
     getProductsByCategory(categorySlug),
   ]);
 
@@ -105,20 +105,34 @@ export default async function CategoryPage({
           <span className="text-navy">{categoryName}</span>
         </nav>
 
-        <h1 className="mb-2 text-2xl font-bold text-navy">{categoryName}</h1>
-        {categoryDescription && (
-          <p className="mb-6 text-sm text-secondary">{categoryDescription}</p>
-        )}
+        {/* Category intro banner */}
+        <div className="rounded-2xl bg-surface p-8 mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-navy mb-2">
+            {categoryName}
+          </h1>
+          {categoryDescription && (
+            <p className="text-secondary leading-relaxed max-w-2xl">
+              {categoryDescription}
+            </p>
+          )}
+          <p className="text-sm text-muted mt-3">
+            {products.length} {t("productsInCategory")}
+          </p>
+        </div>
 
         {/* Mobile category chips */}
-        <div className="flex gap-2 overflow-x-auto pb-4 lg:hidden">
+        <div className="flex gap-2 overflow-x-auto pb-4 lg:hidden snap-x">
           <Link
             href="/shop"
-            className="whitespace-nowrap rounded-full border border-border px-4 py-1.5 text-sm text-secondary hover:text-navy"
+            className="shrink-0 snap-center flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm text-secondary hover:border-navy hover:text-navy transition-colors"
           >
+            <Package size={14} />
             {t("allProducts")}
           </Link>
           {categories.map((cat) => {
+            const Icon = cat.icon
+              ? iconMap[cat.icon] ?? Package
+              : Package;
             const name = locale === "bg" ? cat.name_bg : cat.name_en;
             const isActive = cat.slug === categorySlug;
             return (
@@ -127,10 +141,11 @@ export default async function CategoryPage({
                 href={`/shop/${cat.slug}`}
                 className={
                   isActive
-                    ? "whitespace-nowrap rounded-full border border-navy bg-navy px-4 py-1.5 text-sm font-semibold text-white"
-                    : "whitespace-nowrap rounded-full border border-border px-4 py-1.5 text-sm text-secondary hover:text-navy"
+                    ? "shrink-0 snap-center flex items-center gap-1.5 rounded-full border border-navy bg-navy px-4 py-2 text-sm font-semibold text-white"
+                    : "shrink-0 snap-center flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm text-secondary hover:border-navy hover:text-navy transition-colors"
                 }
               >
+                <Icon size={14} />
                 {name}
               </Link>
             );
@@ -139,37 +154,49 @@ export default async function CategoryPage({
 
         <div className="flex gap-10">
           {/* Desktop sidebar */}
-          <aside className="hidden w-60 shrink-0 lg:block">
-            <nav className="space-y-1">
-              <Link
-                href="/shop"
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-secondary hover:text-navy"
-              >
-                <Package size={16} />
-                {t("allProducts")}
-              </Link>
-              {categories.map((cat) => {
-                const Icon = cat.icon
-                  ? iconMap[cat.icon] ?? Package
-                  : Package;
-                const name = locale === "bg" ? cat.name_bg : cat.name_en;
-                const isActive = cat.slug === categorySlug;
-                return (
-                  <Link
-                    key={cat.id}
-                    href={`/shop/${cat.slug}`}
-                    className={
-                      isActive
-                        ? "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-navy"
-                        : "flex items-center gap-2 rounded-md px-3 py-2 text-sm text-secondary hover:text-navy"
-                    }
-                  >
-                    <Icon size={16} />
-                    {name}
-                  </Link>
-                );
-              })}
-            </nav>
+          <aside className="hidden w-64 shrink-0 lg:block">
+            <div className="sticky top-24 rounded-2xl border border-border p-4">
+              <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
+                {t("categories")}
+              </p>
+              <nav className="space-y-0.5">
+                <Link
+                  href="/shop"
+                  className="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Package size={16} />
+                    {t("allProducts")}
+                  </span>
+                </Link>
+                {categories.map((cat) => {
+                  const Icon = cat.icon
+                    ? iconMap[cat.icon] ?? Package
+                    : Package;
+                  const name = locale === "bg" ? cat.name_bg : cat.name_en;
+                  const isActive = cat.slug === categorySlug;
+                  return (
+                    <Link
+                      key={cat.id}
+                      href={`/shop/${cat.slug}`}
+                      className={
+                        isActive
+                          ? "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-navy bg-surface"
+                          : "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
+                      }
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon size={16} />
+                        {name}
+                      </span>
+                      <span className="text-xs text-muted bg-surface rounded-full px-2 py-0.5">
+                        {cat.product_count}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
           </aside>
 
           {/* Product content */}

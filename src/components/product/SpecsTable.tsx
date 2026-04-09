@@ -72,7 +72,7 @@ export function SpecsTable({
   if (visibleRows.length === 0) return null;
 
   return (
-    <section className="mt-12">
+    <section>
       <h2 className="text-lg font-bold text-navy">
         {translations.specifications}
       </h2>

@@ -96,7 +96,14 @@
     "sortPriceAsc": "Price: Low to High",
     "sortPriceDesc": "Price: High to Low",
     "sortNameAz": "Name A-Z",
-    "intro": "Browse our complete catalog of HPLC-verified research peptides. Every product ships with an independent Certificate of Analysis. Filter by category or sort by price to quickly find what you need."
+    "intro": "Browse our complete catalog of HPLC-verified research peptides. Every product ships with an independent Certificate of Analysis. Filter by category or sort by price to quickly find what you need.",
+    "searchPlaceholder": "Search peptide...",
+    "categories": "Categories",
+    "productsInCategory": "products in this category",
+    "heroHplc": "HPLC ≥98%",
+    "heroCoaIncluded": "COA included",
+    "heroDelivery": "1-3 day delivery",
+    "noResults": "No results found"
   },
   "product": {
     "addToCart": "Add to Cart",

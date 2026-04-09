@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { ProductCard } from "@/components/product/ProductCard";
@@ -16,37 +17,60 @@ export function SortableProductGrid({
   locale: string;
 }) {
   const t = useTranslations("shop");
+  const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
 
-  const sorted = useMemo(() => {
-    const copy = [...products];
+  const filtered = useMemo(() => {
+    let result = [...products];
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.name_bg?.toLowerCase().includes(q) ||
+          p.use_case_tag_bg?.toLowerCase().includes(q) ||
+          p.use_case_tag_en?.toLowerCase().includes(q)
+      );
+    }
+
     switch (sort) {
       case "newest":
-        return copy.sort(
+        return result.sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       case "price-asc":
-        return copy.sort((a, b) => a.price_eur - b.price_eur);
+        return result.sort((a, b) => a.price_eur - b.price_eur);
       case "price-desc":
-        return copy.sort((a, b) => b.price_eur - a.price_eur);
+        return result.sort((a, b) => b.price_eur - a.price_eur);
       case "name-az":
-        return copy.sort((a, b) => a.name.localeCompare(b.name));
+        return result.sort((a, b) => a.name.localeCompare(b.name));
       default:
-        return copy;
+        return result;
     }
-  }, [products, sort]);
+  }, [products, search, sort]);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted">
-          {products.length} {t("products")}
-        </p>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("searchPlaceholder")}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border text-sm placeholder:text-muted focus:border-navy focus:outline-none"
+          />
+        </div>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortOption)}
-          className="rounded-lg border border-border px-3 py-2 text-sm text-navy focus:outline-none focus:ring-1 focus:ring-navy"
+          className="rounded-lg border border-border px-3 py-2.5 text-sm text-navy focus:outline-none focus:ring-1 focus:ring-navy"
         >
           <option value="newest">{t("sortNewest")}</option>
           <option value="price-asc">{t("sortPriceAsc")}</option>
@@ -54,11 +78,22 @@ export function SortableProductGrid({
           <option value="name-az">{t("sortNameAz")}</option>
         </select>
       </div>
-      <ProductGrid>
-        {sorted.map((product) => (
-          <ProductCard key={product.id} product={product} locale={locale} />
-        ))}
-      </ProductGrid>
+
+      <p className="text-sm text-muted mb-4">
+        {filtered.length} {t("products")}
+      </p>
+
+      {filtered.length > 0 ? (
+        <ProductGrid>
+          {filtered.map((product) => (
+            <ProductCard key={product.id} product={product} locale={locale} />
+          ))}
+        </ProductGrid>
+      ) : (
+        <p className="py-12 text-center text-sm text-muted">
+          {t("noResults")}
+        </p>
+      )}
     </div>
   );
 }
