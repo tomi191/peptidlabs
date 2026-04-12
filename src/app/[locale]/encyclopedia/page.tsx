@@ -2,7 +2,9 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { getPeptides } from "@/lib/queries";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { BookOpen } from "lucide-react";
+import { FadeIn } from "@/components/ui/FadeIn";
+import { EncyclopediaGrid } from "./EncyclopediaGrid";
 
 export async function generateMetadata({
   params,
@@ -29,48 +31,57 @@ export default async function EncyclopediaPage({
 
   return (
     <main className="flex-1 bg-white">
-      <div className="mx-auto max-w-[1280px] px-6 py-16">
-        <h1 className="text-3xl font-bold text-navy">{t("title")}</h1>
-        <p className="mt-3 text-secondary max-w-xl">{t("subtitle")}</p>
-        <p className="mt-4 max-w-3xl text-sm text-secondary leading-relaxed">
-          {t("intro")}
-        </p>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {peptides.map((peptide) => {
-            const fullName =
-              locale === "bg"
-                ? peptide.full_name_bg || peptide.full_name_en
-                : peptide.full_name_en || peptide.full_name_bg;
-
-            return (
-              <Link
-                key={peptide.id}
-                href={`/${locale}/encyclopedia/${peptide.slug}`}
-                className="border border-border rounded-lg p-5 hover:border-teal-600 transition-colors group"
-              >
-                <p className="font-mono text-sm font-medium text-navy group-hover:text-teal-600 transition-colors">
-                  {peptide.name}
+      {/* Hero */}
+      <section className="bg-surface border-b border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-12 md:py-16">
+          <FadeIn>
+            <div className="flex items-start gap-4 mb-4">
+              <div className="rounded-xl bg-teal-600/10 p-3">
+                <BookOpen className="h-6 w-6 text-teal-600" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-navy">
+                  {t("title")}
+                </h1>
+                <p className="mt-2 text-secondary leading-relaxed max-w-2xl">
+                  {t("subtitle")}
                 </p>
-                {fullName && (
-                  <p className="text-xs text-muted mt-1 line-clamp-1">
-                    {fullName}
-                  </p>
-                )}
-                {peptide.formula && (
-                  <p className="font-mono text-xs text-muted mt-2">
-                    {peptide.formula}
-                  </p>
-                )}
-              </Link>
-            );
-          })}
+              </div>
+            </div>
+            <p className="mt-4 max-w-3xl text-sm text-muted leading-relaxed">
+              {t("heroDetail")}
+            </p>
+          </FadeIn>
         </div>
+      </section>
 
-        {peptides.length === 0 && (
-          <p className="mt-10 text-sm text-muted">{t("noPeptides")}</p>
-        )}
-      </div>
+      {/* Grid with search */}
+      <section className="mx-auto max-w-[1280px] px-6 py-12">
+        <FadeIn>
+          <EncyclopediaGrid peptides={peptides} />
+        </FadeIn>
+      </section>
+
+      {/* Intro SEO content */}
+      <section className="bg-surface border-t border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-12">
+          <FadeIn>
+            <h2 className="text-lg font-semibold text-navy mb-3">
+              {t("whatIsTitle")}
+            </h2>
+            <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+              {t("intro")}
+            </p>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Disclaimer */}
+      <section className="mx-auto max-w-[1280px] px-6 py-8 border-t border-border">
+        <p className="text-xs text-muted">
+          {t("disclaimer")}
+        </p>
+      </section>
     </main>
   );
 }
