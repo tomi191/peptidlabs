@@ -4,11 +4,13 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import { routing } from "@/i18n/routing";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
+import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import "../globals.css";
 
 const inter = Inter({
@@ -72,7 +74,7 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${GeistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <a
@@ -82,6 +84,7 @@ export default async function LocaleLayout({
           Skip to content
         </a>
         <NextIntlClientProvider messages={messages}>
+          <GrainOverlay />
           <Header />
           <main id="main-content">{children}</main>
           <Footer />

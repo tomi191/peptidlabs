@@ -148,7 +148,7 @@ export default function SearchModal({
                         {` · ≥${product.purity_percent}%`}
                       </p>
                     </div>
-                    <span className="text-sm font-bold text-navy shrink-0">
+                    <span className="text-sm font-bold text-navy shrink-0 tabular">
                       €{product.price_eur.toFixed(2)}
                     </span>
                   </button>

@@ -189,7 +189,7 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
 
                       {/* Price + remove */}
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-navy">
+                        <span className="text-sm font-semibold text-navy tabular">
                           {formatPrice(getItemPrice(item) * item.quantity)}
                         </span>
                         <button
@@ -210,7 +210,7 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
             <div className="border-t border-border px-6 py-4">
               <div className="flex justify-between text-sm text-secondary">
                 <span>{t("subtotal")}</span>
-                <span className="font-semibold text-navy">
+                <span className="font-semibold text-navy tabular">
                   {formatPrice(subtotal)}
                 </span>
               </div>

@@ -176,7 +176,7 @@ export default async function EncyclopediaDetailPage({
                         {product.vial_size_mg}mg
                       </p>
                     )}
-                    <p className="font-mono text-sm text-teal-600 mt-1">
+                    <p className="font-mono text-sm text-teal-600 mt-1 tabular">
                       €{product.price_eur.toFixed(2)}
                     </p>
                   </Link>

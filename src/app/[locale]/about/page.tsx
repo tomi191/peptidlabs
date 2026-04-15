@@ -16,6 +16,7 @@ import {
   Globe,
 } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { HPLCLine } from "@/components/ui/HPLCLine";
 
 export async function generateMetadata({
   params,
@@ -42,9 +43,10 @@ export default async function AboutPage({
       <section className="bg-surface border-b border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-12 md:py-16">
           <FadeIn>
-            <h1 className="text-3xl md:text-4xl font-bold text-navy">
+            <h1 className="font-display text-3xl md:text-4xl font-bold tracking-[-0.04em] text-navy">
               {t("title")}
             </h1>
+            <HPLCLine variant="full" className="mt-4 max-w-xs" />
             <p className="mt-4 max-w-2xl text-secondary leading-relaxed">
               {t("mission")}
             </p>

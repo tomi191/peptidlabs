@@ -1,6 +1,7 @@
 import { FlaskConical, FileCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { HPLCLine } from "@/components/ui/HPLCLine";
 
 export function HeroSection() {
   const t = useTranslations("hero");
@@ -13,9 +14,10 @@ export function HeroSection() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-accent">
             {t("tag")}
           </p>
-          <h1 className="whitespace-pre-line text-3xl font-bold leading-tight text-navy md:text-4xl">
+          <h1 className="whitespace-pre-line font-display text-3xl font-bold leading-tight tracking-[-0.04em] text-navy md:text-4xl">
             {t("title")}
           </h1>
+          <HPLCLine variant="full" className="mt-4 max-w-xs" />
           <p className="mt-4 max-w-lg text-base text-secondary">
             {t("subtitle")}
           </p>
@@ -42,17 +44,17 @@ export function HeroSection() {
           <div className="rounded-xl border border-border bg-surface p-8">
             <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
-                <p className="font-mono text-2xl font-bold text-navy">{t("statPeptides")}</p>
+                <p className="font-mono text-2xl font-bold text-navy tabular">{t("statPeptides")}</p>
                 <p className="mt-1 text-xs text-muted">{t("statPeptidesLabel")}</p>
               </div>
               <div className="text-center">
-                <p className="font-mono text-2xl font-bold text-navy">
+                <p className="font-mono text-2xl font-bold text-navy tabular">
                   {t("statPurity")}
                 </p>
                 <p className="mt-1 text-xs text-muted">{t("statPurityLabel")}</p>
               </div>
               <div className="text-center">
-                <p className="font-mono text-2xl font-bold text-navy">{t("statDelivery")}</p>
+                <p className="font-mono text-2xl font-bold text-navy tabular">{t("statDelivery")}</p>
                 <p className="mt-1 text-xs text-muted">{t("statDeliveryLabel")}</p>
               </div>
             </div>

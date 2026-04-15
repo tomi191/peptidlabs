@@ -55,7 +55,7 @@ export default function OrderSummary() {
                   </p>
                 )}
               </div>
-              <p className="text-sm text-navy whitespace-nowrap">
+              <p className="text-sm text-navy whitespace-nowrap tabular">
                 {item.quantity} x €{price.toFixed(2)}
               </p>
             </div>
@@ -115,7 +115,7 @@ export default function OrderSummary() {
       <div className="border-t border-border pt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-secondary">{t("subtotal")}</span>
-          <span className="text-navy">
+          <span className="text-navy tabular">
             €{subtotal.toFixed(2)}
           </span>
         </div>
@@ -128,7 +128,7 @@ export default function OrderSummary() {
           {isFreeShipping ? (
             <span className="text-accent font-medium">{t("freeShipping")}</span>
           ) : (
-            <span className="text-navy">
+            <span className="text-navy tabular">
               €{shippingCost.toFixed(2)}
             </span>
           )}
@@ -136,7 +136,7 @@ export default function OrderSummary() {
 
         <div className="border-t border-border pt-3 flex justify-between">
           <span className="font-bold text-lg text-navy">{t("total")}</span>
-          <span className="font-bold text-lg text-navy">
+          <span className="font-bold text-lg text-navy tabular">
             €{total.toFixed(2)}
           </span>
         </div>

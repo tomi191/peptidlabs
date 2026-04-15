@@ -17,7 +17,7 @@ export function ProductCard({
 }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/products/${product.slug}`} className="product-card-cursor block">
         <div className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface" role="img" aria-label={`${product.name} product image`}>
           {/* Placeholder vial */}
           <div className="h-16 w-6 rounded-sm border border-border bg-white" />
@@ -37,17 +37,22 @@ export function ProductCard({
           <h3 className="mt-1 text-sm font-semibold text-navy">
             {product.name}
           </h3>
-          <p className="mt-1 font-mono text-[11px] text-muted">
-            {product.vial_size_mg ? `${product.vial_size_mg}mg` : ""}
+          <p className="mt-1 font-mono text-[11px] text-muted tabular">
+            {product.vial_size_mg ? (
+              <>
+                <span className="spec-value">{product.vial_size_mg}mg</span>
+              </>
+            ) : null}
             {product.vial_size_mg && product.form ? " · " : ""}
             {getFormLabel(product.form, locale)}
-            {` · ≥${product.purity_percent}%`}
+            {" · ≥"}
+            <span className="spec-value">{product.purity_percent}%</span>
           </p>
         </div>
       </Link>
 
       <div className="flex items-center justify-between px-4 pb-4 pt-1">
-        <span className="text-base font-bold text-navy">
+        <span className="text-base font-bold text-navy tabular">
           {formatPrice(product)}
         </span>
         <AddToCartButton product={product} />

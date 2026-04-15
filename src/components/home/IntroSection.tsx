@@ -1,5 +1,6 @@
 import { FlaskConical, ShieldCheck, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { HPLCLine } from "@/components/ui/HPLCLine";
 
 export function IntroSection() {
   const t = useTranslations("intro");
@@ -22,9 +23,10 @@ export function IntroSection() {
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
           {/* Text column — 55% */}
           <div className="lg:w-[55%]">
-            <h2 className="text-lg font-semibold text-navy mb-6">
+            <h2 className="font-display text-lg font-semibold tracking-[-0.02em] text-navy mb-3">
               {t("title")}
             </h2>
+            <HPLCLine variant="short" className="mb-6 max-w-[120px]" />
             <div className="space-y-4">
               <p className="text-sm text-secondary leading-relaxed">{t("p1")}</p>
               <p className="text-sm text-secondary leading-relaxed">{t("p2")}</p>
@@ -55,7 +57,7 @@ export function IntroSection() {
                     className="flex items-center justify-between py-5 first:pt-0 last:pb-0"
                   >
                     <p className="text-sm text-secondary">{stat.label}</p>
-                    <p className="text-2xl font-bold text-navy font-mono">
+                    <p className="text-2xl font-bold text-navy font-mono tabular">
                       {stat.value}
                     </p>
                   </div>

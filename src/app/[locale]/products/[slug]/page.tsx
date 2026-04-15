@@ -364,7 +364,7 @@ export default async function ProductPage({ params }: PageProps) {
             )}
 
             {/* Price */}
-            <p className="mt-6 text-3xl font-bold text-navy">
+            <p className="mt-6 text-3xl font-bold text-navy tabular">
               {formatPrice(product)}
             </p>
 
