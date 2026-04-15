@@ -90,6 +90,18 @@ body {
   scrollbar-width: none;
 }
 
+/* Native View Transitions for page navigation (Next.js 16) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 280ms;
+  }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -101,5 +113,9 @@ body {
   .fade-in-section {
     opacity: 1 !important;
     transform: none !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }

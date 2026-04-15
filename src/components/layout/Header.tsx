@@ -70,6 +70,16 @@ export default function Header() {
     return () => document.removeEventListener("keydown", handleGlobalKey);
   }, []);
 
+  // Listen for cart drawer open requests from toast "View" actions
+  useEffect(() => {
+    function handleOpenCart() {
+      setCartOpen(true);
+    }
+    window.addEventListener("peptidelab:open-cart", handleOpenCart);
+    return () =>
+      window.removeEventListener("peptidelab:open-cart", handleOpenCart);
+  }, []);
+
   return (
     <header>
       {/* Top bar — hidden on mobile */}

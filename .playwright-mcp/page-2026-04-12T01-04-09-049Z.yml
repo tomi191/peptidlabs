@@ -1,0 +1,311 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: Безплатна доставка над €49
+      - generic [ref=e7]:
+        - link "WhatsApp" [ref=e8] [cursor=pointer]:
+          - /url: https://wa.me/359XXXXXXXXX
+          - img [ref=e9]
+          - text: WhatsApp
+        - generic [ref=e11]:
+          - button "BG" [ref=e12]
+          - button "EN" [ref=e13]
+        - generic [ref=e14]: EUR
+    - generic [ref=e15]:
+      - link "P PEPTIDELAB" [ref=e16] [cursor=pointer]:
+        - /url: /bg
+        - generic [ref=e18]: P
+        - generic [ref=e19]: PEPTIDELAB
+      - navigation [ref=e20]:
+        - link "Магазин" [ref=e21] [cursor=pointer]:
+          - /url: /bg/shop
+        - link "Енциклопедия" [ref=e22] [cursor=pointer]:
+          - /url: /bg/encyclopedia
+        - link "Калкулатор" [ref=e23] [cursor=pointer]:
+          - /url: /bg/calculator
+        - link "Блог" [ref=e24] [cursor=pointer]:
+          - /url: /bg/blog
+        - link "За нас" [ref=e25] [cursor=pointer]:
+          - /url: /bg/about
+      - generic [ref=e26]:
+        - button "Търси продукти" [ref=e27]:
+          - img [ref=e28]
+        - button "Отвори кошницата" [ref=e31]:
+          - img [ref=e32]
+    - dialog "Кошница" [ref=e35]:
+      - generic [ref=e36]:
+        - heading "Кошница" [level=2] [ref=e37]
+        - button "Close" [ref=e38]:
+          - img [ref=e39]
+      - generic [ref=e42]:
+        - img [ref=e43]
+        - paragraph [ref=e46]: Кошницата Ви е празна
+        - link "Разгледай магазина" [ref=e47] [cursor=pointer]:
+          - /url: /bg/shop
+  - main [ref=e48]:
+    - main [ref=e49]:
+      - generic [ref=e50]:
+        - navigation [ref=e51]:
+          - link "Начало" [ref=e52] [cursor=pointer]:
+            - /url: /bg
+          - img [ref=e53]
+          - link "Магазин" [ref=e55] [cursor=pointer]:
+            - /url: /bg/shop
+          - img [ref=e56]
+          - generic [ref=e58]: Възстановяване
+        - generic [ref=e59]:
+          - heading "Възстановяване" [level=1] [ref=e60]
+          - paragraph [ref=e61]: Пептиди изследвани за възстановяване на тъкани, сухожилия, стави и чревна лигавица. BPC-157 и TB-500 са сред най-проучваните за регенеративни процеси.
+          - paragraph [ref=e62]: 6 продукта в тази категория
+        - generic [ref=e63]:
+          - complementary [ref=e64]:
+            - generic [ref=e65]:
+              - paragraph [ref=e66]: Категории
+              - navigation [ref=e67]:
+                - link "Всички" [ref=e68] [cursor=pointer]:
+                  - /url: /bg/shop
+                  - generic [ref=e69]:
+                    - img [ref=e70]
+                    - text: Всички
+                - link "Възстановяване 6" [ref=e74] [cursor=pointer]:
+                  - /url: /bg/shop/healing
+                  - generic [ref=e75]:
+                    - img [ref=e76]
+                    - text: Възстановяване
+                  - generic [ref=e78]: "6"
+                - link "Отслабване 8" [ref=e79] [cursor=pointer]:
+                  - /url: /bg/shop/weight-loss
+                  - generic [ref=e80]:
+                    - img [ref=e81]
+                    - text: Отслабване
+                  - generic [ref=e85]: "8"
+                - link "GH / Мускули 11" [ref=e86] [cursor=pointer]:
+                  - /url: /bg/shop/gh-muscle
+                  - generic [ref=e87]:
+                    - img [ref=e88]
+                    - text: GH / Мускули
+                  - generic [ref=e94]: "11"
+                - link "Анти-ейдж 7" [ref=e95] [cursor=pointer]:
+                  - /url: /bg/shop/anti-aging
+                  - generic [ref=e96]:
+                    - img [ref=e97]
+                    - text: Анти-ейдж
+                  - generic [ref=e100]: "7"
+                - link "Ноотропик 6" [ref=e101] [cursor=pointer]:
+                  - /url: /bg/shop/nootropic
+                  - generic [ref=e102]:
+                    - img [ref=e103]
+                    - text: Ноотропик
+                  - generic [ref=e111]: "6"
+                - link "Сексуално здраве 4" [ref=e112] [cursor=pointer]:
+                  - /url: /bg/shop/sexual-health
+                  - generic [ref=e113]:
+                    - img [ref=e114]
+                    - text: Сексуално здраве
+                  - generic [ref=e116]: "4"
+                - link "Растеж на коса 3" [ref=e117] [cursor=pointer]:
+                  - /url: /bg/shop/hair-growth
+                  - generic [ref=e118]:
+                    - img [ref=e119]
+                    - text: Растеж на коса
+                  - generic [ref=e125]: "3"
+                - link "Имунитет 3" [ref=e126] [cursor=pointer]:
+                  - /url: /bg/shop/immune
+                  - generic [ref=e127]:
+                    - img [ref=e128]
+                    - text: Имунитет
+                  - generic [ref=e130]: "3"
+                - link "Блендове 4" [ref=e131] [cursor=pointer]:
+                  - /url: /bg/shop/blends
+                  - generic [ref=e132]:
+                    - img [ref=e133]
+                    - text: Блендове
+                  - generic [ref=e137]: "4"
+                - link "Аксесоари 7" [ref=e138] [cursor=pointer]:
+                  - /url: /bg/shop/accessories
+                  - generic [ref=e139]:
+                    - img [ref=e140]
+                    - text: Аксесоари
+                  - generic [ref=e144]: "7"
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - generic [ref=e148]:
+                - img [ref=e149]
+                - textbox "Търси пептид..." [ref=e152]
+              - combobox [ref=e153]:
+                - option "Най-нови" [selected]
+                - 'option "Цена: ниска към висока"'
+                - 'option "Цена: висока към ниска"'
+                - option "Име А-Я"
+            - paragraph [ref=e154]: 6 продукта
+            - generic [ref=e155]:
+              - generic [ref=e156]:
+                - link "BPC-157 + TB-500 Blend product image за възстановяване и регенерация BPC-157 + TB-500 Blend 20mg · Лиофилизиран · ≥98%" [ref=e157] [cursor=pointer]:
+                  - /url: /bg/products/bpc-157-tb-500-blend-20mg
+                  - img "BPC-157 + TB-500 Blend product image" [ref=e158]
+                  - generic [ref=e160]:
+                    - paragraph [ref=e161]: за възстановяване и регенерация
+                    - heading "BPC-157 + TB-500 Blend" [level=3] [ref=e162]
+                    - paragraph [ref=e163]: 20mg · Лиофилизиран · ≥98%
+                - generic [ref=e164]:
+                  - generic [ref=e165]: €89.90
+                  - button "Добави BPC-157 + TB-500 Blend в кошницата" [ref=e166]:
+                    - img [ref=e167]
+              - generic [ref=e168]:
+                - link "BPC-157 + TB-500 Blend product image за възстановяване и регенерация BPC-157 + TB-500 Blend 10mg · Лиофилизиран · ≥98%" [ref=e169] [cursor=pointer]:
+                  - /url: /bg/products/bpc-157-tb-500-blend-10mg
+                  - img "BPC-157 + TB-500 Blend product image" [ref=e170]
+                  - generic [ref=e172]:
+                    - paragraph [ref=e173]: за възстановяване и регенерация
+                    - heading "BPC-157 + TB-500 Blend" [level=3] [ref=e174]
+                    - paragraph [ref=e175]: 10mg · Лиофилизиран · ≥98%
+                - generic [ref=e176]:
+                  - generic [ref=e177]: €49.90
+                  - button "Добави BPC-157 + TB-500 Blend в кошницата" [ref=e178]:
+                    - img [ref=e179]
+              - generic [ref=e180]:
+                - link "BPC-157 Arginate product image за възстановяване BPC-157 Arginate 5mg · Лиофилизиран · ≥99%" [ref=e181] [cursor=pointer]:
+                  - /url: /bg/products/bpc-157-arginate-5mg
+                  - img "BPC-157 Arginate product image" [ref=e182]
+                  - generic [ref=e184]:
+                    - paragraph [ref=e185]: за възстановяване
+                    - heading "BPC-157 Arginate" [level=3] [ref=e186]
+                    - paragraph [ref=e187]: 5mg · Лиофилизиран · ≥99%
+                - generic [ref=e188]:
+                  - generic [ref=e189]: €27.90
+                  - button "Добави BPC-157 Arginate в кошницата" [ref=e190]:
+                    - img [ref=e191]
+              - generic [ref=e192]:
+                - link "BPC-157 product image за възстановяване BPC-157 10mg · Лиофилизиран · ≥99%" [ref=e193] [cursor=pointer]:
+                  - /url: /bg/products/bpc-157-10mg
+                  - img "BPC-157 product image" [ref=e194]
+                  - generic [ref=e196]:
+                    - paragraph [ref=e197]: за възстановяване
+                    - heading "BPC-157" [level=3] [ref=e198]
+                    - paragraph [ref=e199]: 10mg · Лиофилизиран · ≥99%
+                - generic [ref=e200]:
+                  - generic [ref=e201]: €42.90
+                  - button "Добави BPC-157 в кошницата" [ref=e202]:
+                    - img [ref=e203]
+              - generic [ref=e204]:
+                - link "BPC-157 product image за възстановяване BPC-157 5mg · Лиофилизиран · ≥99%" [ref=e205] [cursor=pointer]:
+                  - /url: /bg/products/bpc-157-5mg
+                  - img "BPC-157 product image" [ref=e206]
+                  - generic [ref=e208]:
+                    - paragraph [ref=e209]: за възстановяване
+                    - heading "BPC-157" [level=3] [ref=e210]
+                    - paragraph [ref=e211]: 5mg · Лиофилизиран · ≥99%
+                - generic [ref=e212]:
+                  - generic [ref=e213]: €24.90
+                  - button "Добави BPC-157 в кошницата" [ref=e214]:
+                    - img [ref=e215]
+              - generic [ref=e216]:
+                - link "TB-500 product image за тъканна регенерация TB-500 5mg · Лиофилизиран · ≥99%" [ref=e217] [cursor=pointer]:
+                  - /url: /bg/products/tb-500-5mg
+                  - img "TB-500 product image" [ref=e218]
+                  - generic [ref=e220]:
+                    - paragraph [ref=e221]: за тъканна регенерация
+                    - heading "TB-500" [level=3] [ref=e222]
+                    - paragraph [ref=e223]: 5mg · Лиофилизиран · ≥99%
+                - generic [ref=e224]:
+                  - generic [ref=e225]: €29.90
+                  - button "Добави TB-500 в кошницата" [ref=e226]:
+                    - img [ref=e227]
+  - contentinfo [ref=e228]:
+    - generic [ref=e230]:
+      - generic [ref=e231]:
+        - link "P PEPTIDELAB" [ref=e232] [cursor=pointer]:
+          - /url: /bg
+          - generic [ref=e234]: P
+          - generic [ref=e235]: PEPTIDELAB
+        - paragraph [ref=e236]: Изследователски пептиди с HPLC верифицирана чистота. Сертификат за анализ с всяка поръчка.
+      - generic [ref=e237]:
+        - heading "Магазин" [level=3] [ref=e238]
+        - list [ref=e239]:
+          - listitem [ref=e240]:
+            - link "Възстановяване" [ref=e241] [cursor=pointer]:
+              - /url: /bg/shop/healing
+          - listitem [ref=e242]:
+            - link "Отслабване" [ref=e243] [cursor=pointer]:
+              - /url: /bg/shop/weight-loss
+          - listitem [ref=e244]:
+            - link "Растежен хормон" [ref=e245] [cursor=pointer]:
+              - /url: /bg/shop/gh-muscle
+          - listitem [ref=e246]:
+            - link "Ноотропни" [ref=e247] [cursor=pointer]:
+              - /url: /bg/shop/nootropic
+          - listitem [ref=e248]:
+            - link "Анти-стареене" [ref=e249] [cursor=pointer]:
+              - /url: /bg/shop/anti-aging
+          - listitem [ref=e250]:
+            - link "Аксесоари" [ref=e251] [cursor=pointer]:
+              - /url: /bg/shop/accessories
+      - generic [ref=e252]:
+        - heading "Информация" [level=3] [ref=e253]
+        - list [ref=e254]:
+          - listitem [ref=e255]:
+            - link "Доставка и плащане" [ref=e256] [cursor=pointer]:
+              - /url: /bg/delivery
+          - listitem [ref=e257]:
+            - link "Връщане и рекламации" [ref=e258] [cursor=pointer]:
+              - /url: /bg/returns
+          - listitem [ref=e259]:
+            - link "Често задавани въпроси" [ref=e260] [cursor=pointer]:
+              - /url: /bg/faq
+          - listitem [ref=e261]:
+            - link "Калкулатор" [ref=e262] [cursor=pointer]:
+              - /url: /bg/calculator
+          - listitem [ref=e263]:
+            - link "Гайд за реконституция" [ref=e264] [cursor=pointer]:
+              - /url: /bg/guides/reconstitution
+          - listitem [ref=e265]:
+            - link "COA Vault" [ref=e266] [cursor=pointer]:
+              - /url: /bg/coa-vault
+          - listitem [ref=e267]:
+            - link "Свържете се с нас" [ref=e268] [cursor=pointer]:
+              - /url: /bg/contact
+          - listitem [ref=e269]:
+            - link "Проследи поръчка" [ref=e270] [cursor=pointer]:
+              - /url: /bg/orders
+          - listitem [ref=e271]:
+            - link "Общи условия" [ref=e272] [cursor=pointer]:
+              - /url: /bg/terms
+          - listitem [ref=e273]:
+            - link "Политика за поверителност" [ref=e274] [cursor=pointer]:
+              - /url: /bg/privacy
+      - generic [ref=e275]:
+        - heading "Контакт" [level=3] [ref=e276]
+        - list [ref=e277]:
+          - listitem [ref=e278]:
+            - link "info@peptidelab.bg" [ref=e279] [cursor=pointer]:
+              - /url: mailto:info@peptidelab.bg
+              - img [ref=e280]
+              - text: info@peptidelab.bg
+          - listitem [ref=e283]:
+            - link "WhatsApp" [ref=e284] [cursor=pointer]:
+              - /url: https://wa.me/359XXXXXXXXX
+              - img [ref=e285]
+              - text: WhatsApp
+        - heading "Последвайте ни" [level=3] [ref=e287]
+        - generic [ref=e288]:
+          - link "Instagram" [ref=e289] [cursor=pointer]:
+            - /url: https://instagram.com/peptidelab.bg
+          - link "Facebook" [ref=e290] [cursor=pointer]:
+            - /url: https://facebook.com/peptidelab.bg
+    - generic [ref=e291]:
+      - generic [ref=e292]: Visa · Mastercard · Apple Pay · Наложен платеж
+      - paragraph [ref=e293]: Всички продукти са предназначени единствено за научноизследователски цели in vitro. Не са одобрени за консумация от хора.
+      - paragraph [ref=e294]: © 2026 PeptideLab.bg. Всички права запазени.
+  - link "WhatsApp" [ref=e295] [cursor=pointer]:
+    - /url: https://wa.me/359XXXXXXXXX
+    - img [ref=e296]
+  - button "Open Next.js Dev Tools" [ref=e303] [cursor=pointer]:
+    - img [ref=e304]
+  - alert [ref=e307]
+  - generic [ref=e309]:
+    - paragraph [ref=e310]: We use cookies to improve your experience. By continuing, you agree to our cookie policy.
+    - generic [ref=e311]:
+      - button "Decline" [ref=e312]
+      - button "Accept" [ref=e313]

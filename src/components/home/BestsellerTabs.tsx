@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 
 const FILTERS_BG = [
   { key: "all", label: "Всички" },
@@ -59,18 +60,16 @@ export function BestsellerTabs({
       </div>
 
       {/* Product grid */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {visibleIndices.length > 0 ? (
-          visibleIndices.map((i) => (
-            <div key={i}>{productCards[i]}</div>
-          ))
-        ) : (
-          // Fallback: show all when filter matches nothing
-          productCards.map((card, i) => (
-            <div key={i}>{card}</div>
-          ))
-        )}
-      </div>
+      <MotionProductGrid>
+        {visibleIndices.length > 0
+          ? visibleIndices.map((i) => (
+              <MotionProductItem key={i}>{productCards[i]}</MotionProductItem>
+            ))
+          : // Fallback: show all when filter matches nothing
+            productCards.map((card, i) => (
+              <MotionProductItem key={i}>{card}</MotionProductItem>
+            ))}
+      </MotionProductGrid>
     </div>
   );
 }

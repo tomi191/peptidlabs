@@ -11,6 +11,8 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
+import { LenisProvider } from "@/components/ui/LenisProvider";
+import { Toaster } from "sonner";
 import "../globals.css";
 
 const inter = Inter({
@@ -84,12 +86,25 @@ export default async function LocaleLayout({
           Skip to content
         </a>
         <NextIntlClientProvider messages={messages}>
-          <GrainOverlay />
-          <Header />
-          <main id="main-content">{children}</main>
-          <Footer />
-          <WhatsAppButton />
-          <CookieConsent />
+          <LenisProvider>
+            <GrainOverlay />
+            <Header />
+            <main id="main-content">{children}</main>
+            <Footer />
+            <WhatsAppButton />
+            <CookieConsent />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "#0f172a",
+                  color: "#fff",
+                  border: "1px solid #1e293b",
+                  fontFamily: "var(--font-sans)",
+                },
+              }}
+            />
+          </LenisProvider>
         </NextIntlClientProvider>
       </body>
     </html>

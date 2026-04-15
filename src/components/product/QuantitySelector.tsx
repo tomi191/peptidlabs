@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { motion } from "motion/react";
+import { toast } from "sonner";
+import { useLocale } from "next-intl";
 import { useCart } from "@/lib/store/cart";
 import type { Product } from "@/lib/types";
 
@@ -14,6 +17,8 @@ export function QuantitySelector({
 }) {
   const [quantity, setQuantity] = useState(1);
   const addItem = useCart((s) => s.addItem);
+  const locale = useLocale();
+  const isBg = locale === "bg";
 
   function decrement() {
     setQuantity((q) => Math.max(1, q - 1));
@@ -27,7 +32,34 @@ export function QuantitySelector({
     for (let i = 0; i < quantity; i++) {
       addItem(product);
     }
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try {
+        navigator.vibrate(10);
+      } catch {
+        // no-op
+      }
+    }
+    const addedLabel = isBg
+      ? `${quantity} x ${product.name} добавен в кошницата`
+      : `${quantity} x ${product.name} added to cart`;
+    toast.success(addedLabel, {
+      description: `€${(product.price_eur * quantity).toFixed(2)}`,
+      duration: 2500,
+      action: {
+        label: isBg ? "Виж" : "View",
+        onClick: () => {
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("peptidelab:open-cart"));
+          }
+        },
+      },
+    });
   }
+
+  const press = {
+    whileTap: { scale: 0.97 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 20 },
+  };
 
   return (
     <div className="mt-4">
@@ -51,12 +83,13 @@ export function QuantitySelector({
         </button>
       </div>
 
-      <button
+      <motion.button
         onClick={handleAddToCart}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-navy py-4 text-sm font-semibold text-white transition-colors hover:bg-navy/90"
+        {...press}
       >
         <span>{label}</span>
-      </button>
+      </motion.button>
     </div>
   );
 }

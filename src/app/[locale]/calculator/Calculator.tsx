@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { motion } from "motion/react";
 import { FlaskConical, Droplets, Crosshair, Syringe } from "lucide-react";
 
 /* ── Preset options ── */
@@ -82,9 +83,11 @@ function PresetButton({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
       className={`px-4 py-3 rounded-lg border text-sm font-mono text-navy cursor-pointer transition-colors ${
         active
           ? "border-2 border-navy bg-surface"
@@ -92,7 +95,7 @@ function PresetButton({
       }`}
     >
       {label}
-    </button>
+    </motion.button>
   );
 }
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { ShoppingBag, Truck } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 import { useCart } from "@/lib/store/cart";
 import { SHIPPING } from "@/lib/constants";
 
@@ -116,7 +117,10 @@ export default function OrderSummary() {
         <div className="flex justify-between text-sm">
           <span className="text-secondary">{t("subtotal")}</span>
           <span className="text-navy tabular">
-            €{subtotal.toFixed(2)}
+            <NumberFlow
+              value={subtotal}
+              format={{ style: "currency", currency: "EUR" }}
+            />
           </span>
         </div>
 
@@ -137,7 +141,10 @@ export default function OrderSummary() {
         <div className="border-t border-border pt-3 flex justify-between">
           <span className="font-bold text-lg text-navy">{t("total")}</span>
           <span className="font-bold text-lg text-navy tabular">
-            €{total.toFixed(2)}
+            <NumberFlow
+              value={total}
+              format={{ style: "currency", currency: "EUR" }}
+            />
           </span>
         </div>
       </div>

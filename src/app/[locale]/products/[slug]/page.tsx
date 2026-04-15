@@ -26,8 +26,9 @@ import { FrequentlyBoughtTogether } from "@/components/product/FrequentlyBoughtT
 import { ProductFaq } from "@/components/product/ProductFaq";
 import { ReviewsPlaceholder } from "@/components/product/ReviewsPlaceholder";
 import { ProductCard } from "@/components/product/ProductCard";
-import { ProductGrid } from "@/components/product/ProductGrid";
+import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 import { StickyAddToCart } from "@/components/product/StickyAddToCart";
+import { AnimatedPrice } from "@/components/ui/AnimatedPrice";
 import { getCategoryLabel } from "@/lib/labels";
 
 type PageProps = {
@@ -79,10 +80,6 @@ export async function generateMetadata({
       },
     },
   };
-}
-
-function formatPrice(product: { price_eur: number }) {
-  return `\u20AC${product.price_eur.toFixed(2)}`;
 }
 
 export default async function ProductPage({ params }: PageProps) {
@@ -261,7 +258,10 @@ export default async function ProductPage({ params }: PageProps) {
           {/* LEFT COLUMN */}
           <div>
             {/* Product image placeholder */}
-            <div className="relative flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-surface to-white">
+            <div
+              className="relative flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-surface to-white"
+              style={{ viewTransitionName: `product-image-${product.slug}` }}
+            >
               <div className="h-32 w-12 rounded border border-border bg-white" />
 
               {/* Badges */}
@@ -365,7 +365,7 @@ export default async function ProductPage({ params }: PageProps) {
 
             {/* Price */}
             <p className="mt-6 text-3xl font-bold text-navy tabular">
-              {formatPrice(product)}
+              <AnimatedPrice value={product.price_eur} />
             </p>
 
             {/* Bulk discount note */}
@@ -492,11 +492,13 @@ export default async function ProductPage({ params }: PageProps) {
               )}
             </div>
             <div className="mt-6">
-              <ProductGrid>
+              <MotionProductGrid>
                 {relatedForGrid.map((p) => (
-                  <ProductCard key={p.id} product={p} locale={locale} />
+                  <MotionProductItem key={p.id}>
+                    <ProductCard product={p} locale={locale} />
+                  </MotionProductItem>
                 ))}
-              </ProductGrid>
+              </MotionProductGrid>
             </div>
           </div>
         </div>

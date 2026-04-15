@@ -18,7 +18,12 @@ export function ProductCard({
   return (
     <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
       <Link href={`/products/${product.slug}`} className="product-card-cursor block">
-        <div className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface" role="img" aria-label={`${product.name} product image`}>
+        <div
+          className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface"
+          role="img"
+          aria-label={`${product.name} product image`}
+          style={{ viewTransitionName: `product-image-${product.slug}` }}
+        >
           {/* Placeholder vial */}
           <div className="h-16 w-6 rounded-sm border border-border bg-white" />
 

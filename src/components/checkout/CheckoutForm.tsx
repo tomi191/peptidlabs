@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { CreditCard, Banknote, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/store/cart";
 import { SHIPPING } from "@/lib/constants";
@@ -534,14 +535,16 @@ export default function CheckoutForm() {
       )}
 
       {/* Submit Button */}
-      <button
+      <motion.button
         type="submit"
         disabled={isSubmitting}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
         className="w-full bg-navy text-white py-4 rounded-lg font-semibold text-base mt-6 hover:bg-navy/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isSubmitting && <Loader2 className="h-5 w-5 animate-spin" />}
         {paymentMethod === "stripe" ? t("proceedToPayment") : t("placeOrder")}
-      </button>
+      </motion.button>
     </form>
   );
 }

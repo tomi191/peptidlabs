@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ProductGrid } from "@/components/product/ProductGrid";
+import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 import { ProductCard } from "@/components/product/ProductCard";
 import type { Product } from "@/lib/types";
 
@@ -84,11 +84,13 @@ export function SortableProductGrid({
       </p>
 
       {filtered.length > 0 ? (
-        <ProductGrid>
+        <MotionProductGrid>
           {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} locale={locale} />
+            <MotionProductItem key={product.id}>
+              <ProductCard product={product} locale={locale} />
+            </MotionProductItem>
           ))}
-        </ProductGrid>
+        </MotionProductGrid>
       ) : (
         <p className="py-12 text-center text-sm text-muted">
           {t("noResults")}

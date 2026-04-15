@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import NumberFlow from "@number-flow/react";
+import { motion } from "motion/react";
 import { useCart } from "@/lib/store/cart";
 
 type CartDrawerProps = {
@@ -211,21 +213,26 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
               <div className="flex justify-between text-sm text-secondary">
                 <span>{t("subtotal")}</span>
                 <span className="font-semibold text-navy tabular">
-                  {formatPrice(subtotal)}
+                  <NumberFlow
+                    value={subtotal}
+                    format={{ style: "currency", currency: "EUR" }}
+                  />
                 </span>
               </div>
               <p className="text-xs text-muted mt-1">
                 {t("freeShippingNote")}
               </p>
-              <button
+              <motion.button
                 onClick={() => {
                   onClose();
                   router.push("/checkout");
                 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 className="w-full bg-navy text-white py-3 rounded-lg font-semibold text-sm mt-4 hover:bg-navy/90 transition-colors"
               >
                 {t("checkout")}
-              </button>
+              </motion.button>
             </div>
           </>
         )}
