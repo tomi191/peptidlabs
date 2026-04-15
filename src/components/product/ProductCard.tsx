@@ -1,6 +1,6 @@
-import { ShieldCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
+import { COABadge } from "@/components/ui/COABadge";
 import type { Product } from "@/lib/types";
 import { getFormLabel, getCategoryLabel } from "@/lib/labels";
 
@@ -28,10 +28,7 @@ export function ProductCard({
           <div className="h-16 w-6 rounded-sm border border-border bg-white" />
 
           {product.coa_url && (
-            <span className="absolute right-2 top-2 inline-flex items-center gap-0.5 rounded border border-accent-border bg-accent-tint px-1.5 py-0.5 text-[10px] font-semibold text-accent">
-              <ShieldCheck size={14} />
-              COA
-            </span>
+            <COABadge variant="overlay" className="absolute right-2 top-2" />
           )}
         </div>
 

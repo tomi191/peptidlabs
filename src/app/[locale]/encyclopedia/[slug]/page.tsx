@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SequenceVisual } from "@/components/peptide/SequenceVisual";
 
 export async function generateStaticParams() {
   const supabase = createStaticSupabase();
@@ -84,13 +85,26 @@ export default async function EncyclopediaDetailPage({
           <span className="text-navy">{peptide.name}</span>
         </nav>
 
-        {/* Header */}
-        <h1 className="font-mono text-2xl font-bold text-navy">
-          {peptide.name}
-        </h1>
-        {fullName && (
-          <p className="mt-1 text-secondary">{fullName}</p>
-        )}
+        {/* Header with unique sequence signature */}
+        <div className="grid gap-8 md:grid-cols-[1fr_240px] md:items-start">
+          <div>
+            <h1 className="font-mono text-2xl font-bold text-navy">
+              {peptide.name}
+            </h1>
+            {fullName && (
+              <p className="mt-1 text-secondary">{fullName}</p>
+            )}
+            <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-muted">
+              Signature · {peptide.name}
+            </p>
+          </div>
+          <div className="md:justify-self-end">
+            <SequenceVisual
+              sequence={peptide.formula || peptide.name}
+              size={240}
+            />
+          </div>
+        </div>
 
         {/* Data */}
         <div className="mt-8 grid gap-8 lg:grid-cols-3">

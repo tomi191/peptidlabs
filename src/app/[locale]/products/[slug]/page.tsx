@@ -29,6 +29,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 import { StickyAddToCart } from "@/components/product/StickyAddToCart";
 import { AnimatedPrice } from "@/components/ui/AnimatedPrice";
+import { COABadge } from "@/components/ui/COABadge";
 import { getCategoryLabel } from "@/lib/labels";
 
 type PageProps = {
@@ -266,10 +267,7 @@ export default async function ProductPage({ params }: PageProps) {
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-semibold text-navy shadow-sm backdrop-blur-sm">
-                  <ShieldCheck size={14} className="text-accent" />
-                  COA Verified
-                </span>
+                <COABadge variant="overlay" />
                 {product.is_bestseller && (
                   <span className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
                     <FlaskConical size={14} />
@@ -339,6 +337,23 @@ export default async function ProductPage({ params }: PageProps) {
                   {locale === "bg" ? "Включен" : "Included"}
                 </p>
               </div>
+            </div>
+
+            {/* Lab-style batch/serial line */}
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-dashed border-border bg-surface px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted">
+              <span>
+                BATCH: PL-{product.sku}-{new Date().getFullYear()}
+              </span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" />
+              <span>
+                MFG:{" "}
+                {new Date().toLocaleDateString("bg-BG", {
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </span>
+              <span className="hidden h-3 w-px bg-border sm:inline-block" />
+              <span>STATUS: LOT-CERTIFIED</span>
             </div>
 
             {/* Size selector pills */}

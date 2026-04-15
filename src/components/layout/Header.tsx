@@ -9,6 +9,7 @@ import { useCart } from "@/lib/store/cart";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
 import CartDrawer from "@/components/layout/CartDrawer";
 import SearchModal from "@/components/ui/SearchModal";
+import { PeptideTicker } from "@/components/layout/PeptideTicker";
 
 /* ── Cart icon with badge (reads Zustand) ── */
 function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
@@ -82,6 +83,9 @@ export default function Header() {
 
   return (
     <header>
+      {/* Peptide ticker — Bloomberg-style monospace scroll */}
+      <PeptideTicker />
+
       {/* Top bar — hidden on mobile */}
       <div className="hidden md:block bg-surface border-b border-border">
         <div className="flex items-center justify-between text-muted text-xs py-2 px-6">
