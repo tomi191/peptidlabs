@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { ok, fail, parseBody } from "@/lib/api/response";
+import { AdminProductCreateSchema } from "@/lib/api/schemas";
 
 function validateAdminToken(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
@@ -20,7 +22,7 @@ function slugify(text: string): string {
 
 export async function GET(req: NextRequest) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const searchParams = req.nextUrl.searchParams;
@@ -40,94 +42,65 @@ export async function GET(req: NextRequest) {
   const { data: products, error } = await query;
 
   if (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch products" },
-      { status: 500 }
-    );
+    return fail("Failed to fetch products", 500, "DB_ERROR");
   }
 
-  return NextResponse.json(products ?? []);
+  return ok(products ?? []);
 }
-
-const VALID_STATUSES = ["draft", "published", "out_of_stock", "archived"] as const;
-const VALID_FORMS = ["lyophilized", "solution", "nasal_spray", "capsule", "accessory"] as const;
 
 export async function POST(req: NextRequest) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
-  try {
-    const body = await req.json();
+  const parsed = await parseBody(req, AdminProductCreateSchema);
+  if (!parsed.success) return parsed.response;
 
-    if (!body.name) {
-      return NextResponse.json(
-        { error: "Product name is required" },
-        { status: 400 }
-      );
-    }
+  const body = parsed.data;
 
-    if (body.status && !VALID_STATUSES.includes(body.status)) {
-      return NextResponse.json(
-        { error: "Invalid status" },
-        { status: 400 }
-      );
-    }
+  const slug = body.slug?.trim() || slugify(body.name);
+  const sku = body.sku?.trim() || "";
 
-    if (body.form && !VALID_FORMS.includes(body.form)) {
-      return NextResponse.json(
-        { error: "Invalid form" },
-        { status: 400 }
-      );
-    }
+  const product = {
+    name: body.name,
+    name_bg: body.name_bg ?? null,
+    slug,
+    sku,
+    description_bg: body.description_bg ?? null,
+    description_en: body.description_en ?? null,
+    price_bgn: body.price_bgn,
+    price_eur: body.price_eur,
+    images: body.images ?? [],
+    vial_size_mg: body.vial_size_mg ?? null,
+    form: body.form,
+    purity_percent: body.purity_percent,
+    molecular_weight: body.molecular_weight ?? null,
+    sequence: body.sequence ?? null,
+    scientific_data: body.scientific_data ?? {},
+    coa_url: body.coa_url ?? null,
+    is_bestseller: body.is_bestseller ?? false,
+    is_blend: body.is_blend ?? false,
+    status: body.status ?? "draft",
+    stock: body.stock ?? 0,
+    weight_grams: body.weight_grams ?? null,
+  };
 
-    const slug = body.slug?.trim() || slugify(body.name);
-    const sku = body.sku?.trim() || "";
+  const supabase = createAdminSupabase();
 
-    const product = {
-      name: body.name,
-      name_bg: body.name_bg || null,
-      slug,
-      sku,
-      description_bg: body.description_bg || null,
-      description_en: body.description_en || null,
-      price_bgn: Number(body.price_bgn) || 0,
-      price_eur: Number(body.price_eur) || 0,
-      images: body.images || [],
-      vial_size_mg: body.vial_size_mg ? Number(body.vial_size_mg) : null,
-      form: body.form || "lyophilized",
-      purity_percent: Number(body.purity_percent) || 98,
-      molecular_weight: body.molecular_weight ? Number(body.molecular_weight) : null,
-      sequence: body.sequence || null,
-      scientific_data: body.scientific_data || {},
-      coa_url: body.coa_url || null,
-      is_bestseller: Boolean(body.is_bestseller),
-      is_blend: Boolean(body.is_blend),
-      status: body.status || "draft",
-      stock: Number(body.stock) || 0,
-      weight_grams: body.weight_grams ? Number(body.weight_grams) : null,
-    };
+  const { data, error } = await supabase
+    .from("products")
+    .insert(product)
+    .select()
+    .single();
 
-    const supabase = createAdminSupabase();
-
-    const { data, error } = await supabase
-      .from("products")
-      .insert(product)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json(
-        { error: `Failed to create product: ${error.message}` },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(data, { status: 201 });
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 }
+  if (error) {
+    console.error("Failed to create product:", error);
+    return fail(
+      `Failed to create product: ${error.message}`,
+      500,
+      "DB_ERROR"
     );
   }
+
+  return ok(data, { status: 201 });
 }

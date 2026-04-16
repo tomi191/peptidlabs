@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { ok, fail } from "@/lib/api/response";
 
 function validateAdminToken(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
@@ -10,7 +11,7 @@ function validateAdminToken(req: NextRequest): boolean {
 
 export async function GET(req: NextRequest) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const { searchParams } = new URL(req.url);
@@ -30,10 +31,7 @@ export async function GET(req: NextRequest) {
   const { data: orders, error } = await query;
 
   if (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch orders" },
-      { status: 500 }
-    );
+    return fail("Failed to fetch orders", 500, "DB_ERROR");
   }
 
   // Fetch items for all orders
@@ -56,5 +54,5 @@ export async function GET(req: NextRequest) {
     ),
   }));
 
-  return NextResponse.json(ordersWithItems);
+  return ok(ordersWithItems);
 }

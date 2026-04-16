@@ -71,8 +71,10 @@ export default function AdminOrdersPage() {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        setOrders(data);
+        const json = await res.json();
+        if (json?.success) {
+          setOrders(json.data);
+        }
       }
     } catch {
       // Network error — leave orders empty

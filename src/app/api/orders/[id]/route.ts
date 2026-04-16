@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { ok, fail } from "@/lib/api/response";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -29,19 +30,17 @@ export async function GET(
   const ip = forwarded?.split(",")[0]?.trim() || "unknown";
 
   if (!checkRateLimit(ip)) {
-    return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
-      { status: 429 }
+    return fail(
+      "Too many requests. Please try again later.",
+      429,
+      "RATE_LIMITED"
     );
   }
 
   const { id } = await params;
 
   if (!UUID_REGEX.test(id)) {
-    return NextResponse.json(
-      { error: "Invalid order ID format" },
-      { status: 400 }
-    );
+    return fail("Invalid order ID format", 400, "INVALID_ID");
   }
 
   const supabase = createAdminSupabase();
@@ -53,10 +52,7 @@ export async function GET(
     .single();
 
   if (orderError || !order) {
-    return NextResponse.json(
-      { error: "Order not found" },
-      { status: 404 }
-    );
+    return fail("Order not found", 404, "NOT_FOUND");
   }
 
   const { data: items } = await supabase
@@ -64,8 +60,5 @@ export async function GET(
     .select("*")
     .eq("order_id", id);
 
-  return NextResponse.json({
-    ...order,
-    items: items ?? [],
-  });
+  return ok({ ...order, items: items ?? [] });
 }

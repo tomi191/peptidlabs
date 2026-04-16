@@ -1,121 +1,29 @@
 import Stripe from "stripe";
-import { NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
-
-type OrderItem = {
-  productId: string;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-};
-
-type ShippingAddress = {
-  name: string;
-  address: string;
-  addressLine2?: string;
-  city: string;
-  postalCode: string;
-  country: string;
-};
-
-type StripeCheckoutRequest = {
-  email: string;
-  phone: string;
-  shippingAddress: ShippingAddress;
-  items: OrderItem[];
-  subtotal: number;
-  shippingCost: number;
-  total: number;
-  currency: string;
-  locale: string;
-  researchConfirmed: boolean;
-};
+import { ok, fail, parseBody } from "@/lib/api/response";
+import { StripeCheckoutSchema } from "@/lib/api/schemas";
 
 export async function POST(request: Request) {
   if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json(
-      { error: "Stripe is not configured yet" },
-      { status: 500 }
-    );
+    return fail("Stripe is not configured yet", 500, "CONFIG_MISSING");
   }
 
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return NextResponse.json(
-      { error: "Server configuration error" },
-      { status: 500 }
-    );
+    return fail("Server configuration error", 500, "CONFIG_MISSING");
   }
 
-  let body: StripeCheckoutRequest;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 }
-    );
-  }
+  const parsed = await parseBody(request, StripeCheckoutSchema);
+  if (!parsed.success) return parsed.response;
 
   const {
     email,
     phone,
     shippingAddress,
     items,
-    subtotal,
     shippingCost,
-    total,
     currency,
     locale,
-    researchConfirmed,
-  } = body;
-
-  // Validate required fields
-  if (
-    !email ||
-    !phone ||
-    !shippingAddress ||
-    !items ||
-    items.length === 0 ||
-    subtotal == null ||
-    shippingCost == null ||
-    total == null ||
-    !currency ||
-    !locale
-  ) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
-  }
-
-  if (
-    !shippingAddress.name ||
-    !shippingAddress.address ||
-    !shippingAddress.city ||
-    !shippingAddress.postalCode ||
-    !shippingAddress.country
-  ) {
-    return NextResponse.json(
-      { error: "Missing required shipping address fields" },
-      { status: 400 }
-    );
-  }
-
-  if (researchConfirmed !== true) {
-    return NextResponse.json(
-      { error: "Research use must be confirmed" },
-      { status: 400 }
-    );
-  }
-
-  for (const item of items) {
-    if (!item.productId || !item.productName || !item.quantity || !item.unitPrice) {
-      return NextResponse.json(
-        { error: "Each item must have productId, productName, quantity, and unitPrice" },
-        { status: 400 }
-      );
-    }
-  }
+  } = parsed.data;
 
   const supabase = createAdminSupabase();
 
@@ -128,24 +36,27 @@ export async function POST(request: Request) {
       .single();
 
     if (!product || product.status !== "published") {
-      return NextResponse.json(
-        { error: `Product ${item.productName} is no longer available` },
-        { status: 400 }
+      return fail(
+        `Product ${item.productName} is no longer available`,
+        400,
+        "PRODUCT_UNAVAILABLE"
       );
     }
 
     const expectedPrice = product.price_eur;
     if (Math.abs(item.unitPrice - expectedPrice) > 0.01) {
-      return NextResponse.json(
-        { error: "Price has changed. Please refresh and try again." },
-        { status: 400 }
+      return fail(
+        "Price has changed. Please refresh and try again.",
+        400,
+        "PRICE_MISMATCH"
       );
     }
 
     if (product.stock < item.quantity) {
-      return NextResponse.json(
-        { error: `Insufficient stock for ${item.productName}` },
-        { status: 400 }
+      return fail(
+        `Insufficient stock for ${item.productName}`,
+        400,
+        "INSUFFICIENT_STOCK"
       );
     }
   }
@@ -182,10 +93,7 @@ export async function POST(request: Request) {
 
   if (orderError) {
     console.error("Failed to create order:", orderError);
-    return NextResponse.json(
-      { error: "Failed to create order" },
-      { status: 500 }
-    );
+    return fail("Failed to create order", 500, "DB_ERROR");
   }
 
   // Create order items
@@ -203,10 +111,7 @@ export async function POST(request: Request) {
 
   if (itemsError) {
     console.error("Failed to create order items:", itemsError);
-    return NextResponse.json(
-      { error: "Failed to create order items" },
-      { status: 500 }
-    );
+    return fail("Failed to create order items", 500, "DB_ERROR");
   }
 
   // Build Stripe line items
@@ -241,17 +146,18 @@ export async function POST(request: Request) {
       customer_email: email,
       currency: currency.toLowerCase(),
       line_items: lineItems,
-      metadata: { orderId: order.id },
+      metadata: { orderId: order.id, phone },
       success_url: `${siteUrl}/${locale}/checkout/success?order=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/${locale}/checkout`,
     });
 
-    return NextResponse.json({ url: session.url });
+    if (!session.url) {
+      return fail("Stripe session missing redirect URL", 500, "STRIPE_ERROR");
+    }
+
+    return ok({ url: session.url, orderId: order.id });
   } catch (err) {
     console.error("Stripe session creation failed:", err);
-    return NextResponse.json(
-      { error: "Failed to create payment session" },
-      { status: 500 }
-    );
+    return fail("Failed to create payment session", 500, "STRIPE_ERROR");
   }
 }

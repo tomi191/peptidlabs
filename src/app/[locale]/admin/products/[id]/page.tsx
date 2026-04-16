@@ -88,7 +88,9 @@ export default function AdminProductEditPage({
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        const data: Product = await res.json();
+        const json = await res.json();
+        if (!json?.success) return;
+        const data: Product = json.data;
         setProduct(data);
         setName(data.name);
         setNameBg(data.name_bg ?? "");
@@ -164,10 +166,12 @@ export default function AdminProductEditPage({
         }),
       });
       if (res.ok) {
-        const updated = await res.json();
-        setProduct(updated);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        const json = await res.json();
+        if (json?.success) {
+          setProduct(json.data);
+          setSaved(true);
+          setTimeout(() => setSaved(false), 2000);
+        }
       }
     } catch {
       // Error silently

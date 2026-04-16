@@ -105,6 +105,35 @@ body {
   scrollbar-width: none;
 }
 
+/* Premium scrollbar — navy-tinted, only on fine pointer devices */
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #0f172a;
+    border-radius: 10px;
+    border: 3px solid var(--color-surface);
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-clip: border-box;
+  }
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #0f172a var(--color-surface);
+  }
+  /* Preserve hidden-scrollbar utility override inside pointer:fine */
+  .scroll-hidden {
+    scrollbar-width: none;
+  }
+}
+
 /* Native View Transitions for page navigation (Next.js 16) */
 @view-transition {
   navigation: auto;

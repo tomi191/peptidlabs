@@ -66,8 +66,12 @@ export default function OrderDetailPage({
           if (!cancelled) setError(true);
           return;
         }
-        const data = await res.json();
-        if (!cancelled) setOrder(data);
+        const json = await res.json();
+        if (!json?.success) {
+          if (!cancelled) setError(true);
+          return;
+        }
+        if (!cancelled) setOrder(json.data);
       } catch {
         if (!cancelled) setError(true);
       } finally {

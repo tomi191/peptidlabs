@@ -32,13 +32,13 @@ export default function AdminLoginPage() {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || !data.success) {
         setError(data.error || "Authentication failed");
         setLoading(false);
         return;
       }
 
-      setToken(data.token);
+      setToken(data.data.token);
       router.push("/admin/orders");
     } catch {
       setError("Network error. Please try again.");

@@ -1,126 +1,36 @@
-import { NextResponse } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
-
-type OrderItem = {
-  productId: string;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-};
-
-type ShippingAddress = {
-  name: string;
-  address: string;
-  addressLine2?: string;
-  city: string;
-  postalCode: string;
-  country: string;
-};
-
-type CodOrderRequest = {
-  email: string;
-  phone: string;
-  shippingAddress: ShippingAddress;
-  items: OrderItem[];
-  subtotal: number;
-  shippingCost: number;
-  total: number;
-  currency: string;
-  locale: string;
-  researchConfirmed: boolean;
-};
+import { ok, fail, parseBody } from "@/lib/api/response";
+import { CodOrderSchema } from "@/lib/api/schemas";
 
 export async function POST(request: Request) {
   // Check service role key is configured
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return NextResponse.json(
-      { error: "Server configuration error" },
-      { status: 500 }
-    );
+    return fail("Server configuration error", 500, "CONFIG_MISSING");
   }
 
-  let body: CodOrderRequest;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 }
-    );
-  }
+  const parsed = await parseBody(request, CodOrderSchema);
+  if (!parsed.success) return parsed.response;
 
-  // Validate required fields
   const {
     email,
     phone,
     shippingAddress,
     items,
-    subtotal,
     shippingCost,
-    total,
     currency,
     locale,
-    researchConfirmed,
-  } = body;
-
-  if (
-    !email ||
-    !phone ||
-    !shippingAddress ||
-    !items ||
-    items.length === 0 ||
-    subtotal == null ||
-    shippingCost == null ||
-    total == null ||
-    !currency ||
-    !locale
-  ) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
-  }
-
-  if (
-    !shippingAddress.name ||
-    !shippingAddress.address ||
-    !shippingAddress.city ||
-    !shippingAddress.postalCode ||
-    !shippingAddress.country
-  ) {
-    return NextResponse.json(
-      { error: "Missing required shipping address fields" },
-      { status: 400 }
-    );
-  }
-
-  // Validate research confirmed
-  if (researchConfirmed !== true) {
-    return NextResponse.json(
-      { error: "Research use must be confirmed" },
-      { status: 400 }
-    );
-  }
+  } = parsed.data;
 
   // Validate country is Bulgaria for COD
   if (
     shippingAddress.country !== "BG" &&
     shippingAddress.country !== "Bulgaria"
   ) {
-    return NextResponse.json(
-      { error: "Cash on delivery is only available for Bulgaria" },
-      { status: 400 }
+    return fail(
+      "Cash on delivery is only available for Bulgaria",
+      400,
+      "COD_UNAVAILABLE"
     );
-  }
-
-  // Validate each item has required fields
-  for (const item of items) {
-    if (!item.productId || !item.productName || !item.quantity || !item.unitPrice) {
-      return NextResponse.json(
-        { error: "Each item must have productId, productName, quantity, and unitPrice" },
-        { status: 400 }
-      );
-    }
   }
 
   const supabase = createAdminSupabase();
@@ -134,24 +44,27 @@ export async function POST(request: Request) {
       .single();
 
     if (!product || product.status !== "published") {
-      return NextResponse.json(
-        { error: `Product ${item.productName} is no longer available` },
-        { status: 400 }
+      return fail(
+        `Product ${item.productName} is no longer available`,
+        400,
+        "PRODUCT_UNAVAILABLE"
       );
     }
 
     const expectedPrice = product.price_eur;
     if (Math.abs(item.unitPrice - expectedPrice) > 0.01) {
-      return NextResponse.json(
-        { error: "Price has changed. Please refresh and try again." },
-        { status: 400 }
+      return fail(
+        "Price has changed. Please refresh and try again.",
+        400,
+        "PRICE_MISMATCH"
       );
     }
 
     if (product.stock < item.quantity) {
-      return NextResponse.json(
-        { error: `Insufficient stock for ${item.productName}` },
-        { status: 400 }
+      return fail(
+        `Insufficient stock for ${item.productName}`,
+        400,
+        "INSUFFICIENT_STOCK"
       );
     }
   }
@@ -188,10 +101,7 @@ export async function POST(request: Request) {
 
   if (orderError) {
     console.error("Failed to create order:", orderError);
-    return NextResponse.json(
-      { error: "Failed to create order" },
-      { status: 500 }
-    );
+    return fail("Failed to create order", 500, "DB_ERROR");
   }
 
   // Create order items
@@ -209,14 +119,8 @@ export async function POST(request: Request) {
 
   if (itemsError) {
     console.error("Failed to create order items:", itemsError);
-    return NextResponse.json(
-      { error: "Failed to create order items" },
-      { status: 500 }
-    );
+    return fail("Failed to create order items", 500, "DB_ERROR");
   }
 
-  return NextResponse.json(
-    { orderId: order.id, status: "pending" },
-    { status: 201 }
-  );
+  return ok({ orderId: order.id, status: "pending" as const }, { status: 201 });
 }

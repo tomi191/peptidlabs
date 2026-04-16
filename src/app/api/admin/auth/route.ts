@@ -1,40 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { ok, fail, parseBody } from "@/lib/api/response";
+import { AdminAuthSchema } from "@/lib/api/schemas";
 
 export async function POST(req: NextRequest) {
-  try {
-    const { password } = await req.json();
+  const parsed = await parseBody(req, AdminAuthSchema);
+  if (!parsed.success) return parsed.response;
 
-    if (!password || typeof password !== "string") {
-      return NextResponse.json(
-        { error: "Password is required" },
-        { status: 400 }
-      );
-    }
+  const { password } = parsed.data;
 
-    const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-    if (!adminPassword) {
-      console.error("ADMIN_PASSWORD environment variable is not set");
-      return NextResponse.json(
-        { error: "Admin auth not configured" },
-        { status: 500 }
-      );
-    }
-
-    if (password !== adminPassword) {
-      return NextResponse.json(
-        { error: "Invalid password" },
-        { status: 401 }
-      );
-    }
-
-    const token = `admin-${Date.now()}`;
-
-    return NextResponse.json({ token });
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request" },
-      { status: 400 }
-    );
+  if (!adminPassword) {
+    console.error("ADMIN_PASSWORD environment variable is not set");
+    return fail("Admin auth not configured", 500, "CONFIG_MISSING");
   }
+
+  if (password !== adminPassword) {
+    return fail("Invalid password", 401, "INVALID_CREDENTIALS");
+  }
+
+  const token = `admin-${Date.now()}`;
+
+  return ok({ token });
 }

@@ -6,9 +6,25 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
+};
+
+// Extended sanitize schema — allow links with href + target + rel
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [
+      ...(defaultSchema.attributes?.a ?? []),
+      ["target"],
+      ["rel"],
+    ],
+  },
 };
 
 export async function generateStaticParams() {
@@ -51,77 +67,6 @@ function formatDate(dateStr: string, locale: string): string {
   });
 }
 
-/** Renders plain text content with paragraph breaks and inline markdown links. */
-function renderContent(content: string, locale: string) {
-  const paragraphs = content.split(/\n\n+/);
-
-  return paragraphs.map((para, i) => {
-    const trimmed = para.trim();
-    if (!trimmed) return null;
-
-    // Detect heading-like lines (short, no period, no link, start of section)
-    const isHeading =
-      trimmed.length < 120 &&
-      !trimmed.includes(".") &&
-      !trimmed.startsWith("-") &&
-      !trimmed.startsWith("[") &&
-      !trimmed.match(/^\d+\./);
-
-    const isListSection = trimmed.includes("\n") && trimmed.split("\n").every(line => {
-      const l = line.trim();
-      return l === "" || l.startsWith("-") || l.startsWith("*");
-    });
-
-    // Convert markdown links to HTML
-    const withLinks = trimmed.replace(
-      /\[([^\]]+)\]\(([^)]+)\)/g,
-      (_match, text, href) => {
-        return `<a href="${href}" class="text-teal-600 hover:underline">${text}</a>`;
-      }
-    );
-
-    if (isHeading) {
-      return (
-        <h2
-          key={i}
-          className="text-lg font-semibold text-navy mt-8 mb-3"
-          dangerouslySetInnerHTML={{ __html: withLinks }}
-        />
-      );
-    }
-
-    if (isListSection) {
-      const lines = trimmed.split("\n").filter(l => l.trim());
-      return (
-        <ul key={i} className="list-disc list-inside space-y-1 text-secondary leading-relaxed">
-          {lines.map((line, j) => {
-            const clean = line.replace(/^[-*]\s*/, "");
-            const lineWithLinks = clean.replace(
-              /\[([^\]]+)\]\(([^)]+)\)/g,
-              (_match: string, text: string, href: string) =>
-                `<a href="${href}" class="text-teal-600 hover:underline">${text}</a>`
-            );
-            return (
-              <li
-                key={j}
-                dangerouslySetInnerHTML={{ __html: lineWithLinks }}
-              />
-            );
-          })}
-        </ul>
-      );
-    }
-
-    return (
-      <p
-        key={i}
-        className="text-secondary leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: withLinks }}
-      />
-    );
-  });
-}
-
 export default async function BlogPostPage({ params }: PageProps) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
@@ -154,6 +99,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <>
+      {/* Article JSON-LD is schema.org structured data, not user HTML — safe. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -164,7 +110,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <nav className="text-xs text-muted mb-8">
             <Link
               href={`/${locale}/blog`}
-              className="hover:text-teal-600 transition-colors"
+              className="hover:text-accent transition-colors"
             >
               {t("backToBlog")}
             </Link>
@@ -206,10 +152,78 @@ export default async function BlogPostPage({ params }: PageProps) {
                 </div>
               )}
 
-              {/* Content */}
+              {/* Content — markdown parsed via AST + sanitized */}
               {content && (
-                <div className="mt-8 space-y-4 text-sm">
-                  {renderContent(content, locale)}
+                <div className="mt-8 prose prose-neutral max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}
+                    components={{
+                      h1: ({ children }) => (
+                        <h1 className="text-2xl font-bold text-navy mt-8 mb-3">
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-xl font-semibold text-navy mt-6 mb-2">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-lg font-semibold text-navy mt-4 mb-2">
+                          {children}
+                        </h3>
+                      ),
+                      p: ({ children }) => (
+                        <p className="text-sm text-secondary leading-relaxed mb-4">
+                          {children}
+                        </p>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc pl-6 mb-4 text-sm text-secondary space-y-1">
+                          {children}
+                        </ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal pl-6 mb-4 text-sm text-secondary space-y-1">
+                          {children}
+                        </ol>
+                      ),
+                      a: ({ href, children }) => {
+                        const isExternal = href?.startsWith("http");
+                        return (
+                          <a
+                            href={href}
+                            className="text-accent underline underline-offset-2 hover:text-navy"
+                            target={isExternal ? "_blank" : undefined}
+                            rel={isExternal ? "noopener noreferrer" : undefined}
+                          >
+                            {children}
+                          </a>
+                        );
+                      },
+                      strong: ({ children }) => (
+                        <strong className="font-semibold text-navy">
+                          {children}
+                        </strong>
+                      ),
+                      em: ({ children }) => (
+                        <em className="italic">{children}</em>
+                      ),
+                      code: ({ children }) => (
+                        <code className="font-mono text-xs bg-surface px-1.5 py-0.5 rounded">
+                          {children}
+                        </code>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote className="border-l-2 border-border pl-4 italic text-secondary my-4">
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                  >
+                    {content}
+                  </ReactMarkdown>
                 </div>
               )}
             </article>
@@ -226,7 +240,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                       <Link
                         key={product.id}
                         href={`/${locale}/products/${product.slug}`}
-                        className="block border border-border rounded-lg p-4 hover:border-teal-600 transition-colors"
+                        className="block border border-border rounded-lg p-4 hover:border-accent transition-colors"
                       >
                         <p className="text-sm font-medium text-navy">
                           {product.name}
@@ -236,7 +250,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                             {product.vial_size_mg}mg
                           </p>
                         )}
-                        <p className="font-mono text-sm text-teal-600 mt-1">
+                        <p className="font-mono text-sm text-accent mt-1">
                           &euro;{product.price_eur.toFixed(2)}
                         </p>
                       </Link>

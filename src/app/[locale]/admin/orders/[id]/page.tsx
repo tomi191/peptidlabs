@@ -87,10 +87,12 @@ export default function AdminOrderDetailPage({
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        const data = await res.json();
-        setOrder(data);
-        setNewStatus(data.status);
-        setTrackingNumber(data.tracking_number ?? "");
+        const json = await res.json();
+        if (json?.success) {
+          setOrder(json.data);
+          setNewStatus(json.data.status);
+          setTrackingNumber(json.data.tracking_number ?? "");
+        }
       }
     } catch {
       // Network error
@@ -113,10 +115,12 @@ export default function AdminOrderDetailPage({
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        const updated = await res.json();
-        setOrder((prev) => (prev ? { ...prev, ...updated } : prev));
-        setStatusSaved(true);
-        setTimeout(() => setStatusSaved(false), 2000);
+        const json = await res.json();
+        if (json?.success) {
+          setOrder((prev) => (prev ? { ...prev, ...json.data } : prev));
+          setStatusSaved(true);
+          setTimeout(() => setStatusSaved(false), 2000);
+        }
       }
     } catch {
       // Error silently
@@ -142,10 +146,12 @@ export default function AdminOrderDetailPage({
         }),
       });
       if (res.ok) {
-        const updated = await res.json();
-        setOrder((prev) => (prev ? { ...prev, ...updated } : prev));
-        setTrackingSaved(true);
-        setTimeout(() => setTrackingSaved(false), 2000);
+        const json = await res.json();
+        if (json?.success) {
+          setOrder((prev) => (prev ? { ...prev, ...json.data } : prev));
+          setTrackingSaved(true);
+          setTimeout(() => setTrackingSaved(false), 2000);
+        }
       }
     } catch {
       // Error silently

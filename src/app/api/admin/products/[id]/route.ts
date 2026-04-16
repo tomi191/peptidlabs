@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
+import { ok, fail, parseBody } from "@/lib/api/response";
+import { AdminProductUpdateSchema } from "@/lib/api/schemas";
 
 function validateAdminToken(req: NextRequest): boolean {
   const auth = req.headers.get("authorization");
@@ -16,16 +18,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const { id } = await params;
 
   if (!UUID_REGEX.test(id)) {
-    return NextResponse.json(
-      { error: "Invalid product ID format" },
-      { status: 400 }
-    );
+    return fail("Invalid product ID format", 400, "INVALID_ID");
   }
 
   const supabase = createAdminSupabase();
@@ -37,141 +36,84 @@ export async function GET(
     .single();
 
   if (error || !product) {
-    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    return fail("Product not found", 404, "NOT_FOUND");
   }
 
-  return NextResponse.json(product);
+  return ok(product);
 }
-
-const VALID_STATUSES = ["draft", "published", "out_of_stock", "archived"] as const;
-const VALID_FORMS = ["lyophilized", "solution", "nasal_spray", "capsule", "accessory"] as const;
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const { id } = await params;
 
   if (!UUID_REGEX.test(id)) {
-    return NextResponse.json(
-      { error: "Invalid product ID format" },
-      { status: 400 }
-    );
+    return fail("Invalid product ID format", 400, "INVALID_ID");
   }
 
-  try {
-    const body = await req.json();
-    const updates: Record<string, unknown> = {};
+  const parsed = await parseBody(req, AdminProductUpdateSchema);
+  if (!parsed.success) return parsed.response;
 
-    const stringFields = [
-      "name", "name_bg", "slug", "sku",
-      "description_bg", "description_en",
-      "sequence", "coa_url",
-    ] as const;
+  const body = parsed.data;
+  const updates: Record<string, unknown> = {};
 
-    for (const field of stringFields) {
-      if (body[field] !== undefined) {
-        updates[field] = body[field] || null;
-      }
+  // Map camelCase/exact schema fields to DB columns (all match 1:1 here).
+  const directFields = [
+    "name",
+    "name_bg",
+    "slug",
+    "sku",
+    "description_bg",
+    "description_en",
+    "sequence",
+    "coa_url",
+    "price_bgn",
+    "price_eur",
+    "purity_percent",
+    "stock",
+    "vial_size_mg",
+    "molecular_weight",
+    "weight_grams",
+    "form",
+    "status",
+    "is_bestseller",
+    "is_blend",
+    "images",
+    "scientific_data",
+  ] as const;
+
+  for (const field of directFields) {
+    if (body[field] !== undefined) {
+      updates[field] = body[field];
     }
-
-    // Name is required — don't null it
-    if (body.name !== undefined) {
-      updates.name = body.name;
-    }
-
-    const numberFields = [
-      "price_bgn", "price_eur", "purity_percent", "stock",
-    ] as const;
-
-    for (const field of numberFields) {
-      if (body[field] !== undefined) {
-        updates[field] = Number(body[field]);
-      }
-    }
-
-    const nullableNumberFields = [
-      "vial_size_mg", "molecular_weight", "weight_grams",
-    ] as const;
-
-    for (const field of nullableNumberFields) {
-      if (body[field] !== undefined) {
-        updates[field] = body[field] ? Number(body[field]) : null;
-      }
-    }
-
-    if (body.status !== undefined) {
-      if (!VALID_STATUSES.includes(body.status as (typeof VALID_STATUSES)[number])) {
-        return NextResponse.json(
-          { error: "Invalid status" },
-          { status: 400 }
-        );
-      }
-      updates.status = body.status;
-    }
-
-    if (body.form !== undefined) {
-      if (!VALID_FORMS.includes(body.form as (typeof VALID_FORMS)[number])) {
-        return NextResponse.json(
-          { error: "Invalid form" },
-          { status: 400 }
-        );
-      }
-      updates.form = body.form;
-    }
-
-    if (body.is_bestseller !== undefined) {
-      updates.is_bestseller = Boolean(body.is_bestseller);
-    }
-
-    if (body.is_blend !== undefined) {
-      updates.is_blend = Boolean(body.is_blend);
-    }
-
-    if (body.images !== undefined) {
-      updates.images = body.images;
-    }
-
-    if (body.scientific_data !== undefined) {
-      updates.scientific_data = body.scientific_data;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      return NextResponse.json(
-        { error: "No valid fields to update" },
-        { status: 400 }
-      );
-    }
-
-    updates.updated_at = new Date().toISOString();
-
-    const supabase = createAdminSupabase();
-
-    const { data: product, error } = await supabase
-      .from("products")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json(
-        { error: "Failed to update product" },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(product);
-  } catch {
-    return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 }
-    );
   }
+
+  if (Object.keys(updates).length === 0) {
+    return fail("No valid fields to update", 400, "NO_UPDATES");
+  }
+
+  updates.updated_at = new Date().toISOString();
+
+  const supabase = createAdminSupabase();
+
+  const { data: product, error } = await supabase
+    .from("products")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Failed to update product:", error);
+    return fail("Failed to update product", 500, "DB_ERROR");
+  }
+
+  return ok(product);
 }
 
 export async function DELETE(
@@ -179,16 +121,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   if (!validateAdminToken(req)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
   const { id } = await params;
 
   if (!UUID_REGEX.test(id)) {
-    return NextResponse.json(
-      { error: "Invalid product ID format" },
-      { status: 400 }
-    );
+    return fail("Invalid product ID format", 400, "INVALID_ID");
   }
 
   const supabase = createAdminSupabase();
@@ -201,11 +140,9 @@ export async function DELETE(
     .single();
 
   if (error) {
-    return NextResponse.json(
-      { error: "Failed to archive product" },
-      { status: 500 }
-    );
+    console.error("Failed to archive product:", error);
+    return fail("Failed to archive product", 500, "DB_ERROR");
   }
 
-  return NextResponse.json(product);
+  return ok(product);
 }

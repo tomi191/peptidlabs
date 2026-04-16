@@ -185,13 +185,13 @@ export default function CheckoutForm() {
 
         const data = await res.json();
 
-        if (!res.ok) {
+        if (!res.ok || !data.success) {
           setApiError(data.error || "Failed to place order");
           return;
         }
 
         cart.clearCart();
-        router.push(`/checkout/success?order=${data.orderId}`);
+        router.push(`/checkout/success?order=${data.data.orderId}`);
       } else {
         // Stripe Checkout redirect flow
         const res = await fetch("/api/checkout/stripe", {
@@ -225,9 +225,9 @@ export default function CheckoutForm() {
 
         const data = await res.json();
 
-        if (res.ok && data.url) {
+        if (res.ok && data.success && data.data?.url) {
           // Don't clear cart yet — user might cancel on Stripe
-          window.location.href = data.url;
+          window.location.href = data.data.url;
         } else {
           setApiError(data.error || "Payment error");
         }

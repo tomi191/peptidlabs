@@ -48,8 +48,10 @@ export default function AdminProductsPage() {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        setProducts(data);
+        const json = await res.json();
+        if (json?.success) {
+          setProducts(json.data);
+        }
       }
     } catch {
       // Network error
