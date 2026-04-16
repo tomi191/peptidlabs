@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { getCategories, getBestsellers, getPublishedBlogPosts } from "@/lib/queries";
 import { HeroSection } from "@/components/home/HeroSection";
@@ -22,6 +23,102 @@ function Marker({ index, label }: { index: string; label: string }) {
   );
 }
 
+// ---- Async data wrappers — each fetches independently and streams in ----
+
+async function BestsellersSectionAsync({ locale }: { locale: string }) {
+  const bestsellers = await getBestsellers();
+  return <BestsellersSection products={bestsellers} locale={locale} />;
+}
+
+async function CategoryGridAsync({ locale }: { locale: string }) {
+  const categories = await getCategories();
+  return <CategoryGrid categories={categories} locale={locale} />;
+}
+
+async function BlogPreviewAsync({ locale }: { locale: string }) {
+  const blogPosts = await getPublishedBlogPosts();
+  return <BlogPreview posts={blogPosts} locale={locale} />;
+}
+
+// ---- Skeleton fallbacks ----
+
+function BestsellersSkeleton() {
+  return (
+    <section className="w-full px-6 py-12">
+      <div className="mx-auto max-w-[1280px]">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="h-6 w-36 animate-pulse rounded bg-surface" />
+          <div className="h-4 w-16 animate-pulse rounded bg-surface" />
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="overflow-hidden rounded-lg border border-border"
+            >
+              <div className="h-36 animate-pulse bg-surface" />
+              <div className="space-y-2 p-4">
+                <div className="h-3 w-16 animate-pulse rounded bg-surface" />
+                <div className="h-4 w-24 animate-pulse rounded bg-surface" />
+                <div className="h-3 w-32 animate-pulse rounded bg-surface" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CategoryGridSkeleton() {
+  return (
+    <section className="w-full px-6 py-16">
+      <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto h-8 w-56 animate-pulse rounded bg-surface" />
+        <div className="mt-8 flex gap-3 overflow-x-auto pb-4 lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-32 w-40 shrink-0 animate-pulse rounded-2xl bg-surface lg:w-auto"
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BlogPreviewSkeleton() {
+  return (
+    <section className="w-full px-6 py-16">
+      <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto mb-10 h-8 w-48 animate-pulse rounded bg-surface" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+          <div className="rounded-2xl border border-border p-8 md:col-span-3 space-y-3">
+            <div className="h-3 w-24 animate-pulse rounded bg-surface" />
+            <div className="h-5 w-full animate-pulse rounded bg-surface" />
+            <div className="h-3 w-full animate-pulse rounded bg-surface" />
+            <div className="h-3 w-full animate-pulse rounded bg-surface" />
+            <div className="h-3 w-4/5 animate-pulse rounded bg-surface" />
+          </div>
+          <div className="flex flex-col gap-4 md:col-span-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-1 flex-col rounded-2xl border border-border p-6 space-y-2"
+              >
+                <div className="h-3 w-20 animate-pulse rounded bg-surface" />
+                <div className="h-4 w-full animate-pulse rounded bg-surface" />
+                <div className="h-3 w-5/6 animate-pulse rounded bg-surface" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default async function HomePage({
   params,
 }: {
@@ -29,15 +126,11 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [categories, bestsellers, blogPosts] = await Promise.all([
-    getCategories(),
-    getBestsellers(),
-    getPublishedBlogPosts(),
-  ]);
 
   const isBg = locale === "bg";
   return (
     <main className="w-full">
+      {/* Hero renders instantly — no data dependency */}
       <HeroSection />
       <div className="bg-white">
         <Marker index="02" label={isBg ? "ТРЪСТ" : "TRUST"} />
@@ -58,17 +151,23 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
+      {/* Bestsellers — streams in when getBestsellers() resolves */}
       <div className="bg-white">
         <Marker index="05" label={isBg ? "ПРОДУКТИ" : "PRODUCTS"} />
         <FadeIn>
-          <BestsellersSection products={bestsellers} locale={locale} />
+          <Suspense fallback={<BestsellersSkeleton />}>
+            <BestsellersSectionAsync locale={locale} />
+          </Suspense>
         </FadeIn>
       </div>
 
+      {/* Categories — streams in when getCategories() resolves */}
       <div className="bg-surface">
         <Marker index="06" label={isBg ? "КАТЕГОРИИ" : "CATEGORIES"} />
         <FadeIn>
-          <CategoryGrid categories={categories} locale={locale} />
+          <Suspense fallback={<CategoryGridSkeleton />}>
+            <CategoryGridAsync locale={locale} />
+          </Suspense>
         </FadeIn>
       </div>
 
@@ -92,10 +191,13 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
+      {/* Blog preview — streams in when getPublishedBlogPosts() resolves */}
       <div className="bg-surface">
         <Marker index="09" label={isBg ? "ИЗСЛЕДВАНИЯ" : "RESEARCH"} />
         <FadeIn>
-          <BlogPreview posts={blogPosts} locale={locale} />
+          <Suspense fallback={<BlogPreviewSkeleton />}>
+            <BlogPreviewAsync locale={locale} />
+          </Suspense>
         </FadeIn>
       </div>
 

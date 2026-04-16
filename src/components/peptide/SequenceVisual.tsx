@@ -1,6 +1,3 @@
-"use client";
-import { useMemo } from "react";
-
 type Props = {
   /** Amino acid sequence, chemical formula, or any string used as seed */
   sequence: string | null;
@@ -8,48 +5,68 @@ type Props = {
   className?: string;
 };
 
+type Node = {
+  x: number;
+  y: number;
+  char: string;
+  size: number;
+};
+
+type ComputedPath = {
+  nodes: Node[];
+  pathD: string;
+};
+
+/**
+ * Pure computation — deterministic per input. Lives at module scope so the
+ * Server Component renderer can execute it without React hooks.
+ */
+function computePath(sequence: string | null, size: number): ComputedPath | null {
+  if (!sequence) return null;
+  // Strip everything except letters; fall back to alphanumerics if empty.
+  let chars = sequence.replace(/[^A-Za-z]/g, "").toUpperCase().split("");
+  if (chars.length === 0) {
+    chars = sequence.replace(/[^A-Za-z0-9]/g, "").toUpperCase().split("");
+  }
+  if (chars.length === 0) return null;
+
+  // Cap at 20 nodes so longer sequences still look clean.
+  const capped = chars.slice(0, 20);
+
+  const nodes: Node[] = capped.map((ch, i) => {
+    const code = ch.charCodeAt(0);
+    const angle = (i / capped.length) * Math.PI * 2 - Math.PI / 2;
+    const radiusBase = size * 0.32;
+    const variance = ((code % 7) / 7) * size * 0.1;
+    const radius = radiusBase + variance;
+    return {
+      x: size / 2 + Math.cos(angle) * radius,
+      y: size / 2 + Math.sin(angle) * radius,
+      char: ch,
+      size: 5 + (code % 3),
+    };
+  });
+
+  const pathD =
+    nodes
+      .map(
+        (n, i) =>
+          `${i === 0 ? "M" : "L"} ${n.x.toFixed(1)} ${n.y.toFixed(1)}`
+      )
+      .join(" ") + " Z";
+
+  return { nodes, pathD };
+}
+
 /**
  * Generates a stylized visualization from a peptide sequence or formula.
  * Not a real molecular structure — an aesthetic signature, deterministic
  * per input so every peptide gets a unique visual identity.
+ *
+ * Server Component — SVG is computed on the server and streamed as HTML.
  */
 export function SequenceVisual({ sequence, size = 240, className = "" }: Props) {
-  const path = useMemo(() => {
-    if (!sequence) return null;
-    // Strip everything except letters; fall back to alphanumerics if empty.
-    let chars = sequence.replace(/[^A-Za-z]/g, "").toUpperCase().split("");
-    if (chars.length === 0) {
-      chars = sequence.replace(/[^A-Za-z0-9]/g, "").toUpperCase().split("");
-    }
-    if (chars.length === 0) return null;
-
-    // Cap at 20 nodes so longer sequences still look clean.
-    const capped = chars.slice(0, 20);
-
-    const nodes = capped.map((ch, i) => {
-      const code = ch.charCodeAt(0);
-      const angle = (i / capped.length) * Math.PI * 2 - Math.PI / 2;
-      const radiusBase = size * 0.32;
-      const variance = ((code % 7) / 7) * size * 0.1;
-      const radius = radiusBase + variance;
-      return {
-        x: size / 2 + Math.cos(angle) * radius,
-        y: size / 2 + Math.sin(angle) * radius,
-        char: ch,
-        size: 5 + (code % 3),
-      };
-    });
-
-    const pathD =
-      nodes
-        .map(
-          (n, i) =>
-            `${i === 0 ? "M" : "L"} ${n.x.toFixed(1)} ${n.y.toFixed(1)}`
-        )
-        .join(" ") + " Z";
-
-    return { nodes, pathD };
-  }, [sequence, size]);
+  const path = computePath(sequence, size);
 
   if (!path) return null;
 
