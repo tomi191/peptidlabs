@@ -16,6 +16,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { PageHero } from "@/components/layout/PageHero";
+import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
 
 export async function generateMetadata({
   params,
@@ -35,27 +37,38 @@ export default async function DeliveryPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("delivery");
+  const isBg = locale === "bg";
 
   return (
     <main className="flex-1 bg-white">
-      {/* Hero */}
-      <section className="bg-surface border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-12 md:py-16">
-          <FadeIn>
-            <h1 className="text-3xl md:text-4xl font-bold text-navy">
-              {t("title")}
-            </h1>
-            <p className="mt-4 max-w-2xl text-secondary leading-relaxed">
-              {t("intro")}
-            </p>
-          </FadeIn>
-        </div>
-      </section>
+      <PageHero
+        crumbs={[{ label: t("title") }]}
+        marker={isBg ? "[DELIVERY/01] ДОСТАВКА" : "[DELIVERY/01] SHIPPING"}
+        title={t("title")}
+        subtitle={t("intro")}
+        locale={locale}
+        aside={
+          <div className="flex items-center gap-5 font-mono text-[11px] text-muted">
+            <div className="text-right">
+              <p className="uppercase tracking-widest">1-2 {isBg ? "дни" : "days"}</p>
+              <p className="mt-1 text-[9px]">BG</p>
+            </div>
+            <div className="h-10 w-px bg-border" />
+            <div className="text-right">
+              <p className="uppercase tracking-widest">3-7 {isBg ? "дни" : "days"}</p>
+              <p className="mt-1 text-[9px]">EU</p>
+            </div>
+          </div>
+        }
+      />
 
-      {/* Delivery Zones — 2 styled cards */}
-      <section className="mx-auto max-w-[1280px] px-6 py-14">
+      {/* Delivery Zones — 2 styled cards + map placeholder */}
+      <section className="mx-auto max-w-[1280px] px-6 pb-14">
         <FadeIn>
-          <h2 className="text-xl font-semibold text-navy mb-8">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[DELIVERY/02] ЗОНИ" : "[DELIVERY/02] ZONES"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("shippingTitle")}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -121,6 +134,13 @@ export default async function DeliveryPage({
               </div>
             </div>
           </div>
+          <div className="mt-8">
+            <PlaceholderVisual
+              variant="map"
+              label={isBg ? "Карта на доставките в ЕС" : "EU delivery map"}
+              className="aspect-[16/7]"
+            />
+          </div>
         </FadeIn>
       </section>
 
@@ -128,7 +148,10 @@ export default async function DeliveryPage({
       <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-14">
           <FadeIn>
-            <h2 className="text-xl font-semibold text-navy mb-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[DELIVERY/03] ОПАКОВКА" : "[DELIVERY/03] PACKAGING"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("packagingSectionTitle")}
             </h2>
             <div className="grid gap-6 sm:grid-cols-3">
@@ -167,7 +190,10 @@ export default async function DeliveryPage({
       {/* Process */}
       <section className="mx-auto max-w-[1280px] px-6 py-14">
         <FadeIn>
-          <h2 className="text-xl font-semibold text-navy mb-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[DELIVERY/04] ПРОЦЕС" : "[DELIVERY/04] PROCESS"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
             {t("processTitle")}
           </h2>
           <p className="max-w-3xl text-sm text-secondary leading-relaxed">
@@ -180,7 +206,10 @@ export default async function DeliveryPage({
       <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-14">
           <FadeIn>
-            <h2 className="text-xl font-semibold text-navy mb-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[DELIVERY/05] ПЛАЩАНЕ" : "[DELIVERY/05] PAYMENT"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("paymentTitle")}
             </h2>
             <div className="grid gap-6 sm:grid-cols-2">
@@ -210,7 +239,10 @@ export default async function DeliveryPage({
       {/* FAQ */}
       <section className="mx-auto max-w-[1280px] px-6 py-14">
         <FadeIn>
-          <h2 className="text-xl font-semibold text-navy mb-8">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[DELIVERY/06] ЧЗВ" : "[DELIVERY/06] FAQ"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("faqTitle")}
           </h2>
           <div className="space-y-4 max-w-3xl">

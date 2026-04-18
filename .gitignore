@@ -37,6 +37,18 @@ yarn-error.log*
 # superpowers
 .superpowers/
 
+# claude code workspace (agents / skills / marketing drafts)
+.claude/
+
+# playwright MCP screenshots + snapshots
+.playwright-mcp/
+
+# root-level screenshots from local testing
+/*.png
+
+# internal docs / specs
+docs/
+
 # vercel
 .vercel
 

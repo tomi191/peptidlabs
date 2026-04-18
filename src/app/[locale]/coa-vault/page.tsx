@@ -5,6 +5,8 @@ import { getProductDisplayName } from "@/lib/labels";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Download, FileText, ShieldCheck } from "lucide-react";
+import { PageHero } from "@/components/layout/PageHero";
+import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
 
 export async function generateMetadata({
   params,
@@ -14,8 +16,8 @@ export async function generateMetadata({
   const { locale } = await params;
   const title =
     locale === "bg"
-      ? "Сертификати за анализ (COA) — HPLC тестване | PeptideLab"
-      : "Certificates of Analysis (COA) — HPLC Testing | PeptideLab";
+      ? "Сертификати за анализ (COA) — HPLC тестване | PeptidLabs"
+      : "Certificates of Analysis (COA) — HPLC Testing | PeptidLabs";
   const description =
     locale === "bg"
       ? "Прозрачността е в основата на нашия бизнес. Сертификат за анализ за всяка партида — HPLC хроматограма, данни за чистота и тестове за ендотоксини."
@@ -32,103 +34,156 @@ export default async function CoaVaultPage({
   setRequestLocale(locale);
   const t = await getTranslations("coaVault");
   const products = await getPublishedProducts();
+  const isBg = locale === "bg";
+
+  const withCoa = products.filter((p) => p.coa_url).length;
 
   return (
     <main className="flex-1 bg-white">
-      <div className="mx-auto max-w-[1280px] px-6 py-16">
-        <div className="flex items-center gap-3 mb-2">
-          <ShieldCheck size={28} strokeWidth={1.5} className="text-teal-600" />
-          <h1 className="text-3xl font-bold text-navy">{t("title")}</h1>
-        </div>
-        <p className="mt-3 max-w-3xl text-secondary leading-relaxed">
-          {t("intro")}
-        </p>
+      <PageHero
+        crumbs={[{ label: t("title") }]}
+        marker={isBg ? "[COA/01] ПРОЗРАЧНОСТ" : "[COA/01] TRANSPARENCY"}
+        title={t("title")}
+        subtitle={t("intro")}
+        locale={locale}
+        aside={
+          <div className="flex items-center gap-5 font-mono text-[11px] text-muted">
+            <div className="text-right">
+              <p className="uppercase tracking-widest">{products.length}</p>
+              <p className="mt-1 text-[9px]">
+                {isBg ? "продукта" : "products"}
+              </p>
+            </div>
+            <div className="h-10 w-px bg-border" />
+            <div className="text-right">
+              <p className="uppercase tracking-widest">{withCoa}</p>
+              <p className="mt-1 text-[9px]">
+                {isBg ? "с COA онлайн" : "COA online"}
+              </p>
+            </div>
+          </div>
+        }
+      />
 
-        {products.length === 0 ? (
-          <p className="mt-10 text-sm text-muted">{t("noProducts")}</p>
-        ) : (
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => {
-              const displayName = getProductDisplayName(product, locale);
-              const useCase =
-                locale === "bg"
-                  ? product.use_case_tag_bg
-                  : product.use_case_tag_en;
-              const hasCoa = !!product.coa_url;
+      <div className="mx-auto max-w-[1280px] px-6 pb-16">
+        {/* Info banner */}
+        <section className="mb-10 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[COA/02] КАКВО Е COA" : "[COA/02] WHAT IS A COA"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
+              {isBg
+                ? "Сертификат за анализ за всяка партида"
+                : "Certificate of Analysis for every batch"}
+            </h2>
+            <p className="text-secondary leading-relaxed">
+              {isBg
+                ? "COA (Certificate of Analysis) е документ от независима лаборатория, който потвърждава чистотата, идентичността и липсата на замърсители в конкретна партида. Включва HPLC хроматограма, масспектрометричен анализ, съдържание на ендотоксини и тестове за тежки метали."
+                : "A COA (Certificate of Analysis) is an independent laboratory document confirming the purity, identity and absence of contaminants in a specific batch. It includes the HPLC chromatogram, mass spectrometry analysis, endotoxin content and heavy metal tests."}
+            </p>
+          </div>
+          <PlaceholderVisual
+            variant="certificate"
+            label={isBg ? "Примерен COA" : "Sample COA"}
+            className="aspect-[4/3]"
+          />
+        </section>
 
-              return (
-                <div
-                  key={product.id}
-                  className="border border-border rounded-lg p-5 flex flex-col"
-                >
-                  {/* Header */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <Link
-                        href={`/${locale}/products/${product.slug}`}
-                        className="font-medium text-navy hover:text-teal-600 transition-colors text-sm"
-                      >
-                        {displayName}
-                        {product.vial_size_mg && (
-                          <span className="text-muted font-mono ml-1">
-                            {product.vial_size_mg}mg
-                          </span>
+        {/* Product list */}
+        <section>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[COA/03] КАТАЛОГ" : "[COA/03] CATALOG"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
+            {isBg ? "Сертификати по продукт" : "Certificates by product"}
+          </h2>
+
+          {products.length === 0 ? (
+            <p className="text-sm text-muted">{t("noProducts")}</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => {
+                const displayName = getProductDisplayName(product, locale);
+                const useCase =
+                  locale === "bg"
+                    ? product.use_case_tag_bg
+                    : product.use_case_tag_en;
+                const hasCoa = !!product.coa_url;
+
+                return (
+                  <div
+                    key={product.id}
+                    className="border border-border rounded-xl p-5 flex flex-col bg-white hover:border-navy/30 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <Link
+                          href={`/${locale}/products/${product.slug}`}
+                          className="font-semibold text-navy hover:text-teal-600 transition-colors text-sm block"
+                        >
+                          {displayName}
+                          {product.vial_size_mg && (
+                            <span className="text-muted font-mono ml-1">
+                              {product.vial_size_mg}mg
+                            </span>
+                          )}
+                        </Link>
+                        {useCase && (
+                          <p className="text-xs text-muted mt-1">{useCase}</p>
                         )}
-                      </Link>
-                      {useCase && (
-                        <p className="text-xs text-muted mt-1">{useCase}</p>
+                      </div>
+                      <ShieldCheck
+                        size={18}
+                        className={hasCoa ? "text-teal-600" : "text-muted"}
+                      />
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-2 font-mono text-xs">
+                      <span className="text-muted">{t("purity")}:</span>
+                      <span className="font-semibold text-navy tabular">
+                        ≥{product.purity_percent}%
+                      </span>
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-border mt-4">
+                      {hasCoa ? (
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                            <FileText size={12} strokeWidth={1.5} />
+                            {t("available")}
+                          </span>
+                          <a
+                            href={product.coa_url!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                          >
+                            <Download size={12} strokeWidth={1.5} />
+                            {t("download")}
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+                            <FileText size={12} strokeWidth={1.5} />
+                            {t("onRequest")}
+                          </span>
+                          <Link
+                            href={`/${locale}/contact`}
+                            className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
+                          >
+                            {t("contactForCoa")}
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
-
-                  {/* Purity */}
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="text-xs text-secondary">
-                      {t("purity")}:
-                    </span>
-                    <span className="font-mono text-sm text-navy font-medium">
-                      {product.purity_percent}%
-                    </span>
-                  </div>
-
-                  {/* COA status */}
-                  <div className="mt-auto pt-4">
-                    {hasCoa ? (
-                      <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                          <FileText size={14} strokeWidth={1.5} />
-                          {t("available")}
-                        </span>
-                        <a
-                          href={product.coa_url!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
-                        >
-                          <Download size={14} strokeWidth={1.5} />
-                          {t("download")}
-                        </a>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
-                          <FileText size={14} strokeWidth={1.5} />
-                          {t("onRequest")}
-                        </span>
-                        <Link
-                          href={`/${locale}/contact`}
-                          className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
-                        >
-                          {t("contactForCoa")}
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

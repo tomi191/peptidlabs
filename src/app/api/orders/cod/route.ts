@@ -1,6 +1,7 @@
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { CodOrderSchema } from "@/lib/api/schemas";
+import { sendOrderConfirmation } from "@/lib/email/send";
 
 export async function POST(request: Request) {
   // Check service role key is configured
@@ -35,15 +36,17 @@ export async function POST(request: Request) {
 
   const supabase = createAdminSupabase();
 
-  // Validate prices against database
+  // Validate prices + atomically reserve stock per item.
+  const reservations: { productId: string; quantity: number }[] = [];
   for (const item of items) {
     const { data: product } = await supabase
       .from("products")
-      .select("price_bgn, price_eur, status, stock")
+      .select("price_eur, status")
       .eq("id", item.productId)
       .single();
 
     if (!product || product.status !== "published") {
+      await rollbackStock(supabase, reservations);
       return fail(
         `Product ${item.productName} is no longer available`,
         400,
@@ -51,8 +54,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const expectedPrice = product.price_eur;
-    if (Math.abs(item.unitPrice - expectedPrice) > 0.01) {
+    if (Math.abs(item.unitPrice - product.price_eur) > 0.01) {
+      await rollbackStock(supabase, reservations);
       return fail(
         "Price has changed. Please refresh and try again.",
         400,
@@ -60,13 +63,26 @@ export async function POST(request: Request) {
       );
     }
 
-    if (product.stock < item.quantity) {
+    const { data: dec, error: decErr } = await supabase
+      .rpc("decrement_product_stock", {
+        p_product_id: item.productId,
+        p_quantity: item.quantity,
+      })
+      .single();
+
+    const decResult = dec as
+      | { ok: boolean; reason: string; new_stock: number }
+      | null;
+
+    if (decErr || !decResult || !decResult.ok) {
+      await rollbackStock(supabase, reservations);
       return fail(
         `Insufficient stock for ${item.productName}`,
         400,
         "INSUFFICIENT_STOCK"
       );
     }
+    reservations.push({ productId: item.productId, quantity: item.quantity });
   }
 
   // Recalculate totals from validated prices
@@ -96,16 +112,17 @@ export async function POST(request: Request) {
       payment_method: "cod",
       status: "pending",
     })
-    .select("id")
+    .select("*")
     .single();
 
   if (orderError) {
+    await rollbackStock(supabase, reservations);
     console.error("Failed to create order:", orderError);
     return fail("Failed to create order", 500, "DB_ERROR");
   }
 
   // Create order items
-  const orderItems = items.map((item) => ({
+  const orderItemsInsert = items.map((item) => ({
     order_id: order.id,
     product_id: item.productId,
     product_name: item.productName,
@@ -113,14 +130,41 @@ export async function POST(request: Request) {
     unit_price: item.unitPrice,
   }));
 
-  const { error: itemsError } = await supabase
+  const { data: insertedItems, error: itemsError } = await supabase
     .from("order_items")
-    .insert(orderItems);
+    .insert(orderItemsInsert)
+    .select("*");
 
   if (itemsError) {
+    await supabase
+      .from("orders")
+      .update({
+        status: "cancelled",
+        cancelled_at: new Date().toISOString(),
+        cancellation_reason: "items_insert_failed",
+      })
+      .eq("id", order.id);
+    await rollbackStock(supabase, reservations);
     console.error("Failed to create order items:", itemsError);
     return fail("Failed to create order items", 500, "DB_ERROR");
   }
 
+  // Fire-and-forget email (never block the response)
+  sendOrderConfirmation(order, insertedItems ?? [], locale).catch((err) =>
+    console.error("[email] confirmation failed:", err)
+  );
+
   return ok({ orderId: order.id, status: "pending" as const }, { status: 201 });
+}
+
+async function rollbackStock(
+  supabase: ReturnType<typeof createAdminSupabase>,
+  reservations: { productId: string; quantity: number }[]
+): Promise<void> {
+  for (const r of reservations) {
+    await supabase.rpc("restore_product_stock", {
+      p_product_id: r.productId,
+      p_quantity: r.quantity,
+    });
+  }
 }

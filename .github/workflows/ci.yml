@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality:
+    name: Lint + Type-check + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (includes type-check)
+        run: npm run build
+        env:
+          # CI-only placeholders — real secrets come from Vercel env.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          SUPABASE_SERVICE_ROLE_KEY: placeholder
+          JWT_SECRET: 0123456789abcdef0123456789abcdef0123456789abcdef
+          ACCOUNT_LINK_SECRET: 0123456789abcdef0123456789abcdef0123456789abcdef
+
+      - name: Unit tests
+        run: npm test --if-present

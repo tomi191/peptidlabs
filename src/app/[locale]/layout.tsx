@@ -13,6 +13,7 @@ import CookieConsent from "@/components/ui/CookieConsent";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import { Toaster } from "sonner";
+import { PlausibleScript } from "@/components/analytics/Plausible";
 import "../globals.css";
 
 const inter = Inter({
@@ -28,16 +29,16 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://peptidelab.bg"),
+  metadataBase: new URL("https://peptidlabs.eu"),
   title: {
-    default: "PeptideLab — Research Grade Peptides",
-    template: "%s | PeptideLab",
+    default: "PeptidLabs — Research Grade Peptides",
+    template: "%s | PeptidLabs",
   },
   description:
     "65+ HPLC-tested research peptides. COA included with every order. EU shipping.",
   openGraph: {
     type: "website",
-    siteName: "PeptideLab",
+    siteName: "PeptidLabs",
     locale: "bg_BG",
     alternateLocale: "en_US",
   },
@@ -45,10 +46,10 @@ export const metadata: Metadata = {
     card: "summary",
   },
   alternates: {
-    canonical: "https://peptidelab.bg",
+    canonical: "https://peptidlabs.eu",
     languages: {
-      bg: "https://peptidelab.bg/bg",
-      en: "https://peptidelab.bg/en",
+      bg: "https://peptidlabs.eu/bg",
+      en: "https://peptidlabs.eu/en",
     },
   },
 };
@@ -79,6 +80,7 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${GeistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
+        <PlausibleScript />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-navy focus:px-4 focus:py-2 focus:text-white focus:text-sm focus:font-semibold"

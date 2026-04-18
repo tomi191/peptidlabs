@@ -22,8 +22,11 @@ const infoLinks = [
   { label: "coaVault", href: "/coa-vault" },
   { label: "contactUs", href: "/contact" },
   { label: "trackOrder", href: "/orders" },
+  { label: "myAccount", href: "/account" },
   { label: "terms", href: "/terms" },
   { label: "privacy", href: "/privacy" },
+  { label: "cookiePolicy", href: "/cookie-policy" },
+  { label: "impressum", href: "/impressum" },
 ] as const;
 
 export default function Footer() {
@@ -43,7 +46,7 @@ export default function Footer() {
                 </span>
               </div>
               <span className="font-semibold tracking-widest text-navy text-sm">
-                PEPTIDELAB
+                PEPTIDLABS
               </span>
             </Link>
             <p className="text-secondary text-sm">{t("description")}</p>
@@ -95,11 +98,11 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               <li>
                 <a
-                  href="mailto:info@peptidelab.bg"
+                  href="mailto:info@peptidlabs.eu"
                   className="text-secondary text-sm hover:text-navy transition-colors inline-flex items-center gap-2"
                 >
                   <Mail size={16} strokeWidth={1.5} />
-                  info@peptidelab.bg
+                  info@peptidlabs.eu
                 </a>
               </li>
               <li>
@@ -121,7 +124,7 @@ export default function Footer() {
             </h3>
             <div className="flex items-center gap-4">
               <a
-                href="https://instagram.com/peptidelab.bg"
+                href="https://instagram.com/peptidlabs.eu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary text-sm hover:text-navy transition-colors"
@@ -129,7 +132,7 @@ export default function Footer() {
                 Instagram
               </a>
               <a
-                href="https://facebook.com/peptidelab.bg"
+                href="https://facebook.com/peptidlabs.eu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary text-sm hover:text-navy transition-colors"

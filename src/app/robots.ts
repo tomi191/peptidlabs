@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/admin/"],
     },
-    sitemap: "https://peptidelab.bg/sitemap.xml",
+    sitemap: "https://peptidlabs.eu/sitemap.xml",
   };
 }

@@ -7,6 +7,7 @@ import { useLocale } from "next-intl";
 
 type SearchProduct = {
   name: string;
+  name_bg: string | null;
   slug: string;
   vial_size_mg: number | null;
   price_bgn: number;
@@ -19,6 +20,7 @@ type SearchProduct = {
 
 import { getFormLabel } from "@/lib/labels";
 import type { Product } from "@/lib/types";
+import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 
 export default function SearchModal({
   open,
@@ -75,9 +77,12 @@ export default function SearchModal({
 
   if (!open) return null;
 
-  const filtered = query.trim()
-    ? products.filter((p) =>
-        p.name.toLowerCase().includes(query.toLowerCase())
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.name_bg ?? "").toLowerCase().includes(q)
       )
     : products;
 
@@ -131,22 +136,29 @@ export default function SearchModal({
                     onClick={() => handleSelect(product.slug)}
                     className="w-full text-left px-6 py-3 hover:bg-surface transition-colors flex items-center justify-between gap-4"
                   >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-navy truncate">
-                        {product.name}
-                        {(() => {
-                          const tag = locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
-                          return tag ? <span className="ml-1.5 text-[10px] font-medium text-accent">{tag}</span> : null;
-                        })()}
-                      </p>
-                      <p className="text-xs font-mono text-muted">
-                        {product.vial_size_mg
-                          ? `${product.vial_size_mg}mg`
-                          : ""}
-                        {product.vial_size_mg && product.form ? " · " : ""}
-                        {getFormLabel(product.form as Product["form"], locale)}
-                        {` · ≥${product.purity_percent}%`}
-                      </p>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="shrink-0 flex h-16 w-12 items-center justify-center overflow-hidden rounded-md bg-surface">
+                        <VialPlaceholder name={product.name} size="xs" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-navy truncate">
+                          {locale === "bg" && product.name_bg
+                            ? product.name_bg
+                            : product.name}
+                          {(() => {
+                            const tag = locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
+                            return tag ? <span className="ml-1.5 text-[10px] font-medium text-accent">{tag}</span> : null;
+                          })()}
+                        </p>
+                        <p className="text-xs font-mono text-muted">
+                          {product.vial_size_mg
+                            ? `${product.vial_size_mg}mg`
+                            : ""}
+                          {product.vial_size_mg && product.form ? " · " : ""}
+                          {getFormLabel(product.form as Product["form"], locale)}
+                          {` · ≥${product.purity_percent}%`}
+                        </p>
+                      </div>
                     </div>
                     <span className="text-sm font-bold text-navy shrink-0 tabular">
                       €{product.price_eur.toFixed(2)}

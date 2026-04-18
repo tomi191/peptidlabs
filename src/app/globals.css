@@ -83,14 +83,15 @@ body {
   outline: none;
 }
 
-/* Fade-in on scroll */
+/* Fade-in on scroll — only hides once JS marks the element as ready so that
+   pre-hydration / JS-disabled / screenshot tools always see content. */
 @media (prefers-reduced-motion: no-preference) {
-  .fade-in-section {
+  .fade-in-section.js-ready {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   }
-  .fade-in-section.visible {
+  .fade-in-section.js-ready.visible {
     opacity: 1;
     transform: translateY(0);
   }
@@ -134,6 +135,87 @@ body {
   }
 }
 
+/* ── Liquid-feel animations (Stripe-style organic motion) ── */
+@keyframes peptide-wave {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(-25%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Aurora / mesh gradient blobs — slow organic drift behind hero content */
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(40px, -30px) scale(1.1); }
+  66%      { transform: translate(-20px, 25px) scale(0.95); }
+}
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-50px, 40px) scale(1.15); }
+}
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%      { transform: translate(30px, 20px) scale(0.9); }
+  80%      { transform: translate(-35px, -15px) scale(1.05); }
+}
+
+/* Subtle gradient text — teal-to-navy */
+.text-gradient-navy-teal {
+  background: linear-gradient(135deg, #0f172a 0%, #0f172a 45%, #0d9488 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Aurora blob base */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* HPLC grid watermark for hero backdrop */
+.hplc-grid {
+  background-image:
+    linear-gradient(to right, rgba(13, 148, 136, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 148, 136, 0.09) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+}
+
+@keyframes peptide-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(20px, -15px) scale(1.08); }
+}
+
+@keyframes peptide-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes peptide-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.25); }
+  70%  { box-shadow: 0 0 0 10px rgba(13, 148, 136, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+}
+
+.peptide-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(13, 148, 136, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: peptide-shimmer 3s ease-in-out infinite;
+}
+
+.peptide-live-dot {
+  animation: peptide-pulse-ring 2s ease-out infinite;
+}
+
 /* Native View Transitions for page navigation (Next.js 16) */
 @view-transition {
   navigation: auto;
@@ -154,7 +236,8 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .fade-in-section {
+  .fade-in-section,
+  .fade-in-section.js-ready {
     opacity: 1 !important;
     transform: none !important;
   }

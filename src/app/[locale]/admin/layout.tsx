@@ -30,7 +30,7 @@ export default function AdminLayout({
           href="/admin"
           className="font-semibold text-navy text-sm tracking-tight"
         >
-          PeptideLab Admin
+          PeptidLabs Admin
         </Link>
 
         <div className="flex items-center gap-6">

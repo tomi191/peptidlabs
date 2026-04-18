@@ -1,5 +1,6 @@
 import type { Product } from "@/lib/types";
 import { getFormLabel } from "@/lib/labels";
+import { Abbr } from "@/components/ui/Abbr";
 
 type SpecRow = {
   label: string;

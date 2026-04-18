@@ -6,7 +6,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("products")
-    .select("name, slug, vial_size_mg, price_bgn, price_eur, form, purity_percent, use_case_tag_bg, use_case_tag_en")
+    .select("name, name_bg, slug, vial_size_mg, price_bgn, price_eur, form, purity_percent, use_case_tag_bg, use_case_tag_en")
     .eq("status", "published")
     .order("name");
 

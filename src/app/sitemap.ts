@@ -3,7 +3,7 @@ import { createStaticSupabase } from "@/lib/supabase/static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createStaticSupabase();
-  const baseUrl = "https://peptidelab.bg";
+  const baseUrl = "https://peptidlabs.eu";
 
   // Static pages
   const staticPages = ["", "/shop"].flatMap((path) =>

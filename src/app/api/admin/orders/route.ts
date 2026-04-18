@@ -1,16 +1,10 @@
 import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail } from "@/lib/api/response";
-
-function validateAdminToken(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (!auth) return false;
-  const token = auth.replace("Bearer ", "");
-  return token.startsWith("admin-");
-}
+import { isAdmin } from "@/lib/auth/guard";
 
 export async function GET(req: NextRequest) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 

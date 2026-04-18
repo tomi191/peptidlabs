@@ -2,13 +2,8 @@ import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { AdminOrderUpdateSchema } from "@/lib/api/schemas";
-
-function validateAdminToken(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (!auth) return false;
-  const token = auth.replace("Bearer ", "");
-  return token.startsWith("admin-");
-}
+import { sendShippingUpdate } from "@/lib/email/send";
+import { isAdmin } from "@/lib/auth/guard";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,7 +12,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
@@ -51,7 +46,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
@@ -97,6 +92,13 @@ export async function PATCH(
 
   const supabase = createAdminSupabase();
 
+  // Read previous status so we know whether to fire the shipping email
+  const { data: previous } = await supabase
+    .from("orders")
+    .select("status")
+    .eq("id", id)
+    .single();
+
   const { data: order, error } = await supabase
     .from("orders")
     .update(updates)
@@ -106,6 +108,35 @@ export async function PATCH(
 
   if (error) {
     return fail("Failed to update order", 500, "DB_ERROR");
+  }
+
+  // Fire shipping notification when status first transitions to "shipped"
+  if (
+    order.status === "shipped" &&
+    previous?.status !== "shipped" &&
+    order.tracking_number
+  ) {
+    const locale =
+      (order as { locale?: string }).locale === "en" ? "en" : "bg";
+    sendShippingUpdate(order, locale).catch((err) =>
+      console.error("[email] shipping update failed:", err)
+    );
+  }
+
+  // Award loyalty points when order first becomes payable (confirmed/shipped/delivered).
+  // The DB-side RPC is idempotent via orders.rewards_awarded — safe to call
+  // multiple times through status transitions.
+  const earningStatuses = new Set(["confirmed", "shipped", "delivered"]);
+  if (
+    earningStatuses.has(order.status) &&
+    !earningStatuses.has(previous?.status ?? "")
+  ) {
+    const { error: rpcError } = await supabase.rpc("award_order_rewards", {
+      p_order_id: id,
+    });
+    if (rpcError) {
+      console.error("[rewards] award_order_rewards failed:", rpcError);
+    }
   }
 
   return ok(order);

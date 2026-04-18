@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/queries";
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { SortableProductGrid } from "@/components/product/SortableProductGrid";
+import { ShopFilters } from "@/components/product/ShopFilters";
 
 const iconMap: Record<string, LucideIcon> = {
   activity: Activity,
@@ -55,11 +57,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const name = locale === "bg" ? category.name_bg : category.name_en;
   const desc = locale === "bg" ? category.description_bg : category.description_en;
   return {
-    title: `${name} — PeptideLab`,
-    description: desc || `${name} research peptides at PeptideLab.bg`,
+    title: `${name} — PeptidLabs`,
+    description: desc || `${name} research peptides at PeptidLabs.bg`,
     alternates: {
-      canonical: `https://peptidelab.bg/${locale}/shop/${slug}`,
-      languages: { bg: `https://peptidelab.bg/bg/shop/${slug}`, en: `https://peptidelab.bg/en/shop/${slug}` },
+      canonical: `https://peptidlabs.eu/${locale}/shop/${slug}`,
+      languages: { bg: `https://peptidlabs.eu/bg/shop/${slug}`, en: `https://peptidlabs.eu/en/shop/${slug}` },
     },
   };
 }
@@ -155,54 +157,71 @@ export default async function CategoryPage({
         <div className="flex gap-10">
           {/* Desktop sidebar */}
           <aside className="hidden w-64 shrink-0 lg:block">
-            <div className="sticky top-24 rounded-2xl border border-border p-4">
-              <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
-                {t("categories")}
-              </p>
-              <nav className="space-y-0.5">
-                <Link
-                  href="/shop"
-                  className="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Package size={16} />
-                    {t("allProducts")}
-                  </span>
-                </Link>
-                {categories.map((cat) => {
-                  const Icon = cat.icon
-                    ? iconMap[cat.icon] ?? Package
-                    : Package;
-                  const name = locale === "bg" ? cat.name_bg : cat.name_en;
-                  const isActive = cat.slug === categorySlug;
-                  return (
-                    <Link
-                      key={cat.id}
-                      href={`/shop/${cat.slug}`}
-                      className={
-                        isActive
-                          ? "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-navy bg-surface"
-                          : "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
-                      }
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon size={16} />
-                        {name}
-                      </span>
-                      <span className="text-xs text-muted bg-surface rounded-full px-2 py-0.5">
-                        {cat.product_count}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </nav>
+            <div className="sticky top-24 space-y-4">
+              <div className="rounded-2xl border border-border p-4 bg-white">
+                <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">
+                  {t("categories")}
+                </p>
+                <nav className="space-y-0.5">
+                  <Link
+                    href="/shop"
+                    className="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Package size={16} />
+                      {t("allProducts")}
+                    </span>
+                  </Link>
+                  {categories.map((cat) => {
+                    const Icon = cat.icon
+                      ? iconMap[cat.icon] ?? Package
+                      : Package;
+                    const name = locale === "bg" ? cat.name_bg : cat.name_en;
+                    const isActive = cat.slug === categorySlug;
+                    return (
+                      <Link
+                        key={cat.id}
+                        href={`/shop/${cat.slug}`}
+                        className={
+                          isActive
+                            ? "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-navy bg-surface"
+                            : "flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-sm text-secondary hover:bg-surface hover:text-navy transition-colors"
+                        }
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon size={16} />
+                          {name}
+                        </span>
+                        <span className="text-xs text-muted bg-surface rounded-full px-2 py-0.5">
+                          {cat.product_count}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {products.length > 0 && (
+                <Suspense fallback={null}>
+                  <ShopFilters products={products} layout="sidebar" />
+                </Suspense>
+              )}
             </div>
           </aside>
 
           {/* Product content */}
           <div className="min-w-0 flex-1">
             {products.length > 0 ? (
-              <SortableProductGrid products={products} locale={locale} />
+              <>
+                <div className="mb-4 lg:hidden">
+                  <Suspense fallback={null}>
+                    <ShopFilters products={products} layout="mobile" />
+                  </Suspense>
+                </div>
+                <Suspense fallback={null}>
+                  <SortableProductGrid products={products} locale={locale} />
+                </Suspense>
+              </>
             ) : (
               <p className="py-12 text-center text-sm text-muted">
                 {t("noProducts")}

@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
             <Lock className="h-5 w-5 text-navy" strokeWidth={1.5} />
           </div>
           <h1 className="text-xl font-semibold text-navy">
-            PeptideLab Admin
+            PeptidLabs Admin
           </h1>
           <p className="text-sm text-secondary">
             Enter admin password to continue

@@ -40,6 +40,14 @@ export async function POST(req: NextRequest) {
           stripe_payment_id: session.payment_intent as string,
         })
         .eq("id", orderId);
+
+      // Award loyalty points (idempotent via orders.rewards_awarded flag).
+      const { error: rpcError } = await supabase.rpc("award_order_rewards", {
+        p_order_id: orderId,
+      });
+      if (rpcError) {
+        console.error("[stripe webhook] award_order_rewards failed:", rpcError);
+      }
     }
   }
 

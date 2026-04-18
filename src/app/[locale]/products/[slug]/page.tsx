@@ -24,13 +24,17 @@ import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { SpecsTable } from "@/components/product/SpecsTable";
 import { FrequentlyBoughtTogether } from "@/components/product/FrequentlyBoughtTogether";
 import { ProductFaq } from "@/components/product/ProductFaq";
-import { ReviewsPlaceholder } from "@/components/product/ReviewsPlaceholder";
+import { ProductReviews } from "@/components/product/ProductReviews";
 import { ProductCard } from "@/components/product/ProductCard";
 import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 import { StickyAddToCart } from "@/components/product/StickyAddToCart";
 import { AnimatedPrice } from "@/components/ui/AnimatedPrice";
 import { COABadge } from "@/components/ui/COABadge";
-import { getCategoryLabel } from "@/lib/labels";
+import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
+import { Abbr } from "@/components/ui/Abbr";
+import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
+import { BulkDiscountTiers } from "@/components/product/BulkDiscountTiers";
+import { getCategoryLabel, getProductDisplayName } from "@/lib/labels";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -61,23 +65,23 @@ export async function generateMetadata({
     locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
 
   return {
-    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} | PeptideLab`,
+    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} | PeptidLabs`,
     description:
       description ??
       (locale === "bg"
         ? `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота ≥${product.purity_percent}%. COA включен. Доставка 1-3 дни.`
         : `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ≥${product.purity_percent}%. COA included. 1-3 day delivery.`),
     openGraph: {
-      title: `${product.name} | PeptideLab`,
+      title: `${product.name} | PeptidLabs`,
       description: description ?? undefined,
       type: "website",
-      url: `https://peptidelab.bg/${locale}/products/${slug}`,
+      url: `https://peptidlabs.eu/${locale}/products/${slug}`,
     },
     alternates: {
-      canonical: `https://peptidelab.bg/${locale}/products/${slug}`,
+      canonical: `https://peptidlabs.eu/${locale}/products/${slug}`,
       languages: {
-        bg: `https://peptidelab.bg/bg/products/${slug}`,
-        en: `https://peptidelab.bg/en/products/${slug}`,
+        bg: `https://peptidlabs.eu/bg/products/${slug}`,
+        en: `https://peptidlabs.eu/en/products/${slug}`,
       },
     },
   };
@@ -94,6 +98,8 @@ export default async function ProductPage({ params }: PageProps) {
   ]);
 
   if (!product) notFound();
+
+  const displayName = getProductDisplayName(product, locale);
 
   const [relatedProducts, category, siblings] = await Promise.all([
     getRelatedProducts(product.id),
@@ -116,10 +122,10 @@ export default async function ProductPage({ params }: PageProps) {
     name: product.name,
     description,
     sku: product.sku,
-    image: product.images?.[0] || `https://peptidelab.bg/placeholder-vial.svg`,
+    image: product.images?.[0] || `https://peptidlabs.eu/placeholder-vial.svg`,
     brand: {
       "@type": "Brand",
-      name: "PeptideLab",
+      name: "PeptidLabs",
     },
     category: (locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || "Research Peptide",
     offers: {
@@ -246,7 +252,7 @@ export default async function ProductPage({ params }: PageProps) {
               </>
             )}
             <li aria-hidden="true">/</li>
-            <li className="font-medium text-navy">{product.name}</li>
+            <li className="font-medium text-navy">{displayName}</li>
           </ol>
         </nav>
       </div>
@@ -263,7 +269,7 @@ export default async function ProductPage({ params }: PageProps) {
               className="relative flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-surface to-white"
               style={{ viewTransitionName: `product-image-${product.slug}` }}
             >
-              <div className="h-32 w-12 rounded border border-border bg-white" />
+              <VialPlaceholder name={product.name} size="lg" />
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -296,14 +302,19 @@ export default async function ProductPage({ params }: PageProps) {
 
           {/* RIGHT COLUMN */}
           <div>
-            {/* Category label */}
-            <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+            {/* Lab marker */}
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
+              {locale === "bg" ? "[PRODUCT/01] ДАННИ" : "[PRODUCT/01] DATA"}
+            </p>
+
+            {/* Category / use case label */}
+            <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-accent">
               {(locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || categoryName || getCategoryLabel(locale)}
             </p>
 
             {/* Product name */}
-            <h1 className="mt-1 text-2xl font-bold text-navy md:text-3xl">
-              {product.name}
+            <h1 className="mt-1 font-display text-2xl md:text-3xl font-bold text-navy tracking-[-0.03em]">
+              {displayName}
             </h1>
 
             {/* QuickSpecBar */}
@@ -332,7 +343,9 @@ export default async function ProductPage({ params }: PageProps) {
                 </div>
               )}
               <div className="flex-1 rounded-lg bg-surface p-3 text-center">
-                <p className="font-mono text-lg font-bold text-accent">COA</p>
+                <p className="font-mono text-lg font-bold text-accent">
+                  <Abbr term="COA" locale={locale} />
+                </p>
                 <p className="text-[10px] text-muted uppercase">
                   {locale === "bg" ? "Включен" : "Included"}
                 </p>
@@ -383,8 +396,11 @@ export default async function ProductPage({ params }: PageProps) {
               <AnimatedPrice value={product.price_eur} />
             </p>
 
-            {/* Bulk discount note */}
-            <p className="mt-1 text-xs text-accent">{t("bulkDiscount")}</p>
+            {/* Bulk discount tiers */}
+            <BulkDiscountTiers
+              pricePerUnit={product.price_eur}
+              locale={locale}
+            />
 
             {/* Quantity selector + add to cart */}
             <QuantitySelector product={product} label={t("addToCart")} />
@@ -420,12 +436,12 @@ export default async function ProductPage({ params }: PageProps) {
         <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-y-4 px-6 lg:grid-cols-4">
           <TrustItem
             icon={<FlaskConical size={20} className="text-secondary" />}
-            title={tTrust("hplcTitle") + " ≥98%"}
+            title={<><TextWithAbbr text={tTrust("hplcTitle")} locale={locale} /> ≥98%</>}
             sub={tTrust("hplcSub")}
           />
           <TrustItem
             icon={<ShieldCheck size={20} className="text-secondary" />}
-            title={tTrust("coaTitle")}
+            title={<TextWithAbbr text={tTrust("coaTitle")} locale={locale} />}
             sub={tTrust("coaSub")}
           />
           <TrustItem
@@ -481,11 +497,7 @@ export default async function ProductPage({ params }: PageProps) {
       {/* ─── REVIEWS ─── */}
       <div className="bg-surface py-12">
         <div className="mx-auto max-w-[1280px] px-6">
-          <ReviewsPlaceholder
-            heading={t("reviews")}
-            noReviews={t("noReviews")}
-            writeReview={t("writeReview")}
-          />
+          <ProductReviews productId={product.id} locale={locale} />
         </div>
       </div>
 
@@ -530,7 +542,7 @@ function TrustItem({
   sub,
 }: {
   icon: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   sub: string;
 }) {
   return (

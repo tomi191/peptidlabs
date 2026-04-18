@@ -1,8 +1,10 @@
 import { Globe, FlaskConical, Clock, FileCheck } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 
 export function SocialProofBar() {
   const t = useTranslations("socialProof");
+  const locale = useLocale();
 
   const items = [
     { icon: Globe, value: t("euBasedValue"), label: t("euBasedLabel") },
@@ -20,8 +22,12 @@ export function SocialProofBar() {
             className="flex flex-col items-center px-4 py-3 text-center"
           >
             <item.icon size={20} className="text-secondary" />
-            <p className="mt-2 text-xl font-bold text-navy">{item.value}</p>
-            <p className="mt-0.5 text-xs text-muted">{item.label}</p>
+            <p className="mt-2 text-xl font-bold text-navy">
+              <TextWithAbbr text={item.value} locale={locale} />
+            </p>
+            <p className="mt-0.5 text-xs text-muted">
+              <TextWithAbbr text={item.label} locale={locale} />
+            </p>
           </div>
         ))}
       </div>

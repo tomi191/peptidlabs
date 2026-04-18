@@ -7,6 +7,7 @@ import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import NumberFlow from "@number-flow/react";
 import { motion } from "motion/react";
 import { useCart } from "@/lib/store/cart";
+import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 
 type CartDrawerProps = {
   open: boolean;
@@ -123,8 +124,8 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
                   key={item.product.id}
                   className="flex gap-4 py-4 border-b border-border last:border-0"
                 >
-                  {/* Product image placeholder */}
-                  <div className="w-16 h-16 bg-surface rounded-md flex items-center justify-center shrink-0">
+                  {/* Product image */}
+                  <div className="w-16 h-16 bg-surface rounded-md flex items-center justify-center shrink-0 overflow-hidden">
                     {item.product.images[0] ? (
                       <img
                         src={item.product.images[0]}
@@ -132,11 +133,7 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
                         className="w-full h-full object-cover rounded-md"
                       />
                     ) : (
-                      <ShoppingBag
-                        size={20}
-                        strokeWidth={1}
-                        className="text-muted"
-                      />
+                      <VialPlaceholder name={item.product.name} size="xs" />
                     )}
                   </div>
 

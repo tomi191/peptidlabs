@@ -94,10 +94,21 @@ export type Review = {
   id: string;
   product_id: string;
   rating: number;
-  text: string | null;
+  title: string | null;
+  text: string;
   author_name: string;
+  author_email: string;
   verified_purchase: boolean;
+  order_id: string | null;
+  status: "pending" | "approved" | "rejected";
   created_at: string;
+  updated_at: string;
+};
+
+export type ReviewAggregate = {
+  average: number;
+  count: number;
+  distribution: Record<1 | 2 | 3 | 4 | 5, number>;
 };
 
 export type BlogPost = {

@@ -2,13 +2,7 @@ import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { AdminProductCreateSchema } from "@/lib/api/schemas";
-
-function validateAdminToken(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (!auth) return false;
-  const token = auth.replace("Bearer ", "");
-  return token.startsWith("admin-");
-}
+import { isAdmin } from "@/lib/auth/guard";
 
 function slugify(text: string): string {
   return text
@@ -21,7 +15,7 @@ function slugify(text: string): string {
 }
 
 export async function GET(req: NextRequest) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
@@ -49,7 +43,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 

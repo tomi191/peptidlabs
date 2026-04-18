@@ -13,7 +13,11 @@ import {
   CircleAlert,
   Calculator,
   ShoppingCart,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
+import { PageHero } from "@/components/layout/PageHero";
+import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
 
 const STEP_KEYS = [
   "preparation",
@@ -89,10 +93,10 @@ export async function generateMetadata({
     title: t("metaTitle"),
     description: t("metaDescription"),
     alternates: {
-      canonical: `https://peptidelab.bg/${locale}/guides/reconstitution`,
+      canonical: `https://peptidlabs.eu/${locale}/guides/reconstitution`,
       languages: {
-        bg: "https://peptidelab.bg/bg/guides/reconstitution",
-        en: "https://peptidelab.bg/en/guides/reconstitution",
+        bg: "https://peptidlabs.eu/bg/guides/reconstitution",
+        en: "https://peptidlabs.eu/en/guides/reconstitution",
       },
     },
     other: {
@@ -109,6 +113,7 @@ export default async function ReconstitutionGuidePage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("reconstitution");
+  const isBg = locale === "bg";
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -145,124 +150,141 @@ export default async function ReconstitutionGuidePage({
         }}
       />
 
-      <div className="mx-auto max-w-[800px] px-6 py-12">
-        {/* Header */}
-        <h1 className="text-3xl font-bold text-navy mb-4">{t("title")}</h1>
-        <p className="text-secondary text-sm leading-relaxed mb-10">
-          {t("intro")}
-        </p>
-
-        {/* What You'll Need */}
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold text-navy mb-4">
-            {t("checklistTitle")}
-          </h2>
-          <div className="bg-surface rounded-xl p-6 border border-border">
-            <ul className="space-y-3">
-              {CHECKLIST_KEYS.map((key) => (
-                <li
-                  key={key}
-                  className="flex items-start gap-3 text-sm text-secondary leading-relaxed"
-                >
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-border bg-white text-muted">
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M2.5 6L5 8.5L9.5 4"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  <span>{t(`checklist.${key}`)}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-5 pt-4 border-t border-border">
-              <Link
-                href="/products/reconstitution-starter-kit"
-                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
-              >
-                {t("checklistCta")}
-                <ArrowRight size={16} strokeWidth={1.5} />
-              </Link>
+      <PageHero
+        crumbs={[
+          { label: isBg ? "Помощ" : "Guides" },
+          { label: t("title") },
+        ]}
+        marker={isBg ? "[GUIDE/01] РЕКОНСТИТУЦИЯ" : "[GUIDE/01] RECONSTITUTION"}
+        title={t("title")}
+        subtitle={t("intro")}
+        locale={locale}
+        aside={
+          <div className="flex items-center gap-5 font-mono text-[11px] text-muted">
+            <div className="text-right">
+              <p className="uppercase tracking-widest">
+                {STEP_KEYS.length} {isBg ? "стъпки" : "steps"}
+              </p>
+              <p className="mt-1 text-[9px]">
+                {isBg ? "от флакон до инжекция" : "vial to draw"}
+              </p>
+            </div>
+            <div className="h-10 w-px bg-border" />
+            <div className="text-right">
+              <p className="uppercase tracking-widest">~10 min</p>
+              <p className="mt-1 text-[9px]">
+                {isBg ? "четене" : "read time"}
+              </p>
             </div>
           </div>
+        }
+      />
+
+      <div className="mx-auto max-w-[1280px] px-6 pb-16">
+        {/* ─── [GUIDE/02] CHECKLIST + VISUAL ─── */}
+        <section className="mb-16 grid gap-10 lg:grid-cols-[1fr_420px] lg:items-start">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[GUIDE/02] ПРИГОТВЯНЕ" : "[GUIDE/02] PREPARATION"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-5 tracking-[-0.02em]">
+              {t("checklistTitle")}
+            </h2>
+            <div className="rounded-xl bg-surface border border-border p-6">
+              <ul className="space-y-3">
+                {CHECKLIST_KEYS.map((key) => (
+                  <li
+                    key={key}
+                    className="flex items-start gap-3 text-sm text-secondary leading-relaxed"
+                  >
+                    <CheckCircle2
+                      size={18}
+                      className="text-teal-600 mt-0.5 shrink-0"
+                    />
+                    <span>{t(`checklist.${key}`)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 pt-4 border-t border-border">
+                <Link
+                  href="/products/reconstitution-starter-kit"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
+                >
+                  {t("checklistCta")}
+                  <ArrowRight size={16} strokeWidth={1.5} />
+                </Link>
+              </div>
+            </div>
+          </div>
+          <PlaceholderVisual
+            variant="diagram"
+            label={isBg ? "Работен процес" : "Workflow diagram"}
+            className="aspect-[4/3]"
+          />
         </section>
 
-        {/* Step-by-Step Guide */}
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold text-navy mb-6">
+        {/* ─── [GUIDE/03] STEPS ─── */}
+        <section className="mb-16">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[GUIDE/03] СТЪПКИ" : "[GUIDE/03] STEPS"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("stepsTitle")}
           </h2>
-          <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
             {STEP_KEYS.map((key, i) => {
               const Icon = STEP_ICONS[i];
               return (
                 <div
                   key={key}
-                  className="bg-surface rounded-xl p-6 border border-border"
+                  className="rounded-xl border border-border bg-white p-6 relative"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="flex shrink-0 items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-white font-bold text-lg">
-                        {i + 1}
-                      </div>
+                  <p className="absolute top-5 right-5 font-mono text-[11px] font-bold text-muted tabular">
+                    0{i + 1}
+                  </p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-white">
+                      <Icon size={18} strokeWidth={1.5} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Icon
-                          size={18}
-                          strokeWidth={1.5}
-                          className="text-accent shrink-0"
-                        />
-                        <h3 className="text-lg font-semibold text-navy">
-                          {t(`steps.${key}.title`)}
-                        </h3>
-                      </div>
-                      <p className="text-sm text-secondary leading-relaxed whitespace-pre-line">
-                        {t(`steps.${key}.body`)}
-                      </p>
-                      {key === "drawWater" && (
-                        <Link
-                          href="/calculator"
-                          className="inline-flex items-center gap-2 mt-3 text-sm font-medium text-accent hover:text-accent/80 transition-colors"
-                        >
-                          <Calculator size={14} strokeWidth={1.5} />
-                          {t("calculatorLink")}
-                        </Link>
-                      )}
-                    </div>
+                    <h3 className="text-base font-semibold text-navy">
+                      {t(`steps.${key}.title`)}
+                    </h3>
                   </div>
+                  <p className="text-sm text-secondary leading-relaxed whitespace-pre-line">
+                    {t(`steps.${key}.body`)}
+                  </p>
+                  {key === "drawWater" && (
+                    <Link
+                      href="/calculator"
+                      className="inline-flex items-center gap-2 mt-4 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
+                    >
+                      <Calculator size={14} strokeWidth={1.5} />
+                      {t("calculatorLink")}
+                    </Link>
+                  )}
                 </div>
               );
             })}
           </div>
         </section>
 
-        {/* Important Tips */}
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold text-navy mb-4">
+        {/* ─── [GUIDE/04] TIPS ─── */}
+        <section className="mb-16">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+            {isBg ? "[GUIDE/04] ВАЖНИ СЪВЕТИ" : "[GUIDE/04] IMPORTANT TIPS"}
+          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {t("tipsTitle")}
           </h2>
-          <div className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-3">
             {TIP_KEYS.map((key) => (
               <div
                 key={key}
-                className="border-l-4 border-accent bg-accent-tint p-4 rounded-r-lg"
+                className="border-l-4 border-accent bg-accent-tint p-5 rounded-r-xl"
               >
                 <div className="flex items-start gap-3">
                   <CircleAlert
-                    size={18}
-                    strokeWidth={1.5}
+                    size={16}
                     className="text-accent shrink-0 mt-0.5"
                   />
                   <p className="text-sm text-secondary leading-relaxed">
@@ -274,62 +296,73 @@ export default async function ReconstitutionGuidePage({
           </div>
         </section>
 
-        {/* FAQ */}
-        <section className="mb-10">
-          <h2 className="text-xl font-semibold text-navy mb-4">
-            {t("faqTitle")}
-          </h2>
-          <div className="space-y-0 divide-y divide-border border border-border rounded-lg">
-            {FAQ_KEYS.map((key) => (
-              <details key={key} className="group">
-                <summary className="cursor-pointer px-5 py-4 text-sm font-medium text-navy hover:bg-surface select-none list-none flex items-center justify-between">
-                  <span>{t(`faq.${key}Q`)}</span>
-                  <span className="ml-4 text-muted transition-transform group-open:rotate-45 text-lg leading-none">
-                    +
-                  </span>
-                </summary>
-                <div className="px-5 pb-4 text-sm text-secondary leading-relaxed">
-                  {t(`faq.${key}A`)}
-                </div>
-              </details>
-            ))}
+        {/* ─── [GUIDE/05] FAQ ─── */}
+        <section className="mb-16 grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[GUIDE/05] ЧЗВ" : "[GUIDE/05] FAQ"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
+              {t("faqTitle")}
+            </h2>
+            <div className="divide-y divide-border border border-border rounded-xl bg-white overflow-hidden">
+              {FAQ_KEYS.map((key) => (
+                <details key={key} className="group">
+                  <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-navy hover:bg-surface select-none list-none flex items-center justify-between">
+                    <span>{t(`faq.${key}Q`)}</span>
+                    <span className="ml-4 text-muted transition-transform group-open:rotate-45 text-lg leading-none">
+                      +
+                    </span>
+                  </summary>
+                  <div className="px-5 pb-4 text-sm text-secondary leading-relaxed">
+                    {t(`faq.${key}A`)}
+                  </div>
+                </details>
+              ))}
+            </div>
           </div>
+          <aside className="lg:sticky lg:top-24 space-y-4">
+            <div className="rounded-xl border border-border p-5">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-2">
+                {isBg ? "Следваща стъпка" : "Next step"}
+              </p>
+              <h3 className="text-sm font-semibold text-navy mb-3">
+                {t("ctaTitle")}
+              </h3>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/calculator"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-medium text-white hover:bg-navy/90 transition-colors"
+                >
+                  <Calculator size={14} strokeWidth={1.5} />
+                  {t("ctaCalculator")}
+                </Link>
+                <Link
+                  href="/products/reconstitution-starter-kit"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white hover:bg-accent/90 transition-colors"
+                >
+                  <ShoppingCart size={14} strokeWidth={1.5} />
+                  {t("ctaStarterKit")}
+                </Link>
+                <Link
+                  href="/shop/accessories"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-sm font-medium text-navy hover:bg-surface transition-colors"
+                >
+                  <Droplets size={14} strokeWidth={1.5} />
+                  {t("ctaBacWater")}
+                </Link>
+              </div>
+            </div>
+          </aside>
         </section>
 
-        {/* Bottom CTAs */}
-        <section className="bg-surface rounded-xl p-6 border border-border">
-          <h2 className="text-lg font-semibold text-navy mb-4">
-            {t("ctaTitle")}
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/calculator"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy px-5 py-2.5 text-sm font-medium text-white hover:bg-navy/90 transition-colors"
-            >
-              <Calculator size={16} strokeWidth={1.5} />
-              {t("ctaCalculator")}
-            </Link>
-            <Link
-              href="/products/reconstitution-starter-kit"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent/90 transition-colors"
-            >
-              <ShoppingCart size={16} strokeWidth={1.5} />
-              {t("ctaStarterKit")}
-            </Link>
-            <Link
-              href="/shop/accessories"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-navy hover:bg-surface transition-colors"
-            >
-              <Droplets size={16} strokeWidth={1.5} />
-              {t("ctaBacWater")}
-            </Link>
-          </div>
-        </section>
-
-        {/* Research disclaimer */}
-        <p className="mt-8 text-muted text-xs text-center leading-relaxed">
-          {t("disclaimer")}
-        </p>
+        {/* Disclaimer */}
+        <div className="flex items-start gap-3 rounded-xl border border-dashed border-border bg-surface p-5">
+          <Info size={16} className="text-muted shrink-0 mt-0.5" />
+          <p className="text-xs text-muted leading-relaxed">
+            {t("disclaimer")}
+          </p>
+        </div>
       </div>
     </main>
   );

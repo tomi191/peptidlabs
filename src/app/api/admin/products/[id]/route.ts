@@ -2,13 +2,7 @@ import type { NextRequest } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { AdminProductUpdateSchema } from "@/lib/api/schemas";
-
-function validateAdminToken(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (!auth) return false;
-  const token = auth.replace("Bearer ", "");
-  return token.startsWith("admin-");
-}
+import { isAdmin } from "@/lib/auth/guard";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,7 +11,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
@@ -46,7 +40,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
@@ -120,7 +114,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!validateAdminToken(req)) {
+  if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 

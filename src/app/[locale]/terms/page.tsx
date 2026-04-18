@@ -1,10 +1,27 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { getTranslations } from "next-intl/server";
+import { LegalLayout } from "@/components/legal/LegalLayout";
+import { termsContent } from "@/lib/legal/content";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const doc = termsContent[locale === "bg" ? "bg" : "en"];
+  return {
+    title: `${doc.title} | PeptidLabs`,
+    description: doc.intro.slice(0, 160),
+    alternates: {
+      canonical: `https://peptidlabs.eu/${locale}/terms`,
+      languages: {
+        bg: "https://peptidlabs.eu/bg/terms",
+        en: "https://peptidlabs.eu/en/terms",
+      },
+    },
+  };
+}
 
 export default async function TermsPage({
   params,
@@ -13,14 +30,7 @@ export default async function TermsPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("legal");
+  const doc = termsContent[locale === "bg" ? "bg" : "en"];
 
-  return (
-    <main className="flex-1 bg-white">
-      <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold text-navy mb-4">{t("termsTitle")}</h1>
-        <p className="text-sm text-muted">{t("comingSoon")}</p>
-      </div>
-    </main>
-  );
+  return <LegalLayout document={doc} locale={locale} />;
 }

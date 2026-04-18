@@ -7,6 +7,13 @@ export const NewsletterSchema = z.object({
 });
 export type NewsletterInput = z.infer<typeof NewsletterSchema>;
 
+// --- Account magic-link request ---
+export const AccountLinkRequestSchema = z.object({
+  email: z.email().max(255),
+  locale: z.enum(["bg", "en"]).default("bg"),
+});
+export type AccountLinkRequestInput = z.infer<typeof AccountLinkRequestSchema>;
+
 // --- Shared: shipping address ---
 export const ShippingAddressSchema = z.object({
   name: z.string().min(2).max(200),
@@ -98,3 +105,17 @@ export type AdminProductCreateInput = z.infer<typeof AdminProductCreateSchema>;
 
 export const AdminProductUpdateSchema = AdminProductCreateSchema.partial();
 export type AdminProductUpdateInput = z.infer<typeof AdminProductUpdateSchema>;
+
+// --- Reviews ---
+export const ReviewCreateSchema = z.object({
+  productId: z.uuid(),
+  rating: z.number().int().min(1).max(5),
+  title: z.string().min(5).max(100).optional(),
+  text: z.string().min(10).max(2000),
+  authorName: z.string().min(2).max(60),
+  authorEmail: z.email().max(255),
+  orderId: z.uuid().optional(),
+  // Honeypot: must be empty string. Bots fill hidden inputs.
+  honeypot: z.string().max(0).optional().default(""),
+});
+export type ReviewCreateInput = z.infer<typeof ReviewCreateSchema>;

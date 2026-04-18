@@ -1,8 +1,10 @@
 import { FlaskConical, FileCheck, Truck, Lock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 
 export function TrustBar() {
   const t = useTranslations("trust");
+  const locale = useLocale();
 
   const items = [
     { icon: FlaskConical, title: t("hplcTitle"), sub: t("hplcSub") },
@@ -21,9 +23,11 @@ export function TrustBar() {
           >
             <item.icon size={20} className="text-secondary" />
             <p className="mt-2 text-xs font-semibold text-navy">
-              {item.title}
+              <TextWithAbbr text={item.title} locale={locale} />
             </p>
-            <p className="mt-0.5 text-[11px] text-muted">{item.sub}</p>
+            <p className="mt-0.5 text-[11px] text-muted">
+              <TextWithAbbr text={item.sub} locale={locale} />
+            </p>
           </div>
         ))}
       </div>

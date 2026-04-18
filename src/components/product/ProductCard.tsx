@@ -1,8 +1,13 @@
 import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import { COABadge } from "@/components/ui/COABadge";
+import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 import type { Product } from "@/lib/types";
-import { getFormLabel, getCategoryLabel } from "@/lib/labels";
+import {
+  getFormLabel,
+  getCategoryLabel,
+  getProductDisplayName,
+} from "@/lib/labels";
 
 function formatPrice(product: Product) {
   return `€${product.price_eur.toFixed(2)}`;
@@ -15,17 +20,17 @@ export function ProductCard({
   product: Product;
   locale: string;
 }) {
+  const displayName = getProductDisplayName(product, locale);
   return (
     <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
       <Link href={`/products/${product.slug}`} className="product-card-cursor block">
         <div
           className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface"
           role="img"
-          aria-label={`${product.name} product image`}
+          aria-label={displayName}
           style={{ viewTransitionName: `product-image-${product.slug}` }}
         >
-          {/* Placeholder vial */}
-          <div className="h-16 w-6 rounded-sm border border-border bg-white" />
+          <VialPlaceholder name={product.name} size="sm" />
 
           {product.coa_url && (
             <COABadge variant="overlay" className="absolute right-2 top-2" />
@@ -37,7 +42,7 @@ export function ProductCard({
             {(locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || getCategoryLabel(locale)}
           </p>
           <h3 className="mt-1 text-sm font-semibold text-navy">
-            {product.name}
+            {displayName}
           </h3>
           <p className="mt-1 font-mono text-[11px] text-muted tabular">
             {product.vial_size_mg ? (

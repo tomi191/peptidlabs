@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { Search, ShoppingBag, Menu, X, Phone } from "lucide-react";
+import { Search, ShoppingBag, Menu, Phone } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
 import CartDrawer from "@/components/layout/CartDrawer";
 import SearchModal from "@/components/ui/SearchModal";
 import { PeptideTicker } from "@/components/layout/PeptideTicker";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 
 /* ── Cart icon with badge (reads Zustand) ── */
 function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
@@ -116,7 +117,7 @@ export default function Header() {
             </span>
           </div>
           <span className="font-semibold tracking-widest text-navy text-sm">
-            PEPTIDELAB
+            PEPTIDLABS
           </span>
         </Link>
 
@@ -134,10 +135,25 @@ export default function Header() {
         </nav>
 
         {/* Right icons — Search + Cart only */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Desktop: inline pill with placeholder and ⌘K hint */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="text-navy hover:text-secondary transition-colors duration-150 hidden sm:block"
+            className="hidden md:flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted hover:border-navy hover:text-navy transition-colors duration-150 min-w-[220px]"
+            aria-label={tc("searchLabel")}
+          >
+            <Search size={16} strokeWidth={1.5} />
+            <span className="flex-1 text-left">
+              {locale === "bg" ? "Търси пептид..." : "Search peptide..."}
+            </span>
+            <kbd className="hidden lg:inline-flex items-center rounded border border-border bg-white px-1.5 font-mono text-[10px] text-muted">
+              ⌘K
+            </kbd>
+          </button>
+          {/* Mobile: icon-only */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="md:hidden text-navy hover:text-secondary transition-colors duration-150"
             aria-label={tc("searchLabel")}
           >
             <Search size={20} strokeWidth={1.5} />
@@ -146,59 +162,21 @@ export default function Header() {
 
           {/* Hamburger — visible below lg */}
           <button
-            onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden text-navy hover:text-secondary transition-colors duration-150"
-            aria-label={mobileOpen ? tc("closeMenuLabel") : tc("menuLabel")}
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full border border-border text-navy hover:border-navy hover:bg-surface transition-colors"
+            aria-label={tc("menuLabel")}
           >
-            {mobileOpen ? (
-              <X size={22} strokeWidth={1.5} />
-            ) : (
-              <Menu size={22} strokeWidth={1.5} />
-            )}
+            <Menu size={18} strokeWidth={1.5} />
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <nav className="lg:hidden bg-white border-b border-border py-4 px-6 flex flex-col gap-4">
-          {navKeys.map((key) => (
-            <Link
-              key={key}
-              href={navHrefs[key]}
-              onClick={() => setMobileOpen(false)}
-              className="text-secondary text-sm hover:text-navy transition-colors"
-            >
-              {t(key)}
-            </Link>
-          ))}
-
-          {/* Track Order — mobile only */}
-          <Link
-            href="/orders"
-            onClick={() => setMobileOpen(false)}
-            className="text-secondary text-sm hover:text-navy transition-colors"
-          >
-            {tc("trackOrder")}
-          </Link>
-
-          {/* Mobile-only icon row */}
-          <div className="flex items-center gap-4 pt-2 border-t border-border sm:hidden">
-            <button
-              onClick={() => { setSearchOpen(true); setMobileOpen(false); }}
-              className="text-navy hover:text-secondary transition-colors duration-150"
-              aria-label={tc("searchLabel")}
-            >
-              <Search size={20} strokeWidth={1.5} />
-            </button>
-          </div>
-
-          {/* Mobile locale switch */}
-          <div className="pt-2 border-t border-border md:hidden">
-            <LocaleSwitch />
-          </div>
-        </nav>
-      )}
+      <MobileMenu
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        onOpenSearch={() => setSearchOpen(true)}
+        locale={locale}
+      />
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <CartDrawer
         open={cartOpen}

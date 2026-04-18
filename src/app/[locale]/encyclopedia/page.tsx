@@ -2,9 +2,9 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { getPeptides } from "@/lib/queries";
 import type { Metadata } from "next";
-import { BookOpen } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { EncyclopediaGrid } from "./EncyclopediaGrid";
+import { PageHero } from "@/components/layout/PageHero";
 
 export async function generateMetadata({
   params,
@@ -16,6 +16,13 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("subtitle"),
+    alternates: {
+      canonical: `https://peptidlabs.eu/${locale}/encyclopedia`,
+      languages: {
+        bg: "https://peptidlabs.eu/bg/encyclopedia",
+        en: "https://peptidlabs.eu/en/encyclopedia",
+      },
+    },
   };
 }
 
@@ -28,48 +35,56 @@ export default async function EncyclopediaPage({
   setRequestLocale(locale);
   const t = await getTranslations("encyclopedia");
   const peptides = await getPeptides();
+  const isBg = locale === "bg";
 
   return (
     <main className="flex-1 bg-white">
-      {/* Hero */}
-      <section className="bg-surface border-b border-border">
-        <div className="mx-auto max-w-[1280px] px-6 py-12 md:py-16">
-          <FadeIn>
-            <div className="flex items-start gap-4 mb-4">
-              <div className="rounded-xl bg-teal-600/10 p-3">
-                <BookOpen className="h-6 w-6 text-teal-600" />
-              </div>
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-navy">
-                  {t("title")}
-                </h1>
-                <p className="mt-2 text-secondary leading-relaxed max-w-2xl">
-                  {t("subtitle")}
-                </p>
-              </div>
-            </div>
-            <p className="mt-4 max-w-3xl text-sm text-muted leading-relaxed">
-              {t("heroDetail")}
+      <PageHero
+        crumbs={[{ label: t("title") }]}
+        marker={isBg ? "[ENCY/01] НАУЧНА БАЗА" : "[ENCY/01] KNOWLEDGE BASE"}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        locale={locale}
+        aside={
+          <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-5 py-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-teal-700">
+              {isBg ? "Библиотека" : "Library"}
             </p>
-          </FadeIn>
-        </div>
-      </section>
+            <p className="font-mono text-lg font-bold text-teal-700 mt-0.5 tabular">
+              {peptides.length} {isBg ? "пептида" : "peptides"}
+            </p>
+          </div>
+        }
+      />
 
-      {/* Grid with search */}
-      <section className="mx-auto max-w-[1280px] px-6 py-12">
+      {/* Detail paragraph */}
+      <div className="mx-auto max-w-[1280px] px-6 pb-6 -mt-4">
+        <p className="max-w-3xl text-sm text-muted leading-relaxed">
+          {t("heroDetail")}
+        </p>
+      </div>
+
+      {/* ─── [ENCY/02] CATALOG ─── */}
+      <section className="mx-auto max-w-[1280px] px-6 py-8">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+          {isBg ? "[ENCY/02] КАТАЛОГ" : "[ENCY/02] CATALOG"}
+        </p>
         <FadeIn>
           <EncyclopediaGrid peptides={peptides} />
         </FadeIn>
       </section>
 
-      {/* Intro SEO content */}
-      <section className="bg-surface border-t border-border">
+      {/* ─── [ENCY/03] INTRO ─── */}
+      <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
           <FadeIn>
-            <h2 className="text-lg font-semibold text-navy mb-3">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
+              {isBg ? "[ENCY/03] ВЪВЕДЕНИЕ" : "[ENCY/03] INTRO"}
+            </p>
+            <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
               {t("whatIsTitle")}
             </h2>
-            <p className="max-w-3xl text-sm text-secondary leading-relaxed">
+            <p className="max-w-3xl text-secondary leading-relaxed">
               {t("intro")}
             </p>
           </FadeIn>
@@ -78,9 +93,7 @@ export default async function EncyclopediaPage({
 
       {/* Disclaimer */}
       <section className="mx-auto max-w-[1280px] px-6 py-8 border-t border-border">
-        <p className="text-xs text-muted">
-          {t("disclaimer")}
-        </p>
+        <p className="text-xs text-muted italic">{t("disclaimer")}</p>
       </section>
     </main>
   );

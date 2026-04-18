@@ -1,5 +1,13 @@
 import { createServerSupabase } from "./supabase/server";
-import type { Product, Category, Peptide, BlogPost } from "./types";
+import { createStaticSupabase } from "./supabase/static";
+import type {
+  Product,
+  Category,
+  Peptide,
+  BlogPost,
+  Review,
+  ReviewAggregate,
+} from "./types";
 
 export async function getCategories(): Promise<Category[]> {
   const supabase = await createServerSupabase();
@@ -282,6 +290,73 @@ export async function getBlogPostProducts(
     .eq("status", "published");
 
   return (products as Product[]) ?? [];
+}
+
+export async function getProductReviews(productId: string): Promise<{
+  reviews: Review[];
+  aggregate: ReviewAggregate;
+}> {
+  const supabase = createStaticSupabase();
+  const { data } = await supabase
+    .from("reviews")
+    .select(
+      "id, product_id, rating, title, text, author_name, verified_purchase, created_at, updated_at"
+    )
+    .eq("product_id", productId)
+    .eq("status", "approved")
+    .order("created_at", { ascending: false });
+
+  const rows = (data ?? []) as Array<
+    Pick<
+      Review,
+      | "id"
+      | "product_id"
+      | "rating"
+      | "title"
+      | "text"
+      | "author_name"
+      | "verified_purchase"
+      | "created_at"
+      | "updated_at"
+    >
+  >;
+
+  const reviews: Review[] = rows.map((r) => ({
+    id: r.id,
+    product_id: r.product_id,
+    rating: r.rating,
+    title: r.title,
+    text: r.text,
+    author_name: r.author_name,
+    // Email is never exposed to the client.
+    author_email: "",
+    verified_purchase: r.verified_purchase,
+    order_id: null,
+    status: "approved",
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+  }));
+
+  const distribution: Record<1 | 2 | 3 | 4 | 5, number> = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+  let total = 0;
+  for (const r of reviews) {
+    const k = Math.min(5, Math.max(1, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+    distribution[k] += 1;
+    total += r.rating;
+  }
+  const count = reviews.length;
+  const average = count === 0 ? 0 : Math.round((total / count) * 10) / 10;
+
+  return {
+    reviews,
+    aggregate: { average, count, distribution },
+  };
 }
 
 export async function getProductCategory(

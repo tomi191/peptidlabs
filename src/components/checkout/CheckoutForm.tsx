@@ -19,6 +19,8 @@ type FormData = {
   city: string;
   postalCode: string;
   country: string;
+  vatNumber: string;
+  companyName: string;
 };
 
 type FormErrors = Partial<Record<keyof FormData | "researchConfirm" | "termsAccepted", string>>;
@@ -82,7 +84,10 @@ export default function CheckoutForm() {
     city: "",
     postalCode: "",
     country: "Bulgaria",
+    vatNumber: "",
+    companyName: "",
   });
+  const [showB2B, setShowB2B] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
   const [researchConfirmed, setResearchConfirmed] = useState(false);
@@ -404,6 +409,58 @@ export default function CheckoutForm() {
             </select>
             {errors.country && (
               <p className="text-xs text-red-500 mt-1">{errors.country}</p>
+            )}
+          </div>
+
+          {/* B2B toggle */}
+          <div className="rounded-lg border border-border bg-surface p-4">
+            <button
+              type="button"
+              onClick={() => setShowB2B((v) => !v)}
+              className="text-sm font-medium text-navy hover:text-teal-600 transition-colors flex items-center gap-2"
+            >
+              <span className={`inline-block transition-transform ${showB2B ? "rotate-90" : ""}`}>
+                ▸
+              </span>
+              {locale === "bg"
+                ? "Фирмена поръчка (B2B) — ДДС номер"
+                : "Business order (B2B) — VAT number"}
+            </button>
+            {showB2B && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="companyName" className={LABEL_CLASS}>
+                    {locale === "bg" ? "Фирма" : "Company"}
+                  </label>
+                  <input
+                    id="companyName"
+                    type="text"
+                    autoComplete="organization"
+                    value={formData.companyName}
+                    onChange={(e) => handleChange("companyName", e.target.value)}
+                    className={INPUT_CLASS}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="vatNumber" className={LABEL_CLASS}>
+                    {locale === "bg" ? "ДДС / VAT номер" : "VAT number"}
+                  </label>
+                  <input
+                    id="vatNumber"
+                    type="text"
+                    placeholder="BG123456789 / DE123456789"
+                    autoComplete="off"
+                    value={formData.vatNumber}
+                    onChange={(e) => handleChange("vatNumber", e.target.value.toUpperCase())}
+                    className={`${INPUT_CLASS} font-mono`}
+                  />
+                  <p className="text-xs text-muted mt-1">
+                    {locale === "bg"
+                      ? "Валиден ЕС ДДС номер — ще бъде посочен на фактурата"
+                      : "Valid EU VAT number — will appear on the invoice"}
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>

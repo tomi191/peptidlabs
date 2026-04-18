@@ -32,7 +32,7 @@ export function StickyAddToCart({
           <p className="truncate text-sm font-semibold text-navy">
             {product.name}
           </p>
-          <p className="text-sm font-bold text-navy">{price}</p>
+          <p className="text-sm font-bold text-navy tabular">{price}</p>
         </div>
         <button
           onClick={() => cart.addItem(product)}

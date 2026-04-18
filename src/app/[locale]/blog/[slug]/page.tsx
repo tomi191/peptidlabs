@@ -53,7 +53,7 @@ export async function generateMetadata({
     : title;
 
   return {
-    title: `${title} | PeptideLab`,
+    title: `${title} | PeptidLabs`,
     description,
   };
 }
@@ -88,12 +88,12 @@ export default async function BlogPostPage({ params }: PageProps) {
     datePublished: post.published_at,
     author: {
       "@type": "Organization",
-      name: post.author || "PeptideLab",
+      name: post.author || "PeptidLabs",
     },
     publisher: {
       "@type": "Organization",
-      name: "PeptideLab",
-      url: "https://peptidelab.bg",
+      name: "PeptidLabs",
+      url: "https://peptidlabs.eu",
     },
   };
 

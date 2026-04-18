@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/store/cart";
 import type { Product } from "@/lib/types";
+import { getProductDisplayName } from "@/lib/labels";
 
 type Props = {
   product: Product;
@@ -19,6 +20,7 @@ export function AddToCartButton({ product, variant = "icon", label }: Props) {
   const addItem = useCart((s) => s.addItem);
   const locale = useLocale();
   const isBg = locale === "bg";
+  const displayName = getProductDisplayName(product, locale);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -41,8 +43,8 @@ export function AddToCartButton({ product, variant = "icon", label }: Props) {
       setState("added");
 
       const addedLabel = isBg
-        ? `${product.name} добавен в кошницата`
-        : `${product.name} added to cart`;
+        ? `${displayName} добавен в кошницата`
+        : `${displayName} added to cart`;
       const viewLabel = isBg ? "Виж" : "View";
 
       toast.success(addedLabel, {
@@ -79,8 +81,8 @@ export function AddToCartButton({ product, variant = "icon", label }: Props) {
               ? "Добавено в кошницата"
               : "Added to cart"
             : isBg
-            ? `Добави ${product.name} в кошницата`
-            : `Add ${product.name} to cart`
+            ? `Добави ${displayName} в кошницата`
+            : `Add ${displayName} to cart`
         }
         className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-200 ${
           state === "added"
@@ -106,8 +108,8 @@ export function AddToCartButton({ product, variant = "icon", label }: Props) {
             ? "Добавено в кошницата"
             : "Added to cart"
           : isBg
-          ? `Добави ${product.name} в кошницата`
-          : `Add ${product.name} to cart`
+          ? `Добави ${displayName} в кошницата`
+          : `Add ${displayName} to cart`
       }
       className={`mt-4 flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-semibold transition-colors duration-200 ${
         state === "added"
