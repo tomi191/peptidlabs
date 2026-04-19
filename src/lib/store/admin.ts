@@ -21,7 +21,7 @@ export const useAdmin = create<AdminStore>()(
 
       isAuthenticated: () => {
         const t = get().token;
-        return t !== null && t.startsWith("admin-");
+        return t !== null && t.length > 0;
       },
     }),
     {
