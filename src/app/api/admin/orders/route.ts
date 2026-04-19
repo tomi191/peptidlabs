@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
   const { data: orders, error } = await query;
 
   if (error) {
+    console.error("[admin/orders] DB error:", error.message, error.code);
     return fail("Failed to fetch orders", 500, "DB_ERROR");
   }
 
