@@ -1,29 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAdmin } from "@/lib/store/admin";
 import { useRouter, Link } from "@/i18n/navigation";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, X, ImagePlus, Upload } from "lucide-react";
 
 const FORM_OPTIONS = [
-  { value: "lyophilized", label: "Lyophilized" },
-  { value: "solution", label: "Solution" },
-  { value: "nasal_spray", label: "Nasal Spray" },
-  { value: "capsule", label: "Capsule" },
-  { value: "accessory", label: "Accessory" },
+  { value: "lyophilized", label: "Лиофилизиран" },
+  { value: "solution", label: "Разтвор" },
+  { value: "nasal_spray", label: "Назален спрей" },
+  { value: "capsule", label: "Капсула" },
+  { value: "accessory", label: "Аксесоар" },
 ] as const;
 
 const STATUS_OPTIONS = [
-  { value: "draft", label: "Draft" },
-  { value: "published", label: "Published" },
-  { value: "out_of_stock", label: "Out of Stock" },
-  { value: "archived", label: "Archived" },
+  { value: "draft", label: "Чернова" },
+  { value: "published", label: "Публикуван" },
+  { value: "out_of_stock", label: "Изчерпан" },
+  { value: "archived", label: "Архивиран" },
 ] as const;
 
 const inputClass =
   "w-full rounded-lg border border-border px-4 py-3 text-sm text-navy placeholder:text-muted focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy";
 const labelClass = "block text-sm font-medium text-navy mb-1.5";
-const sectionClass = "border border-border rounded-lg p-6 mb-6";
+const sectionClass = "bg-white border border-border rounded-lg p-6 mb-5";
 const sectionTitleClass = "text-base font-semibold text-navy mb-4";
 
 function slugify(text: string): string {
@@ -41,8 +41,11 @@ export default function AdminProductNewPage() {
   const { token, isAuthenticated } = useAdmin();
 
   const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form fields
   const [name, setName] = useState("");
   const [nameBg, setNameBg] = useState("");
   const [sku, setSku] = useState("");
@@ -61,13 +64,46 @@ export default function AdminProductNewPage() {
   const [isBlend, setIsBlend] = useState(false);
   const [scientificDataJson, setScientificDataJson] = useState("");
 
-  if (!isAuthenticated()) {
-    return null;
+  if (!isAuthenticated()) return null;
+
+  async function uploadFile(file: File) {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.success) {
+          setImages((prev) => [...prev, json.data.url]);
+        }
+      }
+    } catch {
+      // грешка при качване
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleFileInput(files: FileList | null) {
+    if (!files) return;
+    Array.from(files).forEach((file) => uploadFile(file));
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    handleFileInput(e.dataTransfer.files);
   }
 
   async function handleCreate() {
     if (!name.trim()) return;
-
     setSaving(true);
 
     let scientificData = {};
@@ -76,7 +112,7 @@ export default function AdminProductNewPage() {
         scientificData = JSON.parse(scientificDataJson);
       } catch {
         setSaving(false);
-        alert("Invalid JSON in scientific data field");
+        alert("Невалиден JSON в полето за научни данни");
         return;
       }
     }
@@ -106,6 +142,7 @@ export default function AdminProductNewPage() {
           is_bestseller: isBestseller,
           is_blend: isBlend,
           scientific_data: scientificData,
+          images,
         }),
       });
 
@@ -113,7 +150,7 @@ export default function AdminProductNewPage() {
         router.push("/admin/products");
       }
     } catch {
-      // Error silently
+      // грешка
     } finally {
       setSaving(false);
     }
@@ -123,44 +160,98 @@ export default function AdminProductNewPage() {
 
   return (
     <div className="max-w-3xl">
-      {/* Header */}
+      {/* Заглавие */}
       <div className="flex items-center gap-4 mb-8">
-        <Link
-          href="/admin/products"
-          className="text-secondary hover:text-navy transition-colors"
-        >
+        <Link href="/admin/products" className="text-secondary hover:text-navy transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-lg font-semibold text-navy">New Product</h1>
+        <h1 className="text-lg font-semibold text-navy">Нов продукт</h1>
       </div>
 
-      {/* Section 1: Basic Info */}
+      {/* Галерия */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Basic Info</h2>
+        <h2 className={sectionTitleClass}>Снимки</h2>
+
+        {images.length > 0 && (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+            {images.map((url, i) => (
+              <div key={url} className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-surface">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt={`Снимка ${i + 1}`} className="w-full h-full object-cover" />
+                <button
+                  onClick={() => setImages((prev) => prev.filter((u) => u !== url))}
+                  className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+                {i === 0 && (
+                  <span className="absolute bottom-1.5 left-1.5 bg-navy/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                    Главна
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            dragOver
+              ? "border-navy bg-navy/5"
+              : "border-border hover:border-navy/40 hover:bg-surface"
+          }`}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            className="hidden"
+            onChange={(e) => handleFileInput(e.target.files)}
+          />
+          {uploading ? (
+            <div className="flex flex-col items-center gap-2">
+              <Upload className="h-8 w-8 text-navy animate-bounce" />
+              <p className="text-sm text-navy font-medium">Качване...</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <ImagePlus className="h-8 w-8 text-muted" />
+              <p className="text-sm text-navy font-medium">
+                Плъзнете снимки тук или кликнете за избор
+              </p>
+              <p className="text-xs text-muted">JPG, PNG, WebP — макс. 5MB</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Основна информация */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Основна информация</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Name</label>
+            <label className={labelClass}>Наименование</label>
             <input
               type="text"
               value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (!slug) {
-                  // auto-update slug preview only
-                }
-              }}
+              onChange={(e) => setName(e.target.value)}
               className={inputClass}
-              placeholder="Product name"
+              placeholder="Наименование на продукта"
             />
           </div>
           <div>
-            <label className={labelClass}>Name BG</label>
+            <label className={labelClass}>Наименование (BG)</label>
             <input
               type="text"
               value={nameBg}
               onChange={(e) => setNameBg(e.target.value)}
               className={inputClass}
-              placeholder="Product name in Bulgarian"
+              placeholder="Наименование на български"
             />
           </div>
           <div>
@@ -180,34 +271,21 @@ export default function AdminProductNewPage() {
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               className={`${inputClass} font-mono`}
-              placeholder="auto-generated"
+              placeholder="авто-генериран"
             />
             {slugPreview && (
-              <p className="mt-1 text-xs text-muted font-mono">
-                /shop/{slugPreview}
-              </p>
+              <p className="mt-1 text-xs text-muted font-mono">/shop/{slugPreview}</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Section 2: Pricing */}
+      {/* Цени */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Pricing</h2>
+        <h2 className={sectionTitleClass}>Цени</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Price BGN</label>
-            <input
-              type="number"
-              step="0.01"
-              value={priceBgn}
-              onChange={(e) => setPriceBgn(e.target.value)}
-              className={`${inputClass} font-mono`}
-              placeholder="0.00"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Price EUR</label>
+            <label className={labelClass}>Цена EUR (€)</label>
             <input
               type="number"
               step="0.01"
@@ -217,39 +295,44 @@ export default function AdminProductNewPage() {
               placeholder="0.00"
             />
           </div>
+          <div>
+            <label className={labelClass}>Цена BGN (лв.)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={priceBgn}
+              onChange={(e) => setPriceBgn(e.target.value)}
+              className={`${inputClass} font-mono`}
+              placeholder="0.00"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Section 3: Details */}
+      {/* Технически параметри */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Details</h2>
+        <h2 className={sectionTitleClass}>Технически параметри</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Vial Size (mg)</label>
+            <label className={labelClass}>Размер на флакон (mg)</label>
             <input
               type="number"
               value={vialSizeMg}
               onChange={(e) => setVialSizeMg(e.target.value)}
               className={inputClass}
-              placeholder="e.g. 5"
+              placeholder="напр. 5"
             />
           </div>
           <div>
-            <label className={labelClass}>Form</label>
-            <select
-              value={form}
-              onChange={(e) => setForm(e.target.value)}
-              className={inputClass}
-            >
+            <label className={labelClass}>Форма</label>
+            <select value={form} onChange={(e) => setForm(e.target.value)} className={inputClass}>
               {FORM_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className={labelClass}>Purity %</label>
+            <label className={labelClass}>Чистота %</label>
             <input
               type="number"
               step="0.1"
@@ -260,35 +343,35 @@ export default function AdminProductNewPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>Molecular Weight</label>
+            <label className={labelClass}>Молекулно тегло</label>
             <input
               type="number"
               step="0.01"
               value={molecularWeight}
               onChange={(e) => setMolecularWeight(e.target.value)}
               className={inputClass}
-              placeholder="Optional"
+              placeholder="По желание"
             />
           </div>
         </div>
       </div>
 
-      {/* Section 4: Description */}
+      {/* Описание */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Description</h2>
+        <h2 className={sectionTitleClass}>Описание</h2>
         <div className="space-y-4">
           <div>
-            <label className={labelClass}>Description BG</label>
+            <label className={labelClass}>Описание (BG)</label>
             <textarea
               rows={4}
               value={descriptionBg}
               onChange={(e) => setDescriptionBg(e.target.value)}
               className={inputClass}
-              placeholder="Product description in Bulgarian"
+              placeholder="Описание на продукта на български"
             />
           </div>
           <div>
-            <label className={labelClass}>Description EN</label>
+            <label className={labelClass}>Описание (EN)</label>
             <textarea
               rows={4}
               value={descriptionEn}
@@ -300,26 +383,20 @@ export default function AdminProductNewPage() {
         </div>
       </div>
 
-      {/* Section 5: Status & Stock */}
+      {/* Статус и наличност */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Status & Stock</h2>
+        <h2 className={sectionTitleClass}>Статус и наличност</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Status</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className={inputClass}
-            >
+            <label className={labelClass}>Статус</label>
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className={inputClass}>
               {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className={labelClass}>Stock</label>
+            <label className={labelClass}>Наличност (бр.)</label>
             <input
               type="number"
               value={stock}
@@ -337,7 +414,7 @@ export default function AdminProductNewPage() {
               onChange={(e) => setIsBestseller(e.target.checked)}
               className="rounded border-border text-navy focus:ring-navy"
             />
-            Is Bestseller
+            Топ продукт
           </label>
           <label className="flex items-center gap-2 text-sm text-navy cursor-pointer">
             <input
@@ -346,30 +423,25 @@ export default function AdminProductNewPage() {
               onChange={(e) => setIsBlend(e.target.checked)}
               className="rounded border-border text-navy focus:ring-navy"
             />
-            Is Blend
+            Смес (blend)
           </label>
         </div>
       </div>
 
-      {/* Section 6: Scientific Data */}
+      {/* Научни данни */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Scientific Data</h2>
-        <div>
-          <label className={labelClass}>Raw JSON</label>
-          <textarea
-            rows={6}
-            value={scientificDataJson}
-            onChange={(e) => setScientificDataJson(e.target.value)}
-            className={`${inputClass} font-mono text-xs`}
-            placeholder='{"mechanism": "...", "half_life": "...", "storage": "...", "pubmed_links": []}'
-          />
-          <p className="mt-1 text-xs text-muted">
-            Optional. Must be valid JSON if provided.
-          </p>
-        </div>
+        <h2 className={sectionTitleClass}>Научни данни (JSON)</h2>
+        <textarea
+          rows={6}
+          value={scientificDataJson}
+          onChange={(e) => setScientificDataJson(e.target.value)}
+          className={`${inputClass} font-mono text-xs`}
+          placeholder='{"mechanism": "...", "half_life": "...", "storage": "...", "pubmed_links": []}'
+        />
+        <p className="mt-1 text-xs text-muted">По желание. Трябва да е валиден JSON.</p>
       </div>
 
-      {/* Actions */}
+      {/* Действия */}
       <div className="flex justify-end pt-2 pb-8">
         <button
           onClick={handleCreate}
@@ -377,7 +449,7 @@ export default function AdminProductNewPage() {
           className="inline-flex items-center gap-1.5 bg-navy text-white rounded-lg px-6 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Save className="h-4 w-4" />
-          {saving ? "Creating..." : "Create Product"}
+          {saving ? "Създаване..." : "Създай продукт"}
         </button>
       </div>
     </div>

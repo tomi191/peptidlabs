@@ -8,13 +8,21 @@ import { Eye, RefreshCw } from "lucide-react";
 import type { Order } from "@/lib/types";
 
 const STATUS_OPTIONS = [
-  { value: "all", label: "All" },
-  { value: "pending", label: "Pending" },
-  { value: "confirmed", label: "Confirmed" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "all", label: "Всички" },
+  { value: "pending", label: "Изчакване" },
+  { value: "confirmed", label: "Потвърдена" },
+  { value: "shipped", label: "Изпратена" },
+  { value: "delivered", label: "Доставена" },
+  { value: "cancelled", label: "Отказана" },
 ] as const;
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Изчакване",
+  confirmed: "Потвърдена",
+  shipped: "Изпратена",
+  delivered: "Доставена",
+  cancelled: "Отказана",
+};
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -31,7 +39,7 @@ const PAYMENT_COLORS: Record<string, string> = {
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", {
+  return d.toLocaleDateString("bg-BG", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -77,7 +85,7 @@ export default function AdminOrdersPage() {
         }
       }
     } catch {
-      // Network error — leave orders empty
+      // мрежова грешка
     } finally {
       setLoading(false);
     }
@@ -88,17 +96,17 @@ export default function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-navy">Orders</h1>
+        <h1 className="text-xl font-semibold text-navy">Поръчки</h1>
         <button
           onClick={() => fetchOrders(statusFilter)}
           className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-navy transition-colors"
         >
           <RefreshCw className="h-4 w-4" />
-          Refresh
+          Обнови
         </button>
       </div>
 
-      {/* Status filter tabs */}
+      {/* Табове за статус */}
       <div className="flex gap-1 border-b border-border">
         {STATUS_OPTIONS.map((opt) => (
           <button
@@ -115,37 +123,31 @@ export default function AdminOrdersPage() {
         ))}
       </div>
 
-      {/* Orders table */}
+      {/* Таблица с поръчки */}
       <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-surface text-xs uppercase text-muted font-semibold">
-              <th className="text-left px-4 py-3">Order ID</th>
-              <th className="text-left px-4 py-3">Date</th>
-              <th className="text-left px-4 py-3">Customer</th>
-              <th className="text-left px-4 py-3">Payment</th>
-              <th className="text-left px-4 py-3">Status</th>
-              <th className="text-right px-4 py-3">Total</th>
-              <th className="text-center px-4 py-3">Actions</th>
+              <th className="text-left px-4 py-3">Номер</th>
+              <th className="text-left px-4 py-3">Дата</th>
+              <th className="text-left px-4 py-3">Клиент</th>
+              <th className="text-left px-4 py-3">Плащане</th>
+              <th className="text-left px-4 py-3">Статус</th>
+              <th className="text-right px-4 py-3">Сума</th>
+              <th className="text-center px-4 py-3">Действия</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td
-                  colSpan={7}
-                  className="px-4 py-12 text-center text-muted"
-                >
-                  Loading orders...
+                <td colSpan={7} className="px-4 py-12 text-center text-muted">
+                  Зареждане...
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td
-                  colSpan={7}
-                  className="px-4 py-12 text-center text-muted"
-                >
-                  No orders found
+                <td colSpan={7} className="px-4 py-12 text-center text-muted">
+                  Няма намерени поръчки
                 </td>
               </tr>
             ) : (
@@ -168,16 +170,16 @@ export default function AdminOrdersPage() {
                         PAYMENT_COLORS[order.payment_method] ?? ""
                       }`}
                     >
-                      {order.payment_method === "stripe" ? "Card" : "COD"}
+                      {order.payment_method === "stripe" ? "Карта" : "Наложен"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded text-xs font-medium capitalize border ${
+                      className={`inline-block px-2 py-0.5 rounded text-xs font-medium border ${
                         STATUS_COLORS[order.status] ?? ""
                       }`}
                     >
-                      {order.status}
+                      {STATUS_LABELS[order.status] ?? order.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-medium text-navy">
@@ -190,7 +192,7 @@ export default function AdminOrdersPage() {
                       className="inline-flex items-center gap-1 text-xs text-accent hover:text-accent/80 font-medium transition-colors"
                     >
                       <Eye className="h-3.5 w-3.5" />
-                      View
+                      Преглед
                     </Link>
                   </td>
                 </tr>
@@ -201,9 +203,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {!loading && orders.length > 0 && (
-        <p className="text-xs text-muted">
-          {orders.length} order{orders.length !== 1 ? "s" : ""}
-        </p>
+        <p className="text-xs text-muted">{orders.length} поръчки</p>
       )}
     </div>
   );
