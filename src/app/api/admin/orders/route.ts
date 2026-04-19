@@ -25,9 +25,7 @@ export async function GET(req: NextRequest) {
   const { data: orders, error } = await query;
 
   if (error) {
-    const msg = JSON.stringify({ msg: error.message, code: error.code, url: process.env.NEXT_PUBLIC_SUPABASE_URL, keyLen: process.env.SUPABASE_SERVICE_ROLE_KEY?.length });
-    console.error("[orders-debug]", msg);
-    return fail(msg, 500, "DB_ERROR");
+    return fail("Failed to fetch orders", 500, "DB_ERROR");
   }
 
   // Fetch items for all orders
