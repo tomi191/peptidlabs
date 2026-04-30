@@ -46,9 +46,11 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   throw new Error("Missing Supabase env vars");
 }
 
+// Reference master (uploaded user-provided design): clean clinical vial,
+// PEPTIDLABS branding, navy "ADVANCED SOLUTION / PEPTIDE THERAPY" band.
+// Used for every product — only the peptide name + dose label changes.
 const MASTERS = {
-  powder: `${SUPABASE_URL}/storage/v1/object/public/product-images/masters/powder.png`,
-  liquid: `${SUPABASE_URL}/storage/v1/object/public/product-images/masters/liquid.png`,
+  reference: `${SUPABASE_URL}/storage/v1/object/public/product-images/masters/reference.png`,
 };
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -65,11 +67,9 @@ const argSlug = (() => {
 })();
 const force = args.includes("--force");
 
-// ---------- Classify product into master template ----------
-function pickMaster(product) {
-  if (product.form === "solution") return "liquid";
-  // capsule, lyophilized, nasal_spray → all show as powder vial for now
-  return "powder";
+// ---------- Single master for all products ----------
+function pickMaster(_product) {
+  return "reference";
 }
 
 // ---------- KIE.ai client ----------
@@ -119,28 +119,23 @@ async function kiePoll(taskId, { timeoutMs = 5 * 60 * 1000 } = {}) {
   throw new Error(`task ${taskId} timed out`);
 }
 
-// ---------- Build prompt for each product ----------
+// ---------- Build prompt — short prompts succeed more often on KIE ----------
 function buildPrompt(product) {
   const dose = product.vial_size_mg
     ? `${Math.round(product.vial_size_mg)}mg`
     : product.form === "solution"
-      ? "5ml"
-      : "";
-  const batch = `BATCH-2026-${String(
-    Math.floor(Math.random() * 999) + 100
-  )}`;
+      ? "5mL"
+      : "1ct";
   return [
-    `Keep this exact pharmaceutical vial photo identical: same glass, same contents (${product.form === "solution" ? "clear liquid" : "white lyophilized powder"}), same aluminum crimp cap, same studio lighting, same shadow, same clean white background, same 3:4 aspect ratio.`,
-    `ONLY modify the label text on the vial.`,
-    `Replace the large peptide name in the middle of the label with: "${product.name}"`,
-    dose ? `Replace the dose text with: "${dose}"` : "",
-    `Replace the batch number at bottom with: "${batch}"`,
-    `Keep all other label design elements unchanged: navy blue label background (#0f172a), PEPTIDLABS branding at top in monospace font, teal accent line, HPLC over 99% purity badge in corner.`,
-    `All text must be crisp, perfectly legible, properly aligned and centered on the curved vial surface.`,
-    `Do not change vial shape, do not change cap, do not change background, do not change lighting.`,
-  ]
-    .filter(Boolean)
-    .join(" ");
+    `Same vial, same liquid, same cap, same lighting, same background.`,
+    `Replace label text only:`,
+    `top reads PEPTIDLABS instead of ADVANCED PEPTIDE SOLUTION.`,
+    `Middle big text reads ${product.name} instead of FILE 1.`,
+    `Bottom reads ${dose} instead of 10 mL.`,
+    `Keep navy band ADVANCED SOLUTION PEPTIDE THERAPY.`,
+    `Keep FOR RESEARCH USE ONLY at the very bottom.`,
+    `All text crisp.`,
+  ].join(" ");
 }
 
 // ---------- Download + upload ----------
@@ -197,9 +192,8 @@ async function main() {
 
     console.log(`[${done + failed + 1}/${target.length}] ${product.slug} (${masterKey})`);
 
-    const MAX_ATTEMPTS = 4;
+    const MAX_ATTEMPTS = 10;
     let attempt = 0;
-    let lastError = null;
     while (attempt < MAX_ATTEMPTS) {
       attempt++;
       try {
@@ -218,10 +212,8 @@ async function main() {
         const attemptTag = attempt > 1 ? ` (attempt ${attempt})` : "";
         console.log(`  ✓ ${publicUrl} (${elapsed}s)${attemptTag}\n`);
         done++;
-        lastError = null;
         break;
       } catch (err) {
-        lastError = err;
         const isRetryable = /Internal Error|timed out|503|502|504|ECONN/i.test(
           err.message
         );
@@ -230,7 +222,8 @@ async function main() {
           failed++;
           break;
         }
-        const backoff = Math.min(15000 * attempt, 60000);
+        // Backoff: 15s, 30s, 60s, 90s, 120s, 120s, 120s ...
+        const backoff = Math.min(15000 * Math.min(attempt, 4) * (attempt > 4 ? 2 : 1), 120000);
         console.log(`  … retrying in ${backoff / 1000}s (attempt ${attempt} failed: ${err.message})`);
         await new Promise((r) => setTimeout(r, backoff));
       }
