@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Magnet } from "@/components/ui/Magnet";
 
 export function NewsletterSignup() {
   const t = useTranslations("blog");
@@ -47,13 +48,15 @@ export function NewsletterSignup() {
         placeholder={t("emailPlaceholder")}
         className="flex-1 rounded-lg border border-border px-3 py-2 text-sm text-navy placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-teal-600"
       />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 transition-colors disabled:opacity-50"
-      >
-        {t("subscribeButton")}
-      </button>
+      <Magnet strength={0.3} radius={60}>
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 transition-colors disabled:opacity-50"
+        >
+          {t("subscribeButton")}
+        </button>
+      </Magnet>
       {status === "error" && (
         <p className="text-xs text-red-600 mt-1">{t("subscribeError")}</p>
       )}

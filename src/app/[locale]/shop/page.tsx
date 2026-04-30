@@ -156,32 +156,40 @@ export default async function ShopPage({
           </span>
         </div>
 
-        {/* Mobile category chips */}
-        <div className="flex gap-2 overflow-x-auto pb-4 lg:hidden snap-x">
-          <Link
-            href="/shop"
-            className="shrink-0 snap-center flex items-center gap-1.5 rounded-full border border-navy bg-navy px-4 py-2 text-sm font-semibold text-white"
-          >
-            <Package size={14} />
-            {t("allProducts")}
-          </Link>
-          {categories.map((category) => {
-            const Icon = category.icon
-              ? iconMap[category.icon] ?? Package
-              : Package;
-            const name =
-              locale === "bg" ? category.name_bg : category.name_en;
-            return (
-              <Link
-                key={category.id}
-                href={`/shop/${category.slug}`}
-                className="shrink-0 snap-center flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm text-secondary hover:border-navy hover:text-navy transition-colors"
-              >
-                <Icon size={14} />
-                {name}
-              </Link>
-            );
-          })}
+        {/* Mobile category chips — PillNav visual language */}
+        <div className="lg:hidden -mx-1 mb-4 overflow-x-auto pb-4 scroll-hidden">
+          <div className="inline-flex items-center gap-1 rounded-full border border-border bg-surface/60 p-1 mx-1">
+            <Link
+              href="/shop"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-1.5 text-sm font-medium text-white"
+            >
+              <Package size={14} />
+              {t("allProducts")}
+              <span className="font-mono text-[10px] text-white/70">
+                {products.length}
+              </span>
+            </Link>
+            {categories.map((category) => {
+              const Icon = category.icon
+                ? iconMap[category.icon] ?? Package
+                : Package;
+              const name =
+                locale === "bg" ? category.name_bg : category.name_en;
+              return (
+                <Link
+                  key={category.id}
+                  href={`/shop/${category.slug}`}
+                  className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium text-secondary hover:text-navy transition-colors"
+                >
+                  <Icon size={14} />
+                  {name}
+                  <span className="font-mono text-[10px] text-muted">
+                    {category.product_count}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex gap-10">

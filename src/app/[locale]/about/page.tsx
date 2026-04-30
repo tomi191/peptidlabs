@@ -15,10 +15,18 @@ import {
   BookOpen,
   Globe,
 } from "lucide-react";
+import Image from "next/image";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { PageHero } from "@/components/layout/PageHero";
-import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
 import { InfoTile } from "@/components/ui/InfoTile";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const ABOUT_LAB_BENCH = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/about/lab-bench.png`
+  : null;
+const ABOUT_TEAM_PORTRAIT = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/about/team-portrait.png`
+  : null;
 
 export async function generateMetadata({
   params,
@@ -115,11 +123,18 @@ export default async function AboutPage({
                   </ul>
                 </div>
               </div>
-              <PlaceholderVisual
-                variant="chart"
-                label={isBg ? "HPLC хроматограма" : "HPLC chromatogram"}
-                className="aspect-[4/3]"
-              />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+                {ABOUT_LAB_BENCH && (
+                  <Image
+                    src={ABOUT_LAB_BENCH}
+                    alt={isBg ? "HPLC лаборатория" : "HPLC laboratory"}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 45vw"
+                    quality={95}
+                    className="object-cover"
+                  />
+                )}
+              </div>
             </div>
           </FadeIn>
         </section>
@@ -226,26 +241,28 @@ export default async function AboutPage({
         <section className="mb-16">
           <FadeIn>
             <div className="grid gap-10 lg:grid-cols-[420px_1fr] lg:items-center">
-              <PlaceholderVisual
-                variant="avatar"
-                label={isBg ? "Научен екип" : "Science team"}
-                className="aspect-square"
-              />
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+                {ABOUT_TEAM_PORTRAIT && (
+                  <Image
+                    src={ABOUT_TEAM_PORTRAIT}
+                    alt={isBg ? "Научен екип" : "Science team"}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 420px"
+                    quality={95}
+                    className="object-cover"
+                  />
+                )}
+              </div>
               <div>
                 <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
                   {isBg
                     ? "Хората зад лабораторията"
                     : "The people behind the lab"}
                 </h2>
-                <p className="text-secondary leading-relaxed mb-4">
+                <p className="text-secondary leading-relaxed">
                   {isBg
                     ? "PeptidLabs е основан от екип от биотехнолози, фармацевти и разработчици с опит в европейски научни институции. Работим с независими акредитирани лаборатории в Гърция и Полша за HPLC верификация и масспектрометричен анализ на всяка партида."
                     : "PeptidLabs is founded by a team of biotechnologists, pharmacists and engineers with experience in European research institutions. We work with independent accredited labs in Greece and Poland for HPLC verification and mass spectrometry analysis of every batch."}
-                </p>
-                <p className="text-xs text-muted italic">
-                  {isBg
-                    ? "Снимки на екипа и лабораторията ще бъдат добавени скоро."
-                    : "Team and laboratory photos will be added soon."}
                 </p>
               </div>
             </div>

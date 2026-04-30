@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
+import { ShinyText } from "@/components/ui/ShinyText";
 
 type Crumb = { label: string; href?: string };
 
@@ -43,8 +44,8 @@ export function PageHero({
 
       <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
         <div className="max-w-2xl">
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
-            {title}
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-[-0.03em]">
+            <ShinyText speed={6}>{title}</ShinyText>
           </h1>
           {subtitle && (
             <p className="mt-4 text-secondary leading-relaxed">{subtitle}</p>
