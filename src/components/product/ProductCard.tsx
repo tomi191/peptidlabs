@@ -6,6 +6,7 @@ import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 import { WishlistButton } from "@/components/product/WishlistButton";
 import { CompareCheckbox } from "@/components/product/CompareCheckbox";
 import { TiltedCard } from "@/components/ui/TiltedCard";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import type { Product } from "@/lib/types";
 import {
   getFormLabel,
@@ -27,7 +28,7 @@ export function ProductCard({
   const displayName = getProductDisplayName(product, locale);
   return (
     <TiltedCard intensity={5} className="h-full">
-    <div className="h-full overflow-hidden rounded-lg border border-border bg-white transition-shadow hover:shadow-md">
+    <SpotlightCard radius={220} opacity={0.22} className="h-full overflow-hidden rounded-lg border border-border bg-white transition-shadow hover:shadow-md hover:border-navy/20">
       <Link href={`/products/${product.slug}`} className="product-card-cursor block">
         <div
           className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg bg-surface"
@@ -84,7 +85,7 @@ export function ProductCard({
         </span>
         <AddToCartButton product={product} />
       </div>
-    </div>
+    </SpotlightCard>
     </TiltedCard>
   );
 }

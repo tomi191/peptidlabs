@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
+import { PillNav } from "@/components/ui/PillNav";
 
 const FILTERS_BG = [
   { key: "all", label: "Всички" },
@@ -39,36 +40,28 @@ export function BestsellerTabs({
       return productCategories[i]?.includes(active) ?? false;
     });
 
+  // Pre-compute counts and drop empty filters once (skip re-render in PillNav).
+  const pillItems = filters
+    .map((f) => {
+      const count =
+        f.key === "all"
+          ? productCards.length
+          : productCategories.filter((cats) => cats.includes(f.key)).length;
+      return { ...f, count };
+    })
+    .filter((f) => f.key === "all" || f.count > 0)
+    .map((f) => ({ key: f.key, label: f.label, badge: f.count }));
+
   return (
     <div>
-      {/* Filter pills */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        {filters.map((f) => {
-          // Hide a filter if no products match it (instead of fallback-showing all)
-          const count =
-            f.key === "all"
-              ? productCards.length
-              : productCategories.filter((cats) => cats.includes(f.key)).length;
-          if (f.key !== "all" && count === 0) return null;
-
-          return (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => setActive(f.key)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                active === f.key
-                  ? "bg-navy text-white"
-                  : "bg-surface text-secondary hover:bg-border"
-              }`}
-            >
-              {f.label}
-              <span className="ml-1.5 text-[10px] font-mono opacity-60">
-                {count}
-              </span>
-            </button>
-          );
-        })}
+      {/* Filter pills — react-bits PillNav with morphing active background */}
+      <div className="mb-6">
+        <PillNav
+          items={pillItems}
+          active={active}
+          onChange={setActive}
+          layoutId="bestsellers-filter"
+        />
       </div>
 
       {/* Product grid */}
