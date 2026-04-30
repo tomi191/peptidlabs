@@ -197,28 +197,46 @@ async function main() {
 
     console.log(`[${done + failed + 1}/${target.length}] ${product.slug} (${masterKey})`);
 
-    try {
-      const t0 = Date.now();
-      const taskId = await kieCreate(masterUrl, prompt);
-      const urls = await kiePoll(taskId);
-      const buffer = await downloadBuffer(urls[0]);
-      const publicUrl = await uploadToStorage(product.slug, buffer);
-      const { error: updateErr } = await supabase
-        .from("products")
-        .update({ images: [publicUrl] })
-        .eq("slug", product.slug);
-      if (updateErr) throw new Error(`db update: ${updateErr.message}`);
+    const MAX_ATTEMPTS = 4;
+    let attempt = 0;
+    let lastError = null;
+    while (attempt < MAX_ATTEMPTS) {
+      attempt++;
+      try {
+        const t0 = Date.now();
+        const taskId = await kieCreate(masterUrl, prompt);
+        const urls = await kiePoll(taskId);
+        const buffer = await downloadBuffer(urls[0]);
+        const publicUrl = await uploadToStorage(product.slug, buffer);
+        const { error: updateErr } = await supabase
+          .from("products")
+          .update({ images: [publicUrl] })
+          .eq("slug", product.slug);
+        if (updateErr) throw new Error(`db update: ${updateErr.message}`);
 
-      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
-      console.log(`  ✓ ${publicUrl} (${elapsed}s)\n`);
-      done++;
-    } catch (err) {
-      console.error(`  ✗ ${err.message}\n`);
-      failed++;
+        const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+        const attemptTag = attempt > 1 ? ` (attempt ${attempt})` : "";
+        console.log(`  ✓ ${publicUrl} (${elapsed}s)${attemptTag}\n`);
+        done++;
+        lastError = null;
+        break;
+      } catch (err) {
+        lastError = err;
+        const isRetryable = /Internal Error|timed out|503|502|504|ECONN/i.test(
+          err.message
+        );
+        if (!isRetryable || attempt === MAX_ATTEMPTS) {
+          console.error(`  ✗ ${err.message} (attempt ${attempt}/${MAX_ATTEMPTS})\n`);
+          failed++;
+          break;
+        }
+        const backoff = Math.min(15000 * attempt, 60000);
+        console.log(`  … retrying in ${backoff / 1000}s (attempt ${attempt} failed: ${err.message})`);
+        await new Promise((r) => setTimeout(r, backoff));
+      }
     }
 
-    // Rate-limit safety: KIE allows 20 req/10s. We do 1 req per ~70s, so this
-    // is just a polite throttle to avoid bursts when polling overlaps.
+    // Polite throttle between products
     await new Promise((r) => setTimeout(r, 2000));
   }
 
