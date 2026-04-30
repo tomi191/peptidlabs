@@ -130,7 +130,7 @@ export default async function ProductPage({ params }: PageProps) {
     name: product.name,
     description,
     sku: product.sku,
-    image: product.images?.[0] || `https://peptidlabs.eu/placeholder-vial.svg`,
+    image: product.images?.[0] || `https://rthawomwdjdthdiorgvb.supabase.co/storage/v1/object/public/product-images/masters/powder.png`,
     brand: {
       "@type": "Brand",
       name: "PeptidLabs",
