@@ -17,6 +17,12 @@ type MagicLinkProps = {
   locale: string;
 };
 
+type WaitlistConfirmationProps = {
+  email: string;
+  locale: string;
+  interestedPeptides?: string[];
+};
+
 const BRAND = {
   name: "PeptidLabs",
   url: "https://peptidlabs.eu",
@@ -92,6 +98,43 @@ function getCopy(locale: string) {
     magicLinkDidntRequest: bg
       ? "Ако не сте поискали този имейл, просто го игнорирайте — без този линк никой не може да влезе в акаунта Ви."
       : "If you didn't request this email, simply ignore it — no one can access your account without the link.",
+
+    // Waitlist confirmation
+    waitlistSubject: bg
+      ? "Записан си в списъка на PeptidLabs"
+      : "You are on the PeptidLabs waitlist",
+    waitlistHeading: bg
+      ? "Добре дошъл в списъка"
+      : "Welcome to the list",
+    waitlistIntro: bg
+      ? "Записването ти е успешно. Ще те уведомим по имейл в момента, в който каталогът отвори за поръчки. Без спам, без излишни писма."
+      : "You are signed up. We will notify you by email the moment the catalog opens for orders. No spam, no unnecessary emails.",
+    waitlistInterested: bg
+      ? "Заявени продукти"
+      : "Products you're interested in",
+    waitlistWhatNext: bg ? "Какво следва" : "What happens next",
+    waitlistWhatNextItems: bg
+      ? [
+          "Подготвяме логистиката и митническата документация за официалното пускане.",
+          "Записаните в списъка получават имейл с 48-часов ранен достъп преди публичното отваряне.",
+          "Първите 100 души от списъка получават специална стартова отстъпка.",
+        ]
+      : [
+          "We are finalizing logistics and customs paperwork for official launch.",
+          "Waitlist members get an email with 48-hour early access before public opening.",
+          "The first 100 people on the list receive a special launch discount.",
+        ],
+    waitlistBrowse: bg ? "Разгледай каталога" : "Browse the catalog",
+    waitlistBrowseDesc: bg
+      ? "Каталогът от 66+ пептида с пълна научна документация и Сертификат за анализ е публично достъпен."
+      : "The catalog of 66+ peptides with full scientific documentation and Certificate of Analysis is publicly available.",
+    waitlistEducation: bg ? "Какво са пептидите?" : "What are peptides?",
+    waitlistEducationDesc: bg
+      ? "Подробно ръководство на човешки език: какво представляват, как работят, история и видове."
+      : "Detailed guide in plain language: what they are, how they work, history and types.",
+    waitlistUnsubscribe: bg
+      ? "Не искаш да получиш този имейл? Просто отговори с \"unsubscribe\" и веднага те премахваме."
+      : "Don't want to receive this email? Just reply with \"unsubscribe\" and we'll remove you immediately.",
   };
 }
 
@@ -345,6 +388,103 @@ export function renderMagicLink({
 
   return {
     subject: copy.magicLinkSubject,
+    html: layout(content, copy),
+    text,
+  };
+}
+
+export function renderWaitlistConfirmation({
+  email,
+  locale,
+  interestedPeptides = [],
+}: WaitlistConfirmationProps): { subject: string; html: string; text: string } {
+  const copy = getCopy(locale);
+  const baseUrl = "https://peptidlabs.eu";
+
+  const interestedBlock =
+    interestedPeptides.length > 0
+      ? `
+    <div style="margin:24px 0;padding:14px 16px;background:${BRAND.surface};border-radius:8px;border-left:3px solid ${BRAND.teal};">
+      <p style="margin:0 0 8px 0;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:${BRAND.muted};font-weight:600;">
+        ${copy.waitlistInterested}
+      </p>
+      <p style="margin:0;font-family:ui-monospace,monospace;font-size:13px;color:${BRAND.navy};">
+        ${interestedPeptides.join(", ")}
+      </p>
+    </div>`
+      : "";
+
+  const content = `
+    <h1 style="margin:0 0 8px 0;font-size:22px;color:${BRAND.navy};font-weight:700;">${copy.waitlistHeading}</h1>
+    <p style="margin:0 0 16px 0;font-family:ui-monospace,monospace;font-size:13px;color:${BRAND.muted};">${email}</p>
+
+    <p style="margin:20px 0;font-size:14px;line-height:1.6;color:${BRAND.navy};">
+      ${copy.waitlistIntro}
+    </p>
+
+    ${interestedBlock}
+
+    <h2 style="margin:32px 0 12px 0;font-size:15px;color:${BRAND.navy};font-weight:700;">${copy.waitlistWhatNext}</h2>
+    <ol style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:${BRAND.navy};">
+      ${copy.waitlistWhatNextItems.map((item) => `<li style="margin-bottom:6px;">${item}</li>`).join("")}
+    </ol>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0 0;border-top:1px solid ${BRAND.border};">
+      <tr>
+        <td style="padding:20px 0 0 0;">
+          <p style="margin:0 0 4px 0;font-size:14px;font-weight:600;color:${BRAND.navy};">
+            ${copy.waitlistBrowse}
+          </p>
+          <p style="margin:0 0 8px 0;font-size:13px;line-height:1.5;color:${BRAND.muted};">
+            ${copy.waitlistBrowseDesc}
+          </p>
+          <a href="${baseUrl}/${locale}/shop" style="font-size:13px;color:${BRAND.teal};text-decoration:none;font-weight:600;">
+            ${baseUrl}/${locale}/shop →
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:18px 0 0 0;">
+          <p style="margin:0 0 4px 0;font-size:14px;font-weight:600;color:${BRAND.navy};">
+            ${copy.waitlistEducation}
+          </p>
+          <p style="margin:0 0 8px 0;font-size:13px;line-height:1.5;color:${BRAND.muted};">
+            ${copy.waitlistEducationDesc}
+          </p>
+          <a href="${baseUrl}/${locale}/what-are-peptides" style="font-size:13px;color:${BRAND.teal};text-decoration:none;font-weight:600;">
+            ${baseUrl}/${locale}/what-are-peptides →
+          </a>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:32px 0 0 0;font-size:12px;line-height:1.6;color:${BRAND.muted};font-style:italic;">
+      ${copy.waitlistUnsubscribe}
+    </p>
+  `;
+
+  const text = [
+    copy.waitlistHeading,
+    email,
+    "",
+    copy.waitlistIntro,
+    "",
+    interestedPeptides.length > 0
+      ? `${copy.waitlistInterested}: ${interestedPeptides.join(", ")}`
+      : "",
+    copy.waitlistWhatNext + ":",
+    ...copy.waitlistWhatNextItems.map((item, i) => `  ${i + 1}. ${item}`),
+    "",
+    `${copy.waitlistBrowse}: ${baseUrl}/${locale}/shop`,
+    `${copy.waitlistEducation}: ${baseUrl}/${locale}/what-are-peptides`,
+    "",
+    copy.waitlistUnsubscribe,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return {
+    subject: copy.waitlistSubject,
     html: layout(content, copy),
     text,
   };

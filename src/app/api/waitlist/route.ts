@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { getClientKey, rateLimit } from "@/lib/rate-limit";
+import { sendWaitlistConfirmation } from "@/lib/email/send";
 import { createHash, randomBytes } from "node:crypto";
 
 const WaitlistSchema = z.object({
@@ -51,6 +52,11 @@ export async function POST(req: NextRequest) {
     console.error("[waitlist] insert failed:", error);
     return fail("Записът се провали. Моля, опитайте отново.", 500, "DB_ERROR");
   }
+
+  // Fire-and-forget confirmation email — don't block the response if Resend fails
+  sendWaitlistConfirmation(email.toLowerCase().trim(), locale, interestedPeptides).catch(
+    (err) => console.error("[waitlist] confirmation email exception:", err)
+  );
 
   return ok({ subscribed: true });
 }

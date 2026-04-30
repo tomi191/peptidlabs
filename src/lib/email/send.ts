@@ -3,6 +3,7 @@ import {
   renderOrderConfirmation,
   renderShippingUpdate,
   renderMagicLink,
+  renderWaitlistConfirmation,
 } from "./templates";
 import type { Order, OrderItem } from "@/lib/types";
 
@@ -70,6 +71,41 @@ export async function sendMagicLink(
     return { sent: true };
   } catch (err) {
     console.error("[email] magic link exception:", err);
+    return { sent: false, reason: "EXCEPTION" };
+  }
+}
+
+export async function sendWaitlistConfirmation(
+  email: string,
+  locale: string,
+  interestedPeptides: string[] = []
+): Promise<SendResult> {
+  const client = getResendClient();
+  if (!client) return { sent: false, reason: "RESEND_NOT_CONFIGURED" };
+  if (!email) return { sent: false, reason: "NO_RECIPIENT" };
+
+  const { subject, html, text } = renderWaitlistConfirmation({
+    email,
+    locale,
+    interestedPeptides,
+  });
+
+  try {
+    const { error } = await client.emails.send({
+      from: EMAIL_FROM,
+      to: [email],
+      replyTo: EMAIL_REPLY_TO,
+      subject,
+      html,
+      text,
+    });
+    if (error) {
+      console.error("[email] waitlist confirmation failed:", error);
+      return { sent: false, reason: "SEND_FAILED" };
+    }
+    return { sent: true };
+  } catch (err) {
+    console.error("[email] waitlist confirmation exception:", err);
     return { sent: false, reason: "EXCEPTION" };
   }
 }
