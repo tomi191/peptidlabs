@@ -207,6 +207,12 @@ p { text-wrap: pretty; }
   }
 }
 
+/* ── Shimmering text highlight (react-bits ShinyText) ── */
+@keyframes pl-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
 /* ── Liquid-feel animations (Stripe-style organic motion) ── */
 @keyframes peptide-wave {
   0%   { transform: translateX(0); }
