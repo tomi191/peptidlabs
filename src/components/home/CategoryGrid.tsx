@@ -11,7 +11,7 @@ import {
   Shield,
   Layers,
   Package,
-  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -47,12 +47,12 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    transition: { staggerChildren: 0.06, delayChildren: 0.1 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, scale: 0.98 },
+  hidden: { opacity: 0, scale: 0.97 },
   visible: {
     opacity: 1,
     scale: 1,
@@ -90,9 +90,9 @@ export function CategoryGrid({
           </p>
         </motion.div>
 
-        {/* Horizontal scroll on mobile, grid on desktop */}
+        {/* Horizontal scroll on mobile, 5-col grid on desktop */}
         <motion.div
-          className="mt-8 flex gap-4 overflow-x-auto pb-4 scroll-hidden snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0"
+          className="mt-10 flex gap-4 overflow-x-auto pb-4 scroll-hidden snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -111,54 +111,65 @@ export function CategoryGrid({
               <MotionLink
                 key={category.id}
                 variants={itemVariants}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -6 }}
                 whileTap={{ scale: 0.98 }}
                 href={`/shop/${category.slug}`}
-                className="group relative shrink-0 snap-center flex flex-col overflow-hidden rounded-2xl border border-border bg-white transition-all hover:border-navy/30 hover:shadow-[0_12px_32px_-12px_rgba(15,23,42,0.18)] w-52 lg:w-auto"
+                className="group relative shrink-0 snap-center w-44 lg:w-auto"
               >
-                {/* Hero image */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
+                {/* Full-bleed 9:16 card */}
+                <div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-navy/90 shadow-[0_8px_24px_-8px_rgba(15,23,42,0.25)] transition-shadow duration-500 group-hover:shadow-[0_24px_48px_-16px_rgba(15,23,42,0.45)]">
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
                       alt={name}
                       fill
                       sizes="(max-width: 1024px) 50vw, 20vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface to-accent-tint/40">
                       <Icon
-                        size={32}
+                        size={40}
                         className="text-secondary/60"
                         strokeWidth={1.25}
                       />
                     </div>
                   )}
-                  {/* Subtle gradient overlay for icon legibility */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-                  {/* Floating icon badge in corner */}
-                  <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-colors group-hover:bg-accent-tint">
+
+                  {/* Bottom-up gradient for legibility */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+
+                  {/* Floating glassmorphic icon (top-right) */}
+                  <div className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-all duration-300 group-hover:bg-accent group-hover:ring-accent/50">
                     <Icon
-                      size={14}
-                      className="text-navy transition-colors group-hover:text-accent"
+                      size={15}
+                      className="text-white transition-transform duration-300 group-hover:scale-110"
                       strokeWidth={1.75}
                     />
                   </div>
-                </div>
 
-                {/* Card body */}
-                <div className="flex flex-1 flex-col px-4 pt-3 pb-4">
-                  <p className="text-sm font-semibold text-navy">{name}</p>
-                  {count > 0 && (
-                    <p className="mt-1 font-mono text-[10px] text-muted">
-                      {count} {locale === "bg" ? "продукта" : "products"}
-                    </p>
-                  )}
-                  <span className="mt-2 flex items-center gap-1 text-[11px] font-medium text-accent opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100">
-                    {locale === "bg" ? "Виж" : "View"}
-                    <ArrowRight size={11} />
-                  </span>
+                  {/* Overlay text bottom */}
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold leading-tight tracking-tight">
+                          {name}
+                        </p>
+                        {count > 0 && (
+                          <p className="mt-0.5 font-mono text-[10px] text-white/70">
+                            {count} {locale === "bg" ? "продукта" : "products"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-all duration-300 group-hover:bg-white group-hover:ring-white">
+                        <ArrowUpRight
+                          size={14}
+                          className="text-white transition-colors duration-300 group-hover:text-navy"
+                          strokeWidth={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </MotionLink>
             );

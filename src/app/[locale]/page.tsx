@@ -89,11 +89,11 @@ function CategoryGridSkeleton() {
     <section className="w-full px-6 py-16">
       <div className="mx-auto max-w-[1280px]">
         <div className="mx-auto h-8 w-56 animate-pulse rounded bg-surface" />
-        <div className="mt-8 flex gap-4 overflow-x-auto pb-4 lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
+        <div className="mt-10 flex gap-4 overflow-x-auto pb-4 lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-60 w-52 shrink-0 animate-pulse rounded-2xl bg-surface lg:w-auto"
+              className="aspect-[9/16] w-44 shrink-0 animate-pulse rounded-2xl bg-surface lg:w-auto"
             />
           ))}
         </div>

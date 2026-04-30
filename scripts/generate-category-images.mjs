@@ -62,9 +62,10 @@ const force = args.includes("--force");
 // ---------- Common style preamble (kept short — KIE succeeds more often) ----------
 const STYLE = [
   "Premium editorial fitness and wellness photography, 2026 magazine quality.",
+  "Vertical 9:16 full-body or three-quarter portrait composition, subject centered.",
   "Real athletic person, professional model, fit body, healthy skin.",
   "Modern bright gym, clinic, or studio interior, soft cool natural light, cinematic depth.",
-  "Sharp focus on subject, slightly blurred background.",
+  "Sharp focus on subject, slightly blurred background, dark or muted background bottom for text overlay.",
   "No text, no logos, no watermarks.",
   "Confident wellness aesthetic — looks like a Nike, Lululemon, or premium peptide brand campaign.",
 ].join(" ");
@@ -125,7 +126,7 @@ async function kieCreate(prompt) {
       model: "gpt-image-2-text-to-image",
       input: {
         prompt,
-        aspect_ratio: "4:3",
+        aspect_ratio: "9:16",
         resolution: "1K",
       },
     }),
