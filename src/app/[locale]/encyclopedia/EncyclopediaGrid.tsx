@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowUpRight } from "lucide-react";
+import { PeptideVisual } from "@/components/ui/PeptideVisual";
+import { TiltedCard } from "@/components/ui/TiltedCard";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
 
 interface Peptide {
   id: string;
@@ -50,7 +53,7 @@ export function EncyclopediaGrid({ peptides }: { peptides: Peptide[] }) {
         />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((peptide) => {
           const fullName =
             locale === "bg"
@@ -62,32 +65,50 @@ export function EncyclopediaGrid({ peptides }: { peptides: Peptide[] }) {
               : peptide.summary_en || peptide.summary_bg;
 
           return (
-            <Link
-              key={peptide.id}
-              href={`/${locale}/encyclopedia/${peptide.slug}`}
-              className="border border-border rounded-2xl p-5 hover:shadow-md transition-shadow group flex flex-col"
-            >
-              <p className="font-mono text-sm font-bold text-navy group-hover:text-teal-600 transition-colors">
-                {peptide.name}
-              </p>
-              {fullName && (
-                <p className="text-xs text-muted mt-1">{fullName}</p>
-              )}
-              {summary && (
-                <p className="text-sm text-secondary mt-3 leading-relaxed line-clamp-2 flex-1">
-                  {summary}
-                </p>
-              )}
-              {peptide.formula && (
-                <p className="font-mono text-xs text-muted mt-3">
-                  {peptide.formula}
-                </p>
-              )}
-              <span className="mt-3 text-xs font-medium text-teal-600 flex items-center gap-1 group-hover:gap-2 transition-all">
-                {t("readMore")}
-                <ArrowRight size={12} />
-              </span>
-            </Link>
+            <TiltedCard key={peptide.id} intensity={4} className="h-full">
+              <SpotlightCard
+                radius={200}
+                opacity={0.18}
+                className="h-full rounded-2xl"
+              >
+                <Link
+                  href={`/${locale}/encyclopedia/${peptide.slug}`}
+                  className="group flex h-full gap-4 rounded-2xl border border-border bg-white p-4 transition-colors hover:border-teal-300/60"
+                >
+                  {/* Deterministic molecular visualization */}
+                  <PeptideVisual slug={peptide.slug} label={peptide.name} size={88} />
+
+                  {/* Content */}
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <p className="font-mono text-sm font-bold text-navy transition-colors group-hover:text-teal-700">
+                      {peptide.name}
+                    </p>
+                    {fullName && (
+                      <p className="mt-0.5 line-clamp-1 text-[11px] text-muted">
+                        {fullName}
+                      </p>
+                    )}
+                    {summary && (
+                      <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-secondary">
+                        {summary}
+                      </p>
+                    )}
+                    <div className="mt-auto flex items-center justify-between pt-2">
+                      {peptide.formula ? (
+                        <p className="font-mono text-[10px] text-muted truncate">
+                          {peptide.formula}
+                        </p>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-navy transition-colors group-hover:bg-navy group-hover:text-white">
+                        <ArrowUpRight size={12} strokeWidth={2} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </SpotlightCard>
+            </TiltedCard>
           );
         })}
       </div>
