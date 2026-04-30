@@ -422,7 +422,7 @@
   "encyclopedia": {
     "title": "Peptide Encyclopedia",
     "subtitle": "Scientific reference for peptide mechanisms of action, molecular data, and peer-reviewed publications.",
-    "heroDetail": "25+ peptides with detailed scientific information, mechanisms of action, and PubMed references. A free resource for researchers.",
+    "heroDetail": "{count}+ peptides with detailed scientific information, mechanisms of action, and PubMed references. A free resource for researchers.",
     "searchPlaceholder": "Search peptide by name...",
     "readMore": "Read more",
     "noResults": "No peptides found for this search.",

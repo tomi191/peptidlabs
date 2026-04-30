@@ -80,7 +80,7 @@ export default async function EncyclopediaPage({
       {/* Detail paragraph */}
       <div className="mx-auto max-w-[1280px] px-6 pb-6 -mt-4">
         <p className="max-w-3xl text-sm text-muted leading-relaxed">
-          {t("heroDetail")}
+          {t("heroDetail", { count: peptides.length })}
         </p>
       </div>
 
