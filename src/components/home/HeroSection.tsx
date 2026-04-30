@@ -310,21 +310,21 @@ export function HeroSection({ peptideTotal = 65 }: { peptideTotal?: number }) {
                   {isBg ? "Каталог" : "Catalog"}
                 </span>
 
-                <div className="mt-6 grid grid-cols-3 gap-4">
+                <div className="mt-6 grid grid-cols-3 gap-3">
                   <motion.div variants={item} className="text-center">
-                    <p className="font-mono text-2xl md:text-3xl font-bold text-navy tabular">
+                    <p className="font-mono text-xl md:text-2xl font-bold text-navy tabular whitespace-nowrap">
                       <NumberFlow value={peptideCount} />
-                      <span className="text-lg">+</span>
+                      <span className="text-base">+</span>
                     </p>
                     <p className="mt-1.5 text-[10px] uppercase tracking-widest text-muted">
                       {t("statPeptidesLabel")}
                     </p>
                   </motion.div>
                   <motion.div variants={item} className="text-center">
-                    <p className="font-mono text-2xl md:text-3xl font-bold text-navy tabular">
-                      {isBg ? "над " : "over "}
+                    <p className="font-mono text-xl md:text-2xl font-bold text-navy tabular whitespace-nowrap">
+                      <span className="text-sm font-medium text-secondary">{isBg ? "над " : "over "}</span>
                       <NumberFlow value={purity} />
-                      <span className="text-lg">%</span>
+                      <span className="text-base">%</span>
                     </p>
                     <p className="mt-1.5 text-[10px] uppercase tracking-widest text-muted">
                       <TextWithAbbr
