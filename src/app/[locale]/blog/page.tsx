@@ -63,7 +63,6 @@ export default async function BlogPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[BLOG/01] ЗНАНИЕ" : "[BLOG/01] KNOWLEDGE"}
         title={t("title")}
         subtitle={t("subtitle")}
         locale={locale}
@@ -95,11 +94,7 @@ export default async function BlogPage({
           </div>
         ) : (
           <div className="grid gap-10 lg:grid-cols-[1fr_280px] lg:items-start">
-            {/* Articles grid */}
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-                {isBg ? "[BLOG/02] СТАТИИ" : "[BLOG/02] ARTICLES"}
-              </p>
               <div className="grid gap-5 sm:grid-cols-2">
                 {posts.map((post) => {
                   const title =

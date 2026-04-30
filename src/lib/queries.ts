@@ -40,6 +40,16 @@ export async function getPublishedProducts(): Promise<Product[]> {
   return (data as Product[]) ?? [];
 }
 
+export async function getPublishedPeptideCount(): Promise<number> {
+  const supabase = await createServerSupabase();
+  const { count } = await supabase
+    .from("products")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "published")
+    .neq("form", "accessory");
+  return count ?? 0;
+}
+
 export async function getProductBySlug(
   slug: string
 ): Promise<Product | null> {
@@ -357,6 +367,41 @@ export async function getProductReviews(productId: string): Promise<{
     reviews,
     aggregate: { average, count, distribution },
   };
+}
+
+/** Returns a map { productId -> [category_slug, ...] } for the given products.
+ *  Used by client-side filters (Bestsellers tabs etc.) so they can match
+ *  against actual category slugs instead of localized use_case_tag strings. */
+export async function getCategorySlugsForProducts(
+  productIds: string[],
+): Promise<Record<string, string[]>> {
+  if (productIds.length === 0) return {};
+  const supabase = await createServerSupabase();
+  const { data: links } = await supabase
+    .from("product_categories")
+    .select("product_id, category_id")
+    .in("product_id", productIds);
+
+  if (!links || links.length === 0) return {};
+
+  const categoryIds = [...new Set(links.map((l) => l.category_id))];
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, slug")
+    .in("id", categoryIds);
+
+  const slugById = new Map(
+    (categories ?? []).map((c) => [c.id as string, c.slug as string]),
+  );
+
+  const result: Record<string, string[]> = {};
+  for (const link of links) {
+    const slug = slugById.get(link.category_id as string);
+    if (!slug) continue;
+    if (!result[link.product_id]) result[link.product_id] = [];
+    result[link.product_id].push(slug);
+  }
+  return result;
 }
 
 export async function getProductCategory(

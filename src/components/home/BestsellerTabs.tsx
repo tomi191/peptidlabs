@@ -7,7 +7,7 @@ const FILTERS_BG = [
   { key: "all", label: "Всички" },
   { key: "weight-loss", label: "За отслабване" },
   { key: "healing", label: "За възстановяване" },
-  { key: "gh-muscle", label: "За GH" },
+  { key: "gh-muscle", label: "За растежен хормон" },
 ] as const;
 
 const FILTERS_EN = [
@@ -19,57 +19,74 @@ const FILTERS_EN = [
 
 export function BestsellerTabs({
   productCards,
-  productTags,
+  productCategories,
   locale,
 }: {
   productCards: ReactNode[];
-  productTags: (string | null)[];
+  /** Array of category slug arrays — one per product (matches productCards index). */
+  productCategories: string[][];
   locale: string;
 }) {
   const [active, setActive] = useState("all");
   const filters = locale === "bg" ? FILTERS_BG : FILTERS_EN;
 
-  // Determine which indices to show based on the active filter
+  // Determine which indices to show based on the active filter.
+  // Match against actual category slugs (e.g. "weight-loss") instead of localized tag strings.
   const visibleIndices = productCards
     .map((_, i) => i)
     .filter((i) => {
       if (active === "all") return true;
-      const tag = productTags[i];
-      if (!tag) return false;
-      return tag.toLowerCase().includes(active);
+      return productCategories[i]?.includes(active) ?? false;
     });
 
   return (
     <div>
       {/* Filter pills */}
       <div className="mb-6 flex flex-wrap gap-2">
-        {filters.map((f) => (
-          <button
-            key={f.key}
-            type="button"
-            onClick={() => setActive(f.key)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              active === f.key
-                ? "bg-navy text-white"
-                : "bg-surface text-secondary hover:bg-border"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+        {filters.map((f) => {
+          // Hide a filter if no products match it (instead of fallback-showing all)
+          const count =
+            f.key === "all"
+              ? productCards.length
+              : productCategories.filter((cats) => cats.includes(f.key)).length;
+          if (f.key !== "all" && count === 0) return null;
+
+          return (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setActive(f.key)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                active === f.key
+                  ? "bg-navy text-white"
+                  : "bg-surface text-secondary hover:bg-border"
+              }`}
+            >
+              {f.label}
+              <span className="ml-1.5 text-[10px] font-mono opacity-60">
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Product grid */}
-      <MotionProductGrid>
-        {visibleIndices.length > 0
-          ? visibleIndices.map((i) => (
-              <MotionProductItem key={i}>{productCards[i]}</MotionProductItem>
-            ))
-          : // Fallback: show all when filter matches nothing
-            productCards.map((card, i) => (
-              <MotionProductItem key={i}>{card}</MotionProductItem>
-            ))}
-      </MotionProductGrid>
+      {visibleIndices.length > 0 ? (
+        <MotionProductGrid>
+          {visibleIndices.map((i) => (
+            <MotionProductItem key={i}>{productCards[i]}</MotionProductItem>
+          ))}
+        </MotionProductGrid>
+      ) : (
+        <div className="rounded-xl border border-dashed border-border bg-surface/50 p-8 text-center">
+          <p className="text-sm text-secondary">
+            {locale === "bg"
+              ? "Няма продукти в тази категория сред бестселърите."
+              : "No products in this category among the bestsellers."}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

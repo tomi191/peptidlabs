@@ -33,12 +33,8 @@ export default function OrderLookupPage() {
         </nav>
 
         <div className="grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start">
-          {/* Left — lookup form */}
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {isBg ? "[ORDERS/01] ПРОСЛЕДЯВАНЕ" : "[ORDERS/01] TRACKING"}
-            </p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
               {t("trackTitle")}
             </h1>
             <p className="mt-4 text-secondary leading-relaxed max-w-xl">

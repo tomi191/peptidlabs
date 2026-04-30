@@ -43,7 +43,6 @@ export default async function DeliveryPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[DELIVERY/01] ДОСТАВКА" : "[DELIVERY/01] SHIPPING"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -62,12 +61,8 @@ export default async function DeliveryPage({
         }
       />
 
-      {/* Delivery Zones — 2 styled cards + map placeholder */}
       <section className="mx-auto max-w-[1280px] px-6 pb-14">
         <FadeIn>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[DELIVERY/02] ЗОНИ" : "[DELIVERY/02] ZONES"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("shippingTitle")}
           </h2>
@@ -144,13 +139,9 @@ export default async function DeliveryPage({
         </FadeIn>
       </section>
 
-      {/* Packaging — 3 icon cards */}
       <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-14">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[DELIVERY/03] ОПАКОВКА" : "[DELIVERY/03] PACKAGING"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("packagingSectionTitle")}
             </h2>
@@ -187,12 +178,8 @@ export default async function DeliveryPage({
         </div>
       </section>
 
-      {/* Process */}
       <section className="mx-auto max-w-[1280px] px-6 py-14">
         <FadeIn>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[DELIVERY/04] ПРОЦЕС" : "[DELIVERY/04] PROCESS"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
             {t("processTitle")}
           </h2>
@@ -202,13 +189,9 @@ export default async function DeliveryPage({
         </FadeIn>
       </section>
 
-      {/* Payment */}
       <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-14">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[DELIVERY/05] ПЛАЩАНЕ" : "[DELIVERY/05] PAYMENT"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("paymentTitle")}
             </h2>
@@ -236,12 +219,8 @@ export default async function DeliveryPage({
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="mx-auto max-w-[1280px] px-6 py-14">
         <FadeIn>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[DELIVERY/06] ЧЗВ" : "[DELIVERY/06] FAQ"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("faqTitle")}
           </h2>

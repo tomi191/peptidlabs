@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, ExternalLink } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 
 type TabId = "overview" | "science" | "coa";
 
@@ -93,23 +94,47 @@ function OverviewTab({
   const description =
     locale === "bg" ? product.description_bg : product.description_en;
 
-  const researchApps = product.scientific_data?.research_applications as
-    | string[]
-    | undefined;
+  const sci = product.scientific_data as Record<string, unknown> | null;
+  const plainTldr =
+    locale === "bg"
+      ? (sci?.plain_tldr_bg as string | undefined)
+      : (sci?.plain_tldr_en as string | undefined);
+
+  const researchApps = sci?.research_applications as string[] | undefined;
 
   return (
     <div className="space-y-6">
+      {/* Plain-language TL;DR — for users without scientific background */}
+      {plainTldr && (
+        <div className="rounded-2xl border border-accent-border bg-gradient-to-br from-accent-tint via-white to-white p-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
+            {locale === "bg" ? "На обикновен език" : "In plain language"}
+          </p>
+          <p className="mt-2 text-base leading-relaxed text-navy">
+            {plainTldr}
+          </p>
+        </div>
+      )}
+
       {summary && (
         <div className="rounded-xl bg-surface p-5">
           <h3 className="text-sm font-semibold text-navy mb-2">
-            {locale === "bg" ? "Накратко" : "At a Glance"}
+            {locale === "bg" ? "Кратко научно резюме" : "Scientific summary"}
           </h3>
-          <p className="text-base leading-relaxed text-secondary">{summary}</p>
+          <p className="text-base leading-relaxed text-secondary">
+            <TextWithAbbr text={summary} locale={locale} />
+          </p>
         </div>
       )}
 
       {description && (
-        <p className="text-sm leading-relaxed text-secondary">{description}</p>
+        <div className="space-y-4 text-sm leading-relaxed text-secondary">
+          {description.split(/\n\n+/).map((para, i) => (
+            <p key={i}>
+              <TextWithAbbr text={para} locale={locale} />
+            </p>
+          ))}
+        </div>
       )}
 
       {researchApps && researchApps.length > 0 && (

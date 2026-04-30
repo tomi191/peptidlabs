@@ -116,7 +116,6 @@ export default async function FaqPage({
       />
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[FAQ/01] ПОМОЩ" : "[FAQ/01] HELP"}
         title={t("title")}
         subtitle={
           isBg

@@ -156,7 +156,7 @@ export default function SearchModal({
                             : ""}
                           {product.vial_size_mg && product.form ? " · " : ""}
                           {getFormLabel(product.form as Product["form"], locale)}
-                          {` · ≥${product.purity_percent}%`}
+                          {` · ${product.purity_percent}% HPLC`}
                         </p>
                       </div>
                     </div>

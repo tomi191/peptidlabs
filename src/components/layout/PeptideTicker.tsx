@@ -5,15 +5,15 @@ import { motion } from "motion/react";
 type Ticker = { name: string; purity: string; status: "ok" | "new" };
 
 const tickers: Ticker[] = [
-  { name: "BPC-157", purity: "≥99%", status: "ok" },
-  { name: "TB-500", purity: "≥99%", status: "ok" },
-  { name: "Semaglutide", purity: "≥98%", status: "new" },
-  { name: "Ipamorelin", purity: "≥99%", status: "ok" },
-  { name: "Selank", purity: "≥99%", status: "ok" },
-  { name: "GHK-Cu", purity: "≥98%", status: "ok" },
-  { name: "Epitalon", purity: "≥99%", status: "ok" },
-  { name: "PT-141", purity: "≥99%", status: "ok" },
-  { name: "Melanotan 2", purity: "≥99%", status: "ok" },
+  { name: "BPC-157", purity: "над 99%", status: "ok" },
+  { name: "TB-500", purity: "над 99%", status: "ok" },
+  { name: "Semaglutide", purity: "над 98%", status: "new" },
+  { name: "Ipamorelin", purity: "над 99%", status: "ok" },
+  { name: "Selank", purity: "над 99%", status: "ok" },
+  { name: "GHK-Cu", purity: "над 98%", status: "ok" },
+  { name: "Epitalon", purity: "над 99%", status: "ok" },
+  { name: "PT-141", purity: "над 99%", status: "ok" },
+  { name: "Melanotan 2", purity: "над 99%", status: "ok" },
 ];
 
 function Item({ t }: { t: Ticker }) {

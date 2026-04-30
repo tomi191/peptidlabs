@@ -41,7 +41,6 @@ export default async function EncyclopediaPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[ENCY/01] НАУЧНА БАЗА" : "[ENCY/01] KNOWLEDGE BASE"}
         title={t("title")}
         subtitle={t("subtitle")}
         locale={locale}
@@ -64,23 +63,15 @@ export default async function EncyclopediaPage({
         </p>
       </div>
 
-      {/* ─── [ENCY/02] CATALOG ─── */}
       <section className="mx-auto max-w-[1280px] px-6 py-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-          {isBg ? "[ENCY/02] КАТАЛОГ" : "[ENCY/02] CATALOG"}
-        </p>
         <FadeIn>
           <EncyclopediaGrid peptides={peptides} />
         </FadeIn>
       </section>
 
-      {/* ─── [ENCY/03] INTRO ─── */}
       <section className="bg-surface border-y border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[ENCY/03] ВЪВЕДЕНИЕ" : "[ENCY/03] INTRO"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
               {t("whatIsTitle")}
             </h2>

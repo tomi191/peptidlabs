@@ -5,24 +5,16 @@ type Crumb = { label: string; href?: string };
 
 type Props = {
   crumbs: Crumb[];
-  marker: string; // e.g. "[ABOUT/01] МИСИЯ"
+  /** Optional small label above title — currently unused, kept for compat */
+  marker?: string;
   title: string;
   subtitle?: string;
-  /** Right-side content — lab badges, key facts, placeholder visual */
   aside?: ReactNode;
   locale: string;
 };
 
-/**
- * Consistent page header used across the site.
- * - Breadcrumb
- * - Lab-coordinate marker (mono uppercase)
- * - Large display heading
- * - Optional aside (right-aligned desktop, stacked mobile)
- */
 export function PageHero({
   crumbs,
-  marker,
   title,
   subtitle,
   aside,
@@ -49,13 +41,9 @@ export function PageHero({
         ))}
       </nav>
 
-      {/* Hero row */}
       <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
         <div className="max-w-2xl">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-            {marker}
-          </p>
-          <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
             {title}
           </h1>
           {subtitle && (

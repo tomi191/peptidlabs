@@ -7,7 +7,7 @@ const steps = [
   { icon: Package, titleKey: "step3Title", descKey: "step3Desc" },
 ] as const;
 
-export function HowItWorks() {
+export function HowItWorks({ peptideTotal }: { peptideTotal: number }) {
   const t = useTranslations("howItWorks");
 
   return (
@@ -48,7 +48,9 @@ export function HowItWorks() {
                       {t(step.titleKey)}
                     </h3>
                     <p className="max-w-xs text-sm leading-relaxed text-secondary">
-                      {t(step.descKey)}
+                      {step.descKey === "step1Desc"
+                        ? t(step.descKey, { count: peptideTotal })
+                        : t(step.descKey)}
                     </p>
                   </div>
                 </div>

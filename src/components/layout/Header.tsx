@@ -72,23 +72,35 @@ export default function Header() {
     return () => document.removeEventListener("keydown", handleGlobalKey);
   }, []);
 
-  // Listen for cart drawer open requests from toast "View" actions
+  // Listen for cart/search open requests from toasts and the mobile tab bar
   useEffect(() => {
     function handleOpenCart() {
       setCartOpen(true);
     }
+    function handleOpenSearch() {
+      setSearchOpen(true);
+    }
     window.addEventListener("peptidelab:open-cart", handleOpenCart);
-    return () =>
+    window.addEventListener("peptidelab:open-search", handleOpenSearch);
+    return () => {
       window.removeEventListener("peptidelab:open-cart", handleOpenCart);
+      window.removeEventListener("peptidelab:open-search", handleOpenSearch);
+    };
   }, []);
 
   return (
-    <header>
-      {/* Peptide ticker — Bloomberg-style monospace scroll */}
-      <PeptideTicker />
+    <>
+    <header
+      className="sticky top-0 z-30 bg-white/85 supports-[backdrop-filter]:bg-white/70 backdrop-blur-xl border-b border-border/60"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
+      {/* Peptide ticker — website chrome, hidden in installed PWA */}
+      <div className="pwa-hide-in-app">
+        <PeptideTicker />
+      </div>
 
-      {/* Top bar — hidden on mobile */}
-      <div className="hidden md:block bg-surface border-b border-border">
+      {/* Top bar — desktop website chrome, hidden in installed PWA */}
+      <div className="hidden md:block bg-surface border-b border-border pwa-hide-in-app">
         <div className="flex items-center justify-between text-muted text-xs py-2 px-6">
           <span>{tc("freeShipping")}</span>
           <div className="flex items-center gap-3">
@@ -108,7 +120,7 @@ export default function Header() {
       </div>
 
       {/* Main nav */}
-      <div className="flex items-center justify-between py-4 px-6 border-b border-border bg-white">
+      <div className="flex items-center justify-between py-3 px-4 md:py-4 md:px-6 border-b border-border/60">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 bg-navy rounded-md flex items-center justify-center">
@@ -122,7 +134,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav links */}
-        <nav className="hidden lg:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-8 pwa-hide-when-rail">
           {navKeys.map((key) => (
             <Link
               key={key}
@@ -139,7 +151,7 @@ export default function Header() {
           {/* Desktop: inline pill with placeholder and ⌘K hint */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="hidden md:flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted hover:border-navy hover:text-navy transition-colors duration-150 min-w-[220px]"
+            className="hidden md:flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted hover:border-navy hover:text-navy transition-colors duration-150 min-w-[220px] pwa-hide-when-rail"
             aria-label={tc("searchLabel")}
           >
             <Search size={16} strokeWidth={1.5} />
@@ -171,18 +183,23 @@ export default function Header() {
         </div>
       </div>
 
-      <MobileMenu
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        onOpenSearch={() => setSearchOpen(true)}
-        locale={locale}
-      />
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
-      <CartDrawer
-        open={cartOpen}
-        onClose={() => setCartOpen(false)}
-        locale={locale}
-      />
     </header>
+
+    {/* Drawers/modals must be siblings of <header> — not children — because
+        the header has backdrop-filter which creates a containing block for
+        position: fixed descendants (collapsing them to header height). */}
+    <MobileMenu
+      open={mobileOpen}
+      onClose={() => setMobileOpen(false)}
+      onOpenSearch={() => setSearchOpen(true)}
+      locale={locale}
+    />
+    <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+    <CartDrawer
+      open={cartOpen}
+      onClose={() => setCartOpen(false)}
+      locale={locale}
+    />
+    </>
   );
 }

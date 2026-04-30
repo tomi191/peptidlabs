@@ -7,28 +7,51 @@ type Props = {
   locale?: string;
 };
 
+// Characters that count as a "word boundary" — letters, digits, common Cyrillic.
+// We use lookbehind/lookahead so the match is bounded but we don't consume
+// the surrounding chars (which would break the split).
+const WORD_CHAR = "[\\p{L}\\p{N}_]";
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
- * Auto-wraps known abbreviations inside a string with `<Abbr>` tooltip
- * components. Use for translated strings where you don't want to split
- * them into prefix/abbr/suffix pieces manually.
- *
- * Example: "HPLC чистота" → <Abbr term="HPLC">HPLC</Abbr> + " чистота"
+ * Auto-wraps known abbreviations and scientific terms with <Abbr> tooltips.
+ * - Case-insensitive matching (preserves original casing in output).
+ * - Honors word boundaries for both Cyrillic and Latin text.
+ * - Longest terms match first so "GLP-1" wins over "GLP".
  */
 export function TextWithAbbr({ text, locale = "bg" }: Props) {
-  // Build regex once per render from the known abbreviation keys.
   const dict = abbreviations[locale === "bg" ? "bg" : "en"];
+  // Build a lowercase lookup for case-insensitive matches → original term.
+  const lowerToOriginal = new Map<string, string>();
+  for (const term of Object.keys(dict)) {
+    lowerToOriginal.set(term.toLowerCase(), term);
+  }
+
   const terms = Object.keys(dict)
-    .sort((a, b) => b.length - a.length) // longest first so "NAD+" wins over "NAD"
-    .map((t) => t.replace(/[-+]/g, (c) => `\\${c}`));
-  const pattern = new RegExp(`(${terms.join("|")})`, "g");
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex);
+
+  // Bounded by non-word chars (or string start/end) on both sides.
+  const pattern = new RegExp(
+    `(?<!${WORD_CHAR})(${terms.join("|")})(?!${WORD_CHAR})`,
+    "giu"
+  );
 
   const parts = text.split(pattern);
 
   return (
     <>
       {parts.map((part, i) => {
-        if (part in dict) {
-          return <Abbr key={i} term={part} locale={locale} />;
+        const original = lowerToOriginal.get(part?.toLowerCase() ?? "");
+        if (original) {
+          return (
+            <Abbr key={i} term={original} locale={locale}>
+              {part}
+            </Abbr>
+          );
         }
         return <Fragment key={i}>{part}</Fragment>;
       })}

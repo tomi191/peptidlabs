@@ -20,6 +20,12 @@ import {
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { QuickSpecBar } from "@/components/product/QuickSpecBar";
 import { ProductTabs } from "@/components/product/ProductTabs";
+import { PeptideMechanism } from "@/components/peptide/PeptideMechanism";
+import { getPeptideVisualization } from "@/components/peptide/peptide-visualizations";
+import {
+  UsageProtocol,
+  type UsageProtocolData,
+} from "@/components/product/UsageProtocol";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { SpecsTable } from "@/components/product/SpecsTable";
 import { FrequentlyBoughtTogether } from "@/components/product/FrequentlyBoughtTogether";
@@ -69,8 +75,8 @@ export async function generateMetadata({
     description:
       description ??
       (locale === "bg"
-        ? `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота ≥${product.purity_percent}%. COA включен. Доставка 1-3 дни.`
-        : `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ≥${product.purity_percent}%. COA included. 1-3 day delivery.`),
+        ? `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота над ${product.purity_percent}%. COA включен. Доставка 1-3 дни.`
+        : `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ${product.purity_percent}%+. COA included. 1-3 day delivery.`),
     openGraph: {
       title: `${product.name} | PeptidLabs`,
       description: description ?? undefined,
@@ -300,19 +306,11 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* RIGHT COLUMN */}
           <div>
-            {/* Lab marker */}
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {locale === "bg" ? "[PRODUCT/01] ДАННИ" : "[PRODUCT/01] DATA"}
-            </p>
-
-            {/* Category / use case label */}
-            <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-accent">
+            <p className="text-xs font-semibold uppercase tracking-wide text-accent">
               {(locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || categoryName || getCategoryLabel(locale)}
             </p>
 
-            {/* Product name */}
             <h1 className="mt-1 font-display text-2xl md:text-3xl font-bold text-navy tracking-[-0.03em]">
               {displayName}
             </h1>
@@ -436,7 +434,7 @@ export default async function ProductPage({ params }: PageProps) {
         <div className="mx-auto grid max-w-[1280px] grid-cols-2 gap-y-4 px-6 lg:grid-cols-4">
           <TrustItem
             icon={<FlaskConical size={20} className="text-secondary" />}
-            title={<><TextWithAbbr text={tTrust("hplcTitle")} locale={locale} /> ≥98%</>}
+            title={<><TextWithAbbr text={tTrust("hplcTitle")} locale={locale} /> над 98%</>}
             sub={tTrust("hplcSub")}
           />
           <TrustItem
@@ -463,6 +461,36 @@ export default async function ProductPage({ params }: PageProps) {
           <SpecsTable product={product} translations={specTranslations} locale={locale} />
         </div>
       </div>
+
+      {/* ─── USAGE PROTOCOL — peptide-specific ─── */}
+      {(() => {
+        const usageProtocol = (product.scientific_data as Record<string, unknown> | null)?.usage_protocol as UsageProtocolData | undefined;
+        if (!usageProtocol?.tiers) return null;
+        return (
+          <div className="bg-white py-12">
+            <div className="mx-auto max-w-[1280px] px-6">
+              <UsageProtocol
+                protocol={usageProtocol}
+                productSlug={product.slug}
+                vialSizeMg={product.vial_size_mg}
+                locale={locale as "bg" | "en"}
+              />
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ─── LIVE MECHANISM VISUALIZATION ─── */}
+      {getPeptideVisualization(product.slug) && (
+        <div className="bg-white py-12 md:py-16">
+          <div className="mx-auto max-w-[1280px] px-6">
+            <PeptideMechanism
+              data={getPeptideVisualization(product.slug)!}
+              locale={locale as "bg" | "en"}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ─── TABBED CONTENT ─── */}
       <div className="py-12">

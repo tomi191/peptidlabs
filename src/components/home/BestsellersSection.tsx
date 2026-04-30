@@ -3,9 +3,10 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ProductCard } from "@/components/product/ProductCard";
 import { BestsellerTabs } from "@/components/home/BestsellerTabs";
+import { getCategorySlugsForProducts } from "@/lib/queries";
 import type { Product } from "@/lib/types";
 
-export function BestsellersSection({
+export async function BestsellersSection({
   products,
   locale,
 }: {
@@ -21,10 +22,12 @@ export function BestsellersSection({
     <ProductCard key={product.id} product={product} locale={locale} />
   ));
 
-  // Extract filter tags from the products for the client-side filtering
-  const productTags = products.map((p) =>
-    locale === "bg" ? p.use_case_tag_bg : p.use_case_tag_en
+  // Fetch real category slugs for each product — used by tab filters.
+  // (use_case_tag is a free-form Bulgarian/English string, not reliable for matching.)
+  const slugsByProduct = await getCategorySlugsForProducts(
+    products.map((p) => p.id),
   );
+  const productCategories = products.map((p) => slugsByProduct[p.id] ?? []);
 
   return (
     <section className="w-full px-6 py-12">
@@ -43,7 +46,7 @@ export function BestsellersSection({
         </div>
         <BestsellerTabs
           productCards={productCards}
-          productTags={productTags}
+          productCategories={productCategories}
           locale={locale}
         />
       </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import NumberFlow from "@number-flow/react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useCart } from "@/lib/store/cart";
 import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 
@@ -23,11 +23,11 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
   const updateQuantity = useCart((s) => s.updateQuantity);
   const totalPrice = useCart((s) => s.totalPrice);
 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -68,27 +68,31 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
   }
 
   return (
-    <>
-      {/* Overlay */}
-      <div
-        className={`fixed inset-0 z-50 bg-black/30 transition-opacity duration-300 ${
-          open
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black/30"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-      {/* Drawer panel */}
-      <div
-        className={`fixed right-0 top-0 bottom-0 w-full max-w-md bg-white z-50 shadow-xl flex flex-col transition-transform duration-300 ease-in-out ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("title")}
-      >
+          {/* Drawer panel */}
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 280, damping: 32 }}
+            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white z-50 shadow-xl flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("title")}
+          >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-navy font-semibold text-lg">{t("title")}</h2>
@@ -233,7 +237,9 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
             </div>
           </>
         )}
-      </div>
-    </>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

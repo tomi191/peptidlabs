@@ -223,13 +223,9 @@ export default async function AccountPage({
           <span className="text-navy">{t("title")}</span>
         </nav>
 
-        {/* Header */}
         <div className="flex items-start justify-between flex-wrap gap-6 mb-8">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {isBg ? "[ACCOUNT/01] ДАШБОРД" : "[ACCOUNT/01] DASHBOARD"}
-            </p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
               {t("welcomeBack")}
             </h1>
             <p className="mt-2 font-mono text-sm text-muted">{email}</p>
@@ -536,10 +532,7 @@ async function GuestView({ locale }: { locale: string }) {
 
         <div className="grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {isBg ? "[ACCOUNT/00] ДОСТЪП" : "[ACCOUNT/00] ACCESS"}
-            </p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
               {t("title")}
             </h1>
             <p className="mt-4 text-secondary leading-relaxed max-w-xl">

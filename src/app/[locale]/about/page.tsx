@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
+import { getPublishedPeptideCount } from "@/lib/queries";
 import type { Metadata } from "next";
 import {
   FlaskConical,
@@ -47,12 +48,12 @@ export default async function AboutPage({
   setRequestLocale(locale);
   const t = await getTranslations("about");
   const isBg = locale === "bg";
+  const peptideTotal = await getPublishedPeptideCount();
 
   return (
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[ABOUT/01] МИСИЯ" : "[ABOUT/01] MISSION"}
         title={t("title")}
         subtitle={t("mission")}
         locale={locale}
@@ -62,7 +63,7 @@ export default async function AboutPage({
               <TestTubes className="h-4 w-4 text-teal-600 shrink-0" />
               <div>
                 <p className="text-base font-bold text-navy font-mono tabular">
-                  65+
+                  {peptideTotal}+
                 </p>
                 <p className="text-[10px] text-muted uppercase tracking-widest">
                   {t("statPeptides")}
@@ -85,14 +86,10 @@ export default async function AboutPage({
       />
 
       <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {/* ─── [ABOUT/02] STORY ─── */}
         <section className="mb-16">
           <FadeIn>
             <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-start">
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-                  {isBg ? "[ABOUT/02] ИСТОРИЯ" : "[ABOUT/02] STORY"}
-                </p>
                 <h2 className="font-display text-2xl font-bold text-navy mb-5 tracking-[-0.02em]">
                   {t("storyTitle")}
                 </h2>
@@ -127,12 +124,8 @@ export default async function AboutPage({
           </FadeIn>
         </section>
 
-        {/* ─── [ABOUT/03] WHY ─── */}
         <section className="mb-16">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[ABOUT/03] ЗАЩО НИЕ" : "[ABOUT/03] WHY US"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("whyTitle")}
             </h2>
@@ -159,12 +152,8 @@ export default async function AboutPage({
           </FadeIn>
         </section>
 
-        {/* ─── [ABOUT/04] QUALITY ─── */}
         <section className="mb-16">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[ABOUT/04] КАЧЕСТВО" : "[ABOUT/04] QUALITY"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
               {t("qualityStandardsTitle")}
             </h2>
@@ -194,12 +183,8 @@ export default async function AboutPage({
           </FadeIn>
         </section>
 
-        {/* ─── [ABOUT/05] PROCESS ─── */}
         <section className="mb-16">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[ABOUT/05] ПРОЦЕС" : "[ABOUT/05] PROCESS"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("howWeWorkTitle")}
             </h2>
@@ -238,12 +223,8 @@ export default async function AboutPage({
           </FadeIn>
         </section>
 
-        {/* ─── [ABOUT/06] VALUES / Team placeholder ─── */}
         <section className="mb-16">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[ABOUT/06] ЕКИП" : "[ABOUT/06] TEAM"}
-            </p>
             <div className="grid gap-10 lg:grid-cols-[420px_1fr] lg:items-center">
               <PlaceholderVisual
                 variant="avatar"

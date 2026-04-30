@@ -155,7 +155,6 @@ export default async function ReconstitutionGuidePage({
           { label: isBg ? "Помощ" : "Guides" },
           { label: t("title") },
         ]}
-        marker={isBg ? "[GUIDE/01] РЕКОНСТИТУЦИЯ" : "[GUIDE/01] RECONSTITUTION"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -181,12 +180,8 @@ export default async function ReconstitutionGuidePage({
       />
 
       <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {/* ─── [GUIDE/02] CHECKLIST + VISUAL ─── */}
         <section className="mb-16 grid gap-10 lg:grid-cols-[1fr_420px] lg:items-start">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[GUIDE/02] ПРИГОТВЯНЕ" : "[GUIDE/02] PREPARATION"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-5 tracking-[-0.02em]">
               {t("checklistTitle")}
             </h2>
@@ -223,11 +218,7 @@ export default async function ReconstitutionGuidePage({
           />
         </section>
 
-        {/* ─── [GUIDE/03] STEPS ─── */}
         <section className="mb-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[GUIDE/03] СТЪПКИ" : "[GUIDE/03] STEPS"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("stepsTitle")}
           </h2>
@@ -268,11 +259,7 @@ export default async function ReconstitutionGuidePage({
           </div>
         </section>
 
-        {/* ─── [GUIDE/04] TIPS ─── */}
         <section className="mb-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[GUIDE/04] ВАЖНИ СЪВЕТИ" : "[GUIDE/04] IMPORTANT TIPS"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {t("tipsTitle")}
           </h2>
@@ -296,12 +283,8 @@ export default async function ReconstitutionGuidePage({
           </div>
         </section>
 
-        {/* ─── [GUIDE/05] FAQ ─── */}
         <section className="mb-16 grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[GUIDE/05] ЧЗВ" : "[GUIDE/05] FAQ"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
               {t("faqTitle")}
             </h2>

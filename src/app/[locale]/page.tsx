@@ -1,8 +1,12 @@
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
-import { getCategories, getBestsellers, getPublishedBlogPosts } from "@/lib/queries";
+import { getCategoriesWithCounts, getBestsellers, getPublishedBlogPosts, getPublishedPeptideCount } from "@/lib/queries";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SocialProofBar } from "@/components/home/SocialProofBar";
+import { LiveTrustTicker } from "@/components/home/LiveTrustTicker";
+import { GLP1Comparison } from "@/components/home/GLP1Comparison";
+import { PeptideFinder } from "@/components/home/PeptideFinder";
+import { ResearchOnlyBanner } from "@/components/home/ResearchOnlyBanner";
 import { GoalNav } from "@/components/home/GoalNav";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
@@ -13,15 +17,6 @@ import { TrustBar } from "@/components/home/TrustBar";
 import { BlogPreview } from "@/components/home/BlogPreview";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { SectionMarker } from "@/components/ui/SectionMarker";
-
-function Marker({ index, label }: { index: string; label: string }) {
-  return (
-    <div className="mx-auto max-w-[1280px] px-6 pt-10">
-      <SectionMarker index={index} total="09" label={label} />
-    </div>
-  );
-}
 
 // ---- Async data wrappers — each fetches independently and streams in ----
 
@@ -31,7 +26,7 @@ async function BestsellersSectionAsync({ locale }: { locale: string }) {
 }
 
 async function CategoryGridAsync({ locale }: { locale: string }) {
-  const categories = await getCategories();
+  const categories = await getCategoriesWithCounts();
   return <CategoryGrid categories={categories} locale={locale} />;
 }
 
@@ -126,34 +121,38 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const peptideTotal = await getPublishedPeptideCount();
 
-  const isBg = locale === "bg";
   return (
     <main className="w-full">
-      {/* Hero renders instantly — no data dependency */}
-      <HeroSection />
-      <div className="bg-white">
-        <Marker index="02" label={isBg ? "ТРЪСТ" : "TRUST"} />
-      </div>
+      {/* Research-only positioning banner — Meta/FB ads compliance + EU regulatory framing */}
+      <ResearchOnlyBanner locale={locale as "bg" | "en"} />
+      <HeroSection peptideTotal={peptideTotal} />
+      {/* Live trust ticker — rotating psychological signals */}
+      <LiveTrustTicker locale={locale as "bg" | "en"} />
       <SocialProofBar />
 
+      {/* Peptide Finder Wizard — interactive 2-step quiz → personalized recommendations */}
+      <div className="bg-surface">
+        <FadeIn>
+          <PeptideFinder locale={locale as "bg" | "en"} />
+        </FadeIn>
+      </div>
+
       <div className="bg-white">
-        <Marker index="03" label={isBg ? "ЦЕЛ" : "GOAL"} />
         <FadeIn>
           <GoalNav />
         </FadeIn>
       </div>
 
       <div className="bg-surface">
-        <Marker index="04" label={isBg ? "ПРОЦЕС" : "PROCESS"} />
         <FadeIn>
-          <HowItWorks />
+          <HowItWorks peptideTotal={peptideTotal} />
         </FadeIn>
       </div>
 
       {/* Bestsellers — streams in when getBestsellers() resolves */}
       <div className="bg-white">
-        <Marker index="05" label={isBg ? "ПРОДУКТИ" : "PRODUCTS"} />
         <FadeIn>
           <Suspense fallback={<BestsellersSkeleton />}>
             <BestsellersSectionAsync locale={locale} />
@@ -163,7 +162,6 @@ export default async function HomePage({
 
       {/* Categories — streams in when getCategories() resolves */}
       <div className="bg-surface">
-        <Marker index="06" label={isBg ? "КАТЕГОРИИ" : "CATEGORIES"} />
         <FadeIn>
           <Suspense fallback={<CategoryGridSkeleton />}>
             <CategoryGridAsync locale={locale} />
@@ -171,15 +169,20 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
+      {/* GLP-1 Comparison Widget */}
       <div className="bg-white">
-        <Marker index="07" label={isBg ? "МИСИЯ" : "MISSION"} />
         <FadeIn>
-          <IntroSection />
+          <GLP1Comparison locale={locale as "bg" | "en"} />
+        </FadeIn>
+      </div>
+
+      <div className="bg-white">
+        <FadeIn>
+          <IntroSection peptideTotal={peptideTotal} />
         </FadeIn>
       </div>
 
       <div className="bg-surface">
-        <Marker index="08" label={isBg ? "КЛИЕНТИ" : "CLIENTS"} />
         <FadeIn>
           <TestimonialsSection />
         </FadeIn>
@@ -191,9 +194,8 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
-      {/* Blog preview — streams in when getPublishedBlogPosts() resolves */}
+      {/* Blog preview */}
       <div className="bg-surface">
-        <Marker index="09" label={isBg ? "ИЗСЛЕДВАНИЯ" : "RESEARCH"} />
         <FadeIn>
           <Suspense fallback={<BlogPreviewSkeleton />}>
             <BlogPreviewAsync locale={locale} />

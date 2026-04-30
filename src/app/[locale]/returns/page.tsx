@@ -55,7 +55,6 @@ export default async function ReturnsPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[RETURNS/01] ПОЛИТИКА" : "[RETURNS/01] POLICY"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -79,12 +78,8 @@ export default async function ReturnsPage({
       />
 
       <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {/* ─── Policy overview + illustrative placeholder ─── */}
         <section className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-start mb-16">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[RETURNS/02] КРАТКО" : "[RETURNS/02] OVERVIEW"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
               {isBg
                 ? "Какво можем да върнем"
@@ -101,11 +96,7 @@ export default async function ReturnsPage({
           />
         </section>
 
-        {/* ─── Conditions ─── */}
         <section className="mb-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[RETURNS/03] УСЛОВИЯ" : "[RETURNS/03] CONDITIONS"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {t("conditionsTitle")}
           </h2>
@@ -122,11 +113,7 @@ export default async function ReturnsPage({
           </div>
         </section>
 
-        {/* ─── Process — how to return ─── */}
         <section className="mb-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[RETURNS/04] ПРОЦЕС" : "[RETURNS/04] PROCESS"}
-          </p>
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
               <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
@@ -163,11 +150,10 @@ export default async function ReturnsPage({
           </div>
         </section>
 
-        {/* ─── Edge cases ─── */}
         <section className="mb-16">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[RETURNS/05] СПЕЦИАЛНИ СЛУЧАИ" : "[RETURNS/05] EDGE CASES"}
-          </p>
+          <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
+            {isBg ? "Специални случаи" : "Edge cases"}
+          </h2>
           <div className="grid gap-4 md:grid-cols-2">
             <InfoTile
               icon={AlertTriangle}

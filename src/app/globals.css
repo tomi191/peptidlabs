@@ -56,12 +56,65 @@
   opacity: 0.6;
 }
 
+html {
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent iOS Safari font-size auto-bump on rotate */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Use dynamic viewport so 100dvh respects the iOS dynamic toolbar */
+  min-height: 100dvh;
+}
+
 body {
   background-color: #ffffff;
   color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Allow content to flow under the notch / home-indicator */
+  overscroll-behavior-y: none;
 }
+
+/* App-style background — subtle warm white in standalone mode */
+.bg-app {
+  background-color: #ffffff;
+}
+@media (display-mode: standalone), (display-mode: window-controls-overlay) {
+  .bg-app {
+    background-color: #fafaf9;
+  }
+  /* Chrome reduction in installed PWA — hide elements that feel website-y */
+  .pwa-hide-in-app { display: none !important; }
+  /* Slim app-mode header */
+  .pwa-slim-header { padding-top: 0 !important; }
+  /* Allow content to breathe under the title bar in WCO mode */
+  .pwa-titlebar-pad { padding-top: env(titlebar-area-height, 0); }
+  /* App-mode rounded corners on cards */
+  .pwa-app-card { border-radius: 20px; }
+}
+/* Stronger separation only when standalone */
+@media (display-mode: standalone) {
+  body { background-color: #fafaf9; }
+}
+
+/* PWA side rail — hidden by default; visible only when installed (standalone) on md+ */
+.pwa-side-rail { display: none; }
+@media (display-mode: standalone), (display-mode: window-controls-overlay) {
+  @media (min-width: 768px) {
+    .pwa-side-rail { display: flex; }
+    /* Push body content right to make room for the 64px rail */
+    body { padding-left: 4rem; }
+    /* Header and footer chrome shifts too — they live inside body so already covered */
+    /* Hide the regular hamburger + top nav links since rail handles them */
+    .pwa-hide-when-rail { display: none !important; }
+  }
+}
+
+/* Safe area utility classes — used by mobile shell */
+.safe-pt { padding-top: env(safe-area-inset-top); }
+.safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+.safe-pl { padding-left: env(safe-area-inset-left); }
+.safe-pr { padding-right: env(safe-area-inset-right); }
 
 .container {
   max-width: 1280px;
@@ -69,6 +122,25 @@ body {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+/* Touch targets — never under 44px on coarse pointers */
+@media (pointer: coarse) {
+  button, [role="button"], a {
+    touch-action: manipulation;
+  }
+}
+
+/* Headings get balanced wrap; paragraphs get pretty */
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* Native-feel tap state for mobile — only on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button:active, a:active, [role="button"]:active {
+    transform: scale(0.985);
+    transition: transform 0.08s ease;
+  }
 }
 
 /* Focus ring for keyboard navigation */
@@ -222,9 +294,89 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
+  @keyframes pl-slide-in {
+    from { transform: translateX(8px); opacity: 0; }
+    to   { transform: translateX(0);   opacity: 1; }
+  }
+  @keyframes pl-slide-out {
+    from { transform: translateX(0);   opacity: 1; }
+    to   { transform: translateX(-8px); opacity: 0; }
+  }
+  ::view-transition-old(root) {
+    animation: pl-slide-out 220ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
   ::view-transition-new(root) {
-    animation-duration: 280ms;
+    animation: pl-slide-in 260ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+/* Scroll-driven fade-up reveal — progressive enhancement, falls back gracefully */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-on-scroll {
+      animation: pl-reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+    @keyframes pl-reveal-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  }
+}
+
+/* App-shell glass surface — used by floating bottom nav and sheet headers */
+.glass-surface {
+  background-color: color-mix(in srgb, white 78%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid color-mix(in srgb, #f5f5f4 70%, transparent);
+}
+
+/* Print stylesheet — calculator and product pages should print as a clean reference card */
+@media print {
+  /* Hide chrome */
+  header,
+  footer,
+  nav,
+  [data-pwa-rail],
+  .peptide-ticker,
+  .pwa-side-rail,
+  [aria-label*="навигация"],
+  [aria-label*="navigation"],
+  .print\:hidden {
+    display: none !important;
+  }
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 1.2cm;
+  }
+  body {
+    background: white !important;
+    color: #0f172a !important;
+    font-size: 11pt;
+  }
+  /* Remove backgrounds */
+  .bg-navy,
+  .bg-surface,
+  .bg-accent-tint {
+    background: white !important;
+    color: #0f172a !important;
+  }
+  /* Strip animations */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+  /* Avoid breaking inside cards */
+  .rounded-xl,
+  .rounded-2xl {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 

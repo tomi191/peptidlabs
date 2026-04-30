@@ -70,6 +70,11 @@ export default function AdminProductEditPage({
   const [form, setForm] = useState("lyophilized");
   const [purityPercent, setPurityPercent] = useState("");
   const [molecularWeight, setMolecularWeight] = useState("");
+  const [sequence, setSequence] = useState("");
+  const [summaryBg, setSummaryBg] = useState("");
+  const [summaryEn, setSummaryEn] = useState("");
+  const [useCaseTagBg, setUseCaseTagBg] = useState("");
+  const [useCaseTagEn, setUseCaseTagEn] = useState("");
   const [descriptionBg, setDescriptionBg] = useState("");
   const [descriptionEn, setDescriptionEn] = useState("");
   const [status, setStatus] = useState("draft");
@@ -78,14 +83,34 @@ export default function AdminProductEditPage({
   const [isBlend, setIsBlend] = useState(false);
   const [scientificDataJson, setScientificDataJson] = useState("");
 
+  // Категории
+  type CategoryOption = { id: string; slug: string; name_bg: string; name_en: string };
+  const [allCategories, setAllCategories] = useState<CategoryOption[]>([]);
+  const [selectedCategorySlugs, setSelectedCategorySlugs] = useState<string[]>([]);
+
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/admin");
       return;
     }
     fetchProduct();
+    fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch("/api/admin/categories", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.success) setAllCategories(json.data);
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   async function fetchProduct() {
     setLoading(true);
@@ -96,7 +121,14 @@ export default function AdminProductEditPage({
       if (res.ok) {
         const json = await res.json();
         if (!json?.success) return;
-        const data: Product = json.data;
+        const data: Product & {
+          summary_bg?: string | null;
+          summary_en?: string | null;
+          use_case_tag_bg?: string | null;
+          use_case_tag_en?: string | null;
+          sequence?: string | null;
+          category_slugs?: string[];
+        } = json.data;
         setProduct(data);
         setName(data.name);
         setNameBg(data.name_bg ?? "");
@@ -110,6 +142,11 @@ export default function AdminProductEditPage({
         setMolecularWeight(
           data.molecular_weight ? String(data.molecular_weight) : ""
         );
+        setSequence(data.sequence ?? "");
+        setSummaryBg(data.summary_bg ?? "");
+        setSummaryEn(data.summary_en ?? "");
+        setUseCaseTagBg(data.use_case_tag_bg ?? "");
+        setUseCaseTagEn(data.use_case_tag_en ?? "");
         setDescriptionBg(data.description_bg ?? "");
         setDescriptionEn(data.description_en ?? "");
         setStatus(data.status);
@@ -122,6 +159,7 @@ export default function AdminProductEditPage({
             : ""
         );
         setImages(Array.isArray(data.images) ? data.images : []);
+        setSelectedCategorySlugs(data.category_slugs ?? []);
       }
     } catch {
       // мрежова грешка
@@ -218,6 +256,11 @@ export default function AdminProductEditPage({
           form,
           purity_percent: Number(purityPercent),
           molecular_weight: molecularWeight ? Number(molecularWeight) : null,
+          sequence: sequence || null,
+          summary_bg: summaryBg || null,
+          summary_en: summaryEn || null,
+          use_case_tag_bg: useCaseTagBg || null,
+          use_case_tag_en: useCaseTagEn || null,
           description_bg: descriptionBg || null,
           description_en: descriptionEn || null,
           status,
@@ -226,6 +269,7 @@ export default function AdminProductEditPage({
           is_blend: isBlend,
           scientific_data: scientificData,
           images,
+          category_slugs: selectedCategorySlugs,
         }),
       });
       if (res.ok) {
@@ -506,14 +550,87 @@ export default function AdminProductEditPage({
         </div>
       </div>
 
-      {/* Описание */}
+      {/* SEO етикети + последователност */}
       <div className={sectionClass}>
-        <h2 className={sectionTitleClass}>Описание</h2>
+        <h2 className={sectionTitleClass}>SEO етикет и последователност</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Use-case етикет (BG)</label>
+            <input
+              type="text"
+              value={useCaseTagBg}
+              onChange={(e) => setUseCaseTagBg(e.target.value)}
+              className={inputClass}
+              placeholder='напр. "за възстановяване"'
+            />
+            <p className="mt-1 text-xs text-muted">
+              Малък етикет под името (напр. &quot;GLP-1 first-gen&quot;)
+            </p>
+          </div>
+          <div>
+            <label className={labelClass}>Use-case tag (EN)</label>
+            <input
+              type="text"
+              value={useCaseTagEn}
+              onChange={(e) => setUseCaseTagEn(e.target.value)}
+              className={inputClass}
+              placeholder='e.g. "regeneration"'
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={labelClass}>Молекулна последователност</label>
+            <input
+              type="text"
+              value={sequence}
+              onChange={(e) => setSequence(e.target.value)}
+              className={`${inputClass} font-mono text-xs`}
+              placeholder="напр. GEPPPGKPADDAGLV"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Резюме (показва се на product page) */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Кратко резюме</h2>
+        <p className="text-xs text-muted mb-3">
+          1-2 изречения. Показва се над пълното описание на продуктовата страница.
+        </p>
+        <div className="space-y-4">
+          <div>
+            <label className={labelClass}>Резюме (BG)</label>
+            <textarea
+              rows={2}
+              value={summaryBg}
+              onChange={(e) => setSummaryBg(e.target.value)}
+              className={inputClass}
+              placeholder="Кратко научно резюме..."
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Резюме (EN)</label>
+            <textarea
+              rows={2}
+              value={summaryEn}
+              onChange={(e) => setSummaryEn(e.target.value)}
+              className={inputClass}
+              placeholder="Short scientific summary..."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Пълно описание */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Пълно описание</h2>
+        <p className="text-xs text-muted mb-3">
+          3-4 параграфа flowing prose. БЕЗ bold-heading factory.
+        </p>
         <div className="space-y-4">
           <div>
             <label className={labelClass}>Описание (BG)</label>
             <textarea
-              rows={4}
+              rows={8}
               value={descriptionBg}
               onChange={(e) => setDescriptionBg(e.target.value)}
               className={inputClass}
@@ -523,7 +640,7 @@ export default function AdminProductEditPage({
           <div>
             <label className={labelClass}>Описание (EN)</label>
             <textarea
-              rows={4}
+              rows={8}
               value={descriptionEn}
               onChange={(e) => setDescriptionEn(e.target.value)}
               className={inputClass}
@@ -531,6 +648,50 @@ export default function AdminProductEditPage({
             />
           </div>
         </div>
+      </div>
+
+      {/* Категории */}
+      <div className={sectionClass}>
+        <h2 className={sectionTitleClass}>Категории</h2>
+        <p className="text-xs text-muted mb-3">
+          Изберете в кои категории да се показва продуктът. Може повече от една.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {allCategories.map((cat) => {
+            const checked = selectedCategorySlugs.includes(cat.slug);
+            return (
+              <label
+                key={cat.id}
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-colors ${
+                  checked
+                    ? "border-navy bg-navy/5 text-navy font-medium"
+                    : "border-border text-secondary hover:border-navy/30"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedCategorySlugs([...selectedCategorySlugs, cat.slug]);
+                    } else {
+                      setSelectedCategorySlugs(
+                        selectedCategorySlugs.filter((s) => s !== cat.slug)
+                      );
+                    }
+                  }}
+                  className="rounded border-border text-navy focus:ring-navy"
+                />
+                {cat.name_bg}
+              </label>
+            );
+          })}
+        </div>
+        {selectedCategorySlugs.length === 0 && (
+          <p className="mt-2 text-xs text-amber-700">
+            ⚠ Без категория продуктът няма да се показва в /shop/[категория]
+          </p>
+        )}
       </div>
 
       {/* Статус и наличност */}

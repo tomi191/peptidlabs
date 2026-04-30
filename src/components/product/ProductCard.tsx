@@ -52,7 +52,7 @@ export function ProductCard({
             ) : null}
             {product.vial_size_mg && product.form ? " · " : ""}
             {getFormLabel(product.form, locale)}
-            {" · ≥"}
+            {" · "}
             <span className="spec-value">{product.purity_percent}%</span>
           </p>
         </div>

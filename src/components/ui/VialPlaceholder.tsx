@@ -143,7 +143,7 @@ export function VialPlaceholder({ name, size = "md", className = "" }: Props) {
           fill="#0d9488"
           letterSpacing="0.1em"
         >
-          ≥98% HPLC
+          над 98% HPLC
         </text>
 
         {/* Lyophilized powder at bottom */}

@@ -2,11 +2,11 @@ import { FlaskConical, ShieldCheck, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { HPLCLine } from "@/components/ui/HPLCLine";
 
-export function IntroSection() {
+export function IntroSection({ peptideTotal }: { peptideTotal: number }) {
   const t = useTranslations("intro");
 
   const stats = [
-    { value: t("statPeptides"), label: t("statPeptidesLabel") },
+    { value: t("statPeptides", { count: peptideTotal }), label: t("statPeptidesLabel") },
     { value: t("statCategories"), label: t("statCategoriesLabel") },
     { value: t("statPurity"), label: t("statPurityLabel") },
   ];
@@ -29,7 +29,7 @@ export function IntroSection() {
             <HPLCLine variant="short" className="mb-6 max-w-[120px]" />
             <div className="space-y-4">
               <p className="text-sm text-secondary leading-relaxed">{t("p1")}</p>
-              <p className="text-sm text-secondary leading-relaxed">{t("p2")}</p>
+              <p className="text-sm text-secondary leading-relaxed">{t("p2", { count: peptideTotal })}</p>
               <p className="text-sm text-secondary leading-relaxed">{t("p3")}</p>
             </div>
 

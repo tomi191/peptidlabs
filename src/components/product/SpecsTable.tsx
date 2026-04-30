@@ -45,7 +45,7 @@ export function SpecsTable({
     },
     {
       label: translations.specPurity,
-      value: `≥${product.purity_percent}%`,
+      value: `над ${product.purity_percent}%`,
     },
     { label: translations.specForm, value: getFormLabel(product.form, locale) },
     {

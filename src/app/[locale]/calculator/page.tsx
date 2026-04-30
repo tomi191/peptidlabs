@@ -86,13 +86,9 @@ export default async function CalculatorPage({
           <span className="text-navy">{t("title")}</span>
         </nav>
 
-        {/* Header block */}
         <div className="mb-10 flex items-end justify-between gap-8">
           <div className="max-w-2xl">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              [CALC/01] ИНСТРУМЕНТ
-            </p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
               {t("title")}
             </h1>
             <p className="mt-4 text-secondary leading-relaxed">
@@ -102,7 +98,7 @@ export default async function CalculatorPage({
           <div className="hidden md:flex items-center gap-6 font-mono text-[11px] text-muted">
             <div className="text-right">
               <p className="uppercase tracking-widest">
-                <Abbr term="HPLC" /> ≥98%
+                <Abbr term="HPLC" /> над 98%
               </p>
               <p className="mt-1 text-[9px]">
                 {isBg ? "верифицирана чистота" : "verified purity"}
@@ -123,13 +119,7 @@ export default async function CalculatorPage({
         {/* Calculator component */}
         <Calculator />
 
-        {/* ─── [CALC/02] HOW TO USE ─── */}
         <section className="mt-20">
-          <div className="flex items-center gap-3 mb-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              [CALC/02] РАБОТЕН ПРОЦЕС
-            </p>
-          </div>
           <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
             {isBg ? "Как работи калкулаторът" : "How the calculator works"}
           </h2>
@@ -156,13 +146,8 @@ export default async function CalculatorPage({
           </div>
         </section>
 
-        {/* ─── [CALC/03] TIPS ─── */}
         <section className="mt-16">
-          <div className="flex items-center gap-3 mb-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              [CALC/03] ДОБРИ ПРАКТИКИ
-            </p>
-          </div>
+          <h2 className="sr-only">{isBg ? "Добри практики" : "Best practices"}</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl border border-border p-6">
               <div className="flex items-center gap-2 mb-3">

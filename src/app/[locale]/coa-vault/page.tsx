@@ -42,7 +42,6 @@ export default async function CoaVaultPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[COA/01] ПРОЗРАЧНОСТ" : "[COA/01] TRANSPARENCY"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -66,12 +65,8 @@ export default async function CoaVaultPage({
       />
 
       <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {/* Info banner */}
         <section className="mb-10 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[COA/02] КАКВО Е COA" : "[COA/02] WHAT IS A COA"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">
               {isBg
                 ? "Сертификат за анализ за всяка партида"
@@ -90,11 +85,7 @@ export default async function CoaVaultPage({
           />
         </section>
 
-        {/* Product list */}
         <section>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[COA/03] КАТАЛОГ" : "[COA/03] CATALOG"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {isBg ? "Сертификати по продукт" : "Certificates by product"}
           </h2>
@@ -142,7 +133,7 @@ export default async function CoaVaultPage({
                     <div className="mt-3 flex items-center gap-2 font-mono text-xs">
                       <span className="text-muted">{t("purity")}:</span>
                       <span className="font-semibold text-navy tabular">
-                        ≥{product.purity_percent}%
+                        над {product.purity_percent}%
                       </span>
                     </div>
 

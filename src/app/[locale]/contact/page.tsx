@@ -50,7 +50,6 @@ export default async function ContactPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[CONTACT/01] ВРЪЗКА" : "[CONTACT/01] REACH OUT"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -67,15 +66,10 @@ export default async function ContactPage({
       />
 
       <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {/* ─── [CONTACT/02] CHANNELS + FORM ─── */}
         <section className="mb-16">
           <FadeIn>
             <div className="grid gap-10 lg:grid-cols-2">
-              {/* Left — contact info cards */}
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-                  {isBg ? "[CONTACT/02] КАНАЛИ" : "[CONTACT/02] CHANNELS"}
-                </p>
                 <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
                   {isBg ? "Как да се свържете" : "How to reach us"}
                 </h2>
@@ -133,11 +127,7 @@ export default async function ContactPage({
                 </div>
               </div>
 
-              {/* Right — form */}
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-                  {isBg ? "[CONTACT/03] ФОРМА" : "[CONTACT/03] FORM"}
-                </p>
                 <div className="border border-border rounded-xl p-6 lg:p-8">
                   <h2 className="text-lg font-semibold text-navy mb-5">
                     {t("formTitle")}
@@ -149,12 +139,8 @@ export default async function ContactPage({
           </FadeIn>
         </section>
 
-        {/* ─── [CONTACT/04] WHEN ─── */}
         <section className="mb-16">
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[CONTACT/04] КАТЕГОРИИ" : "[CONTACT/04] CATEGORIES"}
-            </p>
             <h2 className="font-display text-2xl font-bold text-navy mb-8 tracking-[-0.02em]">
               {t("whenToContact")}
             </h2>
@@ -187,12 +173,8 @@ export default async function ContactPage({
           </FadeIn>
         </section>
 
-        {/* ─── [CONTACT/05] LOCATION ─── */}
         <section>
           <FadeIn>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-              {isBg ? "[CONTACT/05] ЛОКАЦИЯ" : "[CONTACT/05] LOCATION"}
-            </p>
             <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-center">
               <div>
                 <h2 className="font-display text-2xl font-bold text-navy mb-4 tracking-[-0.02em]">

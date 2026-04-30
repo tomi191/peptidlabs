@@ -93,7 +93,6 @@ export default async function ShopPage({
     <main className="w-full">
       <PageHero
         crumbs={[{ label: t("title") }]}
-        marker={isBg ? "[SHOP/01] КАТАЛОГ" : "[SHOP/01] CATALOG"}
         title={t("title")}
         subtitle={t("intro")}
         locale={locale}
@@ -101,7 +100,7 @@ export default async function ShopPage({
           <div className="flex items-center gap-5 font-mono text-[11px] text-muted">
             <div className="text-right">
               <p className="uppercase tracking-widest">
-                <Abbr term="HPLC" locale={locale} /> ≥98%
+                <Abbr term="HPLC" locale={locale} /> над 98%
               </p>
               <p className="mt-1 text-[9px]">
                 {isBg ? "верифицирана чистота" : "verified purity"}

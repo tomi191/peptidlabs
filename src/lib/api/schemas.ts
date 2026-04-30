@@ -94,12 +94,17 @@ export const AdminProductCreateSchema = z.object({
   weight_grams: z.number().nonnegative().nullable().optional(),
   description_bg: z.string().nullable().optional(),
   description_en: z.string().nullable().optional(),
+  summary_bg: z.string().max(2000).nullable().optional(),
+  summary_en: z.string().max(2000).nullable().optional(),
+  use_case_tag_bg: z.string().max(200).nullable().optional(),
+  use_case_tag_en: z.string().max(200).nullable().optional(),
   sequence: z.string().max(1000).nullable().optional(),
   coa_url: z.string().max(500).nullable().optional(),
   images: z.array(z.string()).optional(),
   is_bestseller: z.boolean().optional(),
   is_blend: z.boolean().optional(),
   scientific_data: z.record(z.string(), z.unknown()).optional(),
+  category_slugs: z.array(z.string()).optional(),
 });
 export type AdminProductCreateInput = z.infer<typeof AdminProductCreateSchema>;
 

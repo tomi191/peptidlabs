@@ -76,13 +76,19 @@ export function MobileMenu({ open, onClose, onOpenSearch, locale }: Props) {
           key: "shop",
           href: "/shop",
           icon: Package,
-          description: isBg ? "65+ изследователски пептида" : "65+ research peptides",
+          description: isBg ? "Изследователски пептиди" : "Research peptides",
         },
         {
           key: "encyclopedia",
           href: "/encyclopedia",
           icon: BookOpen,
           description: isBg ? "Научна база знания" : "Scientific knowledge base",
+        },
+        {
+          key: "whatArePeptides",
+          href: "/what-are-peptides",
+          icon: HelpCircle,
+          description: isBg ? "Ръководство за начинаещи" : "Beginners guide",
         },
         {
           key: "calculator",
@@ -149,6 +155,7 @@ export function MobileMenu({ open, onClose, onOpenSearch, locale }: Props) {
   const navLabels: Record<string, string> = {
     shop: t("shop"),
     encyclopedia: t("encyclopedia"),
+    whatArePeptides: isBg ? "Какво са пептидите?" : "What are peptides?",
     calculator: t("calculator"),
     about: t("about"),
     blog: t("blog"),
@@ -297,8 +304,8 @@ export function MobileMenu({ open, onClose, onOpenSearch, locale }: Props) {
                 </div>
                 <p className="mt-1.5 text-xs text-secondary leading-relaxed">
                   {isBg
-                    ? "≥98% чистота · Сертификат за анализ с всяка поръчка · Изпращаме от ЕС склад."
-                    : "≥98% purity · COA with every order · Shipped from EU warehouse."}
+                    ? "Чистота над 98% · Сертификат за анализ с всяка поръчка · Изпращаме от ЕС склад."
+                    : "Purity above 98% · COA with every order · Shipped from EU warehouse."}
                 </p>
               </motion.div>
             </div>

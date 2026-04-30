@@ -53,7 +53,6 @@ export default async function ImpressumPage({
     <main className="flex-1 bg-white">
       <PageHero
         crumbs={[{ label: isBg ? "Импресум" : "Impressum" }]}
-        marker={isBg ? "[LEGAL/IMPR] ДОСТАВЧИК" : "[LEGAL/IMPR] SUPPLIER"}
         title={isBg ? "Информация за доставчика" : "Legal Notice (Impressum)"}
         subtitle={
           isBg
@@ -83,11 +82,7 @@ export default async function ImpressumPage({
             : "values below are placeholders. Replace with your Commercial Registry data before launch."}
         </div>
 
-        {/* Company */}
         <section>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[IMPR/01] ДРУЖЕСТВО" : "[IMPR/01] COMPANY"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {isBg ? "Данни за дружеството" : "Company details"}
           </h2>
@@ -141,11 +136,7 @@ export default async function ImpressumPage({
           </div>
         </section>
 
-        {/* Contact */}
         <section>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[IMPR/02] КОНТАКТ" : "[IMPR/02] CONTACT"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {isBg ? "Връзка с нас" : "Contact channels"}
           </h2>
@@ -198,11 +189,7 @@ export default async function ImpressumPage({
           </div>
         </section>
 
-        {/* EU compliance */}
         <section>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent mb-3">
-            {isBg ? "[IMPR/03] EU COMPLIANCE" : "[IMPR/03] EU COMPLIANCE"}
-          </p>
           <h2 className="font-display text-2xl font-bold text-navy mb-6 tracking-[-0.02em]">
             {isBg ? "Съответствие с ЕС" : "EU compliance"}
           </h2>

@@ -320,7 +320,7 @@ export function ShopFilters({ products, layout = "sidebar" }: Props) {
             return (
               <li key={threshold}>
                 <CheckboxRow
-                  label={`HPLC ≥${threshold}%`}
+                  label={`HPLC над ${threshold}%`}
                   checked={checked}
                   onChange={() => toggleListValue("purity", String(threshold))}
                   count={count}

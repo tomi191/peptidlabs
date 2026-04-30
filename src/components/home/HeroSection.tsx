@@ -8,6 +8,7 @@ import NumberFlow from "@number-flow/react";
 import { Link } from "@/i18n/navigation";
 import { HPLCLine } from "@/components/ui/HPLCLine";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
+import { HeroDataOverlay } from "@/components/home/HeroDataOverlay";
 
 const container = {
   hidden: { opacity: 0 },
@@ -37,28 +38,26 @@ const statsContainer = {
   },
 };
 
-export function HeroSection() {
+export function HeroSection({ peptideTotal = 65 }: { peptideTotal?: number }) {
   const t = useTranslations("hero");
   const locale = useLocale();
   const isBg = locale === "bg";
 
-  // Scroll-linked parallax for aurora blobs
   const { scrollY } = useScroll();
   const blob1Y = useTransform(scrollY, [0, 600], [0, -80]);
   const blob2Y = useTransform(scrollY, [0, 600], [0, 50]);
   const blob3Y = useTransform(scrollY, [0, 600], [0, -40]);
 
-  // Count stats — trigger after mount so NumberFlow animates from 0
   const [peptideCount, setPeptideCount] = useState(0);
   const [purity, setPurity] = useState(0);
   useEffect(() => {
-    const t1 = setTimeout(() => setPeptideCount(65), 400);
+    const t1 = setTimeout(() => setPeptideCount(peptideTotal), 400);
     const t2 = setTimeout(() => setPurity(98), 600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, []);
+  }, [peptideTotal]);
 
   return (
     <section className="relative w-full overflow-hidden">
@@ -138,6 +137,9 @@ export function HeroSection() {
         </motion.div>
       </div>
 
+      {/* ─── DATA OVERLAY — animated HPLC + peptide chain decorative SVG ─── */}
+      <HeroDataOverlay />
+
       {/* ─── CONTENT ─── */}
       <div className="relative px-6 py-16 md:py-24">
         <div className="mx-auto grid max-w-[1280px] grid-cols-1 items-center gap-10 lg:grid-cols-5 lg:gap-12">
@@ -174,7 +176,7 @@ export function HeroSection() {
               variants={item}
               className="mt-5 max-w-lg text-base md:text-lg text-secondary leading-relaxed"
             >
-              {t("subtitle")}
+              {t("subtitle", { count: peptideTotal })}
             </motion.p>
             <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
               <motion.div
@@ -212,7 +214,7 @@ export function HeroSection() {
             >
               <span className="inline-flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
-                <TextWithAbbr text={isBg ? "HPLC ≥98%" : "HPLC ≥98%"} locale={locale} />
+                <TextWithAbbr text={isBg ? "HPLC над 98%" : "HPLC above 98%"} locale={locale} />
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
@@ -236,15 +238,9 @@ export function HeroSection() {
             animate="show"
           >
             <div className="relative rounded-2xl border border-border bg-white/75 backdrop-blur-md p-7 shadow-[0_12px_40px_-24px_rgba(15,23,42,0.2)]">
-              {/* Corner ticks */}
+              {/* Corner label */}
               <span className="absolute top-3 left-3 font-mono text-[9px] uppercase tracking-widest text-muted">
-                STATS · LIVE
-              </span>
-              <span className="absolute top-3 right-3 flex items-center gap-1">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inset-0 rounded-full bg-teal-500/50 peptide-live-dot" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal-500" />
-                </span>
+                {isBg ? "Каталог" : "Catalog"}
               </span>
 
               <div className="mt-6 grid grid-cols-3 gap-6">
@@ -259,7 +255,8 @@ export function HeroSection() {
                 </motion.div>
                 <motion.div variants={item} className="text-center">
                   <p className="font-mono text-3xl font-bold text-navy tabular">
-                    ≥<NumberFlow value={purity} />
+                    {isBg ? "над " : "over "}
+                    <NumberFlow value={purity} />
                     <span className="text-xl">%</span>
                   </p>
                   <p className="mt-2 text-[10px] uppercase tracking-widest text-muted">
@@ -270,7 +267,7 @@ export function HeroSection() {
                   </p>
                 </motion.div>
                 <motion.div variants={item} className="text-center">
-                  <p className="font-mono text-3xl font-bold text-navy tabular">
+                  <p className="font-mono text-2xl md:text-[1.75rem] font-bold text-navy tabular whitespace-nowrap">
                     {t("statDelivery")}
                   </p>
                   <p className="mt-2 text-[10px] uppercase tracking-widest text-muted">

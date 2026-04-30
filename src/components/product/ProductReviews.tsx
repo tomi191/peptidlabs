@@ -22,12 +22,9 @@ export async function ProductReviews({ productId, locale }: Props) {
     <section aria-labelledby="product-reviews-heading">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-            {isBg ? "[REVIEWS/01] ДАННИ" : "[REVIEWS/01] DATA"}
-          </p>
           <h2
             id="product-reviews-heading"
-            className="mt-1 font-display text-2xl font-bold text-navy tracking-[-0.02em]"
+            className="font-display text-2xl font-bold text-navy tracking-[-0.02em]"
           >
             {t("title")}
           </h2>

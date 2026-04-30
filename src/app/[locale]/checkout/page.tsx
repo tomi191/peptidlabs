@@ -60,10 +60,7 @@ export default function CheckoutPage() {
 
         <div className="flex items-end justify-between gap-6 mb-8">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {isBg ? "[CHECKOUT/01] ФИНАЛИЗИРАНЕ" : "[CHECKOUT/01] CHECKOUT"}
-            </p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-navy tracking-[-0.03em]">
               {t("title")}
             </h1>
           </div>

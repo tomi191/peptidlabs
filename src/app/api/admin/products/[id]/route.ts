@@ -33,7 +33,16 @@ export async function GET(
     return fail("Product not found", 404, "NOT_FOUND");
   }
 
-  return ok(product);
+  const { data: links } = await supabase
+    .from("product_categories")
+    .select("category_id, categories(slug)")
+    .eq("product_id", id);
+
+  const category_slugs = (links ?? [])
+    .map((l) => (l.categories as unknown as { slug: string } | null)?.slug)
+    .filter((s): s is string => Boolean(s));
+
+  return ok({ ...product, category_slugs });
 }
 
 export async function PATCH(
@@ -56,7 +65,6 @@ export async function PATCH(
   const body = parsed.data;
   const updates: Record<string, unknown> = {};
 
-  // Map camelCase/exact schema fields to DB columns (all match 1:1 here).
   const directFields = [
     "name",
     "name_bg",
@@ -64,6 +72,10 @@ export async function PATCH(
     "sku",
     "description_bg",
     "description_en",
+    "summary_bg",
+    "summary_en",
+    "use_case_tag_bg",
+    "use_case_tag_en",
     "sequence",
     "coa_url",
     "price_bgn",
@@ -87,24 +99,49 @@ export async function PATCH(
     }
   }
 
-  if (Object.keys(updates).length === 0) {
+  const supabase = createAdminSupabase();
+
+  // Sync category links if provided (separate junction table)
+  if (body.category_slugs !== undefined) {
+    const { data: cats } = await supabase
+      .from("categories")
+      .select("id, slug")
+      .in("slug", body.category_slugs);
+    const newCategoryIds = (cats ?? []).map((c) => c.id);
+
+    await supabase.from("product_categories").delete().eq("product_id", id);
+    if (newCategoryIds.length > 0) {
+      await supabase.from("product_categories").insert(
+        newCategoryIds.map((cid) => ({ product_id: id, category_id: cid }))
+      );
+    }
+  }
+
+  if (Object.keys(updates).length === 0 && body.category_slugs === undefined) {
     return fail("No valid fields to update", 400, "NO_UPDATES");
   }
 
-  updates.updated_at = new Date().toISOString();
+  if (Object.keys(updates).length > 0) {
+    updates.updated_at = new Date().toISOString();
+    const { error } = await supabase
+      .from("products")
+      .update(updates)
+      .eq("id", id);
+    if (error) {
+      console.error("Failed to update product:", error);
+      return fail("Failed to update product", 500, "DB_ERROR");
+    }
+  }
 
-  const supabase = createAdminSupabase();
-
-  const { data: product, error } = await supabase
+  // Re-fetch with current data
+  const { data: product, error: fetchErr } = await supabase
     .from("products")
-    .update(updates)
+    .select("*")
     .eq("id", id)
-    .select()
     .single();
 
-  if (error) {
-    console.error("Failed to update product:", error);
-    return fail("Failed to update product", 500, "DB_ERROR");
+  if (fetchErr) {
+    return fail("Failed to fetch updated product", 500, "DB_ERROR");
   }
 
   return ok(product);
