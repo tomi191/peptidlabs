@@ -5,9 +5,17 @@
    Click a card to see animated bar chart with weight loss %, price, frequency. */
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import { ArrowRight, Sparkles, Crown, Award, Trophy } from "lucide-react";
+import { TiltedCard } from "@/components/ui/TiltedCard";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+function glp1BgUrl(id: string): string | null {
+  if (!SUPABASE_URL) return null;
+  return `${SUPABASE_URL}/storage/v1/object/public/product-images/glp1/${id}.png`;
+}
 
 type Locale = "bg" | "en";
 
@@ -122,11 +130,11 @@ export function GLP1Comparison({ locale }: { locale: Locale }) {
             const Icon = v.badgeIcon;
             const isActive = active === v.id;
             return (
+              <TiltedCard key={v.id} intensity={6} className="h-full">
               <button
-                key={v.id}
                 type="button"
                 onClick={() => setActive(v.id)}
-                className={`group relative overflow-hidden rounded-2xl border p-5 text-left transition-all ${
+                className={`group relative h-full w-full overflow-hidden rounded-2xl border p-5 text-left transition-all ${
                   isActive
                     ? "border-navy shadow-[0_8px_24px_-12px_rgba(15,23,42,0.25)]"
                     : "border-border hover:border-navy/40"
@@ -167,6 +175,7 @@ export function GLP1Comparison({ locale }: { locale: Locale }) {
                   </span>
                 </div>
               </button>
+              </TiltedCard>
             );
           })}
         </div>
@@ -182,8 +191,29 @@ export function GLP1Comparison({ locale }: { locale: Locale }) {
             className="overflow-hidden rounded-3xl border border-border bg-white"
           >
             <div className="grid lg:grid-cols-[1.2fr_1fr]">
-              {/* Left: animated comparison bars */}
-              <div className="border-b border-border bg-surface/30 p-6 md:p-8 lg:border-b-0 lg:border-r">
+              {/* Left: animated comparison bars with subtle variant bg */}
+              <div className="relative overflow-hidden border-b border-border bg-surface/30 p-6 md:p-8 lg:border-b-0 lg:border-r">
+                {(() => {
+                  const bg = glp1BgUrl(activeVariant.id);
+                  if (!bg) return null;
+                  return (
+                    <div
+                      className="pointer-events-none absolute inset-0 opacity-25"
+                      aria-hidden="true"
+                    >
+                      <Image
+                        src={bg}
+                        alt=""
+                        fill
+                        sizes="40vw"
+                        quality={85}
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-white/40" />
+                    </div>
+                  );
+                })()}
+                <div className="relative">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
                   {isBg ? "[Phase 2/3 клинични данни]" : "[Phase 2/3 clinical data]"}
                 </p>
@@ -237,6 +267,7 @@ export function GLP1Comparison({ locale }: { locale: Locale }) {
                       </div>
                     );
                   })}
+                </div>
                 </div>
               </div>
 

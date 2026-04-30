@@ -3,6 +3,9 @@ import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import { COABadge } from "@/components/ui/COABadge";
 import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
+import { WishlistButton } from "@/components/product/WishlistButton";
+import { CompareCheckbox } from "@/components/product/CompareCheckbox";
+import { TiltedCard } from "@/components/ui/TiltedCard";
 import type { Product } from "@/lib/types";
 import {
   getFormLabel,
@@ -23,7 +26,8 @@ export function ProductCard({
 }) {
   const displayName = getProductDisplayName(product, locale);
   return (
-    <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
+    <TiltedCard intensity={5} className="h-full">
+    <div className="h-full overflow-hidden rounded-lg border border-border bg-white transition-shadow hover:shadow-md">
       <Link href={`/products/${product.slug}`} className="product-card-cursor block">
         <div
           className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg bg-surface"
@@ -46,6 +50,11 @@ export function ProductCard({
           {product.coa_url && (
             <COABadge variant="overlay" className="absolute right-2 top-2" />
           )}
+
+          <div className="absolute left-2 top-2 flex flex-col gap-1.5">
+            <WishlistButton slug={product.slug} productName={displayName} />
+            <CompareCheckbox slug={product.slug} productName={displayName} />
+          </div>
         </div>
 
         <div className="px-4 pt-4 pb-2">
@@ -76,5 +85,6 @@ export function ProductCard({
         <AddToCartButton product={product} />
       </div>
     </div>
+    </TiltedCard>
   );
 }

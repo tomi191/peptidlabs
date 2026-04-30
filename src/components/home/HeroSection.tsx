@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { FlaskConical, FileCheck, Bell } from "lucide-react";
 import { PRE_LAUNCH_MODE } from "@/lib/config";
 import { useTranslations, useLocale } from "next-intl";
@@ -10,6 +11,11 @@ import { Link } from "@/i18n/navigation";
 import { HPLCLine } from "@/components/ui/HPLCLine";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 import { HeroDataOverlay } from "@/components/home/HeroDataOverlay";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const HERO_PORTRAIT_URL = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/hero/portrait.png`
+  : null;
 
 const container = {
   hidden: { opacity: 0 },
@@ -264,51 +270,79 @@ export function HeroSection({ peptideTotal = 65 }: { peptideTotal?: number }) {
             </motion.div>
           </motion.div>
 
-          {/* Right — stats card with counting numbers */}
+          {/* Right — portrait with floating stats card overlay */}
           <motion.div
             className="lg:col-span-2"
             variants={statsContainer}
             initial="hidden"
             animate="show"
           >
-            <div className="relative rounded-2xl border border-border bg-white/75 backdrop-blur-md p-7 shadow-[0_12px_40px_-24px_rgba(15,23,42,0.2)]">
-              {/* Corner label */}
-              <span className="absolute top-3 left-3 font-mono text-[9px] uppercase tracking-widest text-muted">
-                {isBg ? "Каталог" : "Catalog"}
-              </span>
+            <div className="relative">
+              {/* Hero portrait — vertical 3:4 */}
+              {HERO_PORTRAIT_URL && (
+                <motion.div
+                  variants={item}
+                  className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl bg-surface shadow-[0_24px_64px_-24px_rgba(15,23,42,0.35)] ring-1 ring-border"
+                >
+                  <Image
+                    src={HERO_PORTRAIT_URL}
+                    alt={isBg ? "Изследовател в лаборатория" : "Researcher in lab"}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    quality={95}
+                    priority
+                    className="object-cover"
+                  />
+                  {/* Subtle gradient at the bottom for stats card legibility */}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/45 via-black/15 to-transparent" />
+                </motion.div>
+              )}
 
-              <div className="mt-6 grid grid-cols-3 gap-6">
-                <motion.div variants={item} className="text-center">
-                  <p className="font-mono text-3xl font-bold text-navy tabular">
-                    <NumberFlow value={peptideCount} />
-                    <span className="text-xl">+</span>
-                  </p>
-                  <p className="mt-2 text-[10px] uppercase tracking-widest text-muted">
-                    {t("statPeptidesLabel")}
-                  </p>
-                </motion.div>
-                <motion.div variants={item} className="text-center">
-                  <p className="font-mono text-3xl font-bold text-navy tabular">
-                    {isBg ? "над " : "over "}
-                    <NumberFlow value={purity} />
-                    <span className="text-xl">%</span>
-                  </p>
-                  <p className="mt-2 text-[10px] uppercase tracking-widest text-muted">
-                    <TextWithAbbr
-                      text={t("statPurityLabel")}
-                      locale={locale}
-                    />
-                  </p>
-                </motion.div>
-                <motion.div variants={item} className="text-center">
-                  <p className="font-mono text-2xl md:text-[1.75rem] font-bold text-navy tabular whitespace-nowrap">
-                    {t("statDelivery")}
-                  </p>
-                  <p className="mt-2 text-[10px] uppercase tracking-widest text-muted">
-                    {t("statDeliveryLabel")}
-                  </p>
-                </motion.div>
-              </div>
+              {/* Stats card — floating over portrait bottom */}
+              <motion.div
+                variants={item}
+                className={`relative rounded-2xl border border-border bg-white/85 backdrop-blur-md p-6 shadow-[0_12px_40px_-24px_rgba(15,23,42,0.25)] ${
+                  HERO_PORTRAIT_URL ? "-mt-12 mx-4 lg:mx-6" : ""
+                }`}
+              >
+                {/* Corner label */}
+                <span className="absolute top-3 left-3 font-mono text-[9px] uppercase tracking-widest text-muted">
+                  {isBg ? "Каталог" : "Catalog"}
+                </span>
+
+                <div className="mt-6 grid grid-cols-3 gap-4">
+                  <motion.div variants={item} className="text-center">
+                    <p className="font-mono text-2xl md:text-3xl font-bold text-navy tabular">
+                      <NumberFlow value={peptideCount} />
+                      <span className="text-lg">+</span>
+                    </p>
+                    <p className="mt-1.5 text-[10px] uppercase tracking-widest text-muted">
+                      {t("statPeptidesLabel")}
+                    </p>
+                  </motion.div>
+                  <motion.div variants={item} className="text-center">
+                    <p className="font-mono text-2xl md:text-3xl font-bold text-navy tabular">
+                      {isBg ? "над " : "over "}
+                      <NumberFlow value={purity} />
+                      <span className="text-lg">%</span>
+                    </p>
+                    <p className="mt-1.5 text-[10px] uppercase tracking-widest text-muted">
+                      <TextWithAbbr
+                        text={t("statPurityLabel")}
+                        locale={locale}
+                      />
+                    </p>
+                  </motion.div>
+                  <motion.div variants={item} className="text-center">
+                    <p className="font-mono text-xl md:text-2xl font-bold text-navy tabular whitespace-nowrap">
+                      {t("statDelivery")}
+                    </p>
+                    <p className="mt-1.5 text-[10px] uppercase tracking-widest text-muted">
+                      {t("statDeliveryLabel")}
+                    </p>
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>

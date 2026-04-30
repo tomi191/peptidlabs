@@ -222,11 +222,9 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
-      <div className="bg-white">
-        <FadeIn>
-          <NewsletterSection />
-        </FadeIn>
-      </div>
+      <FadeIn>
+        <NewsletterSection />
+      </FadeIn>
     </main>
   );
 }
