@@ -123,7 +123,8 @@ export function CategoryGrid({
                       src={imageUrl}
                       alt={name}
                       fill
-                      sizes="(max-width: 1024px) 50vw, 20vw"
+                      sizes="(max-width: 1024px) 60vw, 30vw"
+                      quality={95}
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
                   ) : (
