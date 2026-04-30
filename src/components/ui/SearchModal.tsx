@@ -16,8 +16,10 @@ type SearchProduct = {
   purity_percent: number;
   use_case_tag_bg: string | null;
   use_case_tag_en: string | null;
+  images: string[] | null;
 };
 
+import Image from "next/image";
 import { getFormLabel } from "@/lib/labels";
 import type { Product } from "@/lib/types";
 import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
@@ -137,8 +139,18 @@ export default function SearchModal({
                     className="w-full text-left px-6 py-3 hover:bg-surface transition-colors flex items-center justify-between gap-4"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="shrink-0 flex h-16 w-12 items-center justify-center overflow-hidden rounded-md bg-surface">
-                        <VialPlaceholder name={product.name} size="xs" />
+                      <div className="relative shrink-0 flex h-16 w-12 items-center justify-center overflow-hidden rounded-md bg-surface">
+                        {product.images && product.images.length > 0 ? (
+                          <Image
+                            src={product.images[0]}
+                            alt={product.name}
+                            fill
+                            sizes="48px"
+                            className="object-contain p-1"
+                          />
+                        ) : (
+                          <VialPlaceholder name={product.name} size="xs" />
+                        )}
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-navy truncate">

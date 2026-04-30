@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { AddToCartButton } from "@/components/ui/AddToCartButton";
 import { COABadge } from "@/components/ui/COABadge";
@@ -25,12 +26,22 @@ export function ProductCard({
     <div className="overflow-hidden rounded-lg border border-border transition-shadow hover:shadow-md">
       <Link href={`/products/${product.slug}`} className="product-card-cursor block">
         <div
-          className="relative flex h-36 items-center justify-center rounded-t-lg bg-surface"
+          className="relative flex h-36 items-center justify-center overflow-hidden rounded-t-lg bg-surface"
           role="img"
           aria-label={displayName}
           style={{ viewTransitionName: `product-image-${product.slug}` }}
         >
-          <VialPlaceholder name={product.name} size="sm" />
+          {product.images && product.images.length > 0 ? (
+            <Image
+              src={product.images[0]}
+              alt={displayName}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-contain p-2"
+            />
+          ) : (
+            <VialPlaceholder name={product.name} size="sm" />
+          )}
 
           {product.coa_url && (
             <COABadge variant="overlay" className="absolute right-2 top-2" />

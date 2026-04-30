@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
@@ -282,12 +283,23 @@ export default async function ProductPage({ params }: PageProps) {
         <div className="grid gap-12 lg:grid-cols-2">
           {/* LEFT COLUMN */}
           <div>
-            {/* Product image placeholder */}
+            {/* Product image */}
             <div
-              className="relative flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-surface to-white"
+              className="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-surface to-white"
               style={{ viewTransitionName: `product-image-${product.slug}` }}
             >
-              <VialPlaceholder name={product.name} size="lg" />
+              {product.images && product.images.length > 0 ? (
+                <Image
+                  src={product.images[0]}
+                  alt={displayName}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-contain p-6"
+                />
+              ) : (
+                <VialPlaceholder name={product.name} size="lg" />
+              )}
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">

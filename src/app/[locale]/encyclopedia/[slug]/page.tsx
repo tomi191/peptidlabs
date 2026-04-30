@@ -11,6 +11,7 @@ import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { ArrowRight, FileText, FlaskConical, Info, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import { SequenceVisual } from "@/components/peptide/SequenceVisual";
 import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
@@ -250,8 +251,18 @@ export default async function EncyclopediaDetailPage({
                         href={`/products/${product.slug}`}
                         className="flex items-center gap-3 p-4 hover:bg-surface transition-colors"
                       >
-                        <div className="shrink-0 flex h-14 w-10 items-center justify-center overflow-hidden rounded-md bg-surface">
-                          <VialPlaceholder name={product.name} size="xs" />
+                        <div className="relative shrink-0 flex h-14 w-10 items-center justify-center overflow-hidden rounded-md bg-surface">
+                          {product.images && product.images.length > 0 ? (
+                            <Image
+                              src={product.images[0]}
+                              alt={productName}
+                              fill
+                              sizes="40px"
+                              className="object-contain p-1"
+                            />
+                          ) : (
+                            <VialPlaceholder name={product.name} size="xs" />
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-navy truncate">
