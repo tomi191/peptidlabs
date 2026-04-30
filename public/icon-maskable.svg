@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PeptidLabs">
-  <defs>
-    <linearGradient id="gm" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#0d9488"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#gm)"/>
-  <g fill="#fff" font-family="Inter, ui-sans-serif, system-ui, sans-serif">
-    <text x="50%" y="58%" text-anchor="middle" font-size="220" font-weight="700" letter-spacing="-8">P</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PeptidLabs">
+  <!-- Full bleed background for maskable safe-area requirement -->
+  <rect width="64" height="64" fill="#0f172a"/>
+  <!-- Inset content within ~80% safe zone -->
+  <g transform="translate(6 6) scale(0.8125)">
+    <path d="M 22 16 V 48 M 22 16 H 35 a 9 9 0 0 1 0 18 H 22" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="36" y1="42" x2="44" y2="46" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="46" cy="46" r="4" fill="#14b8a6"/>
   </g>
 </svg>

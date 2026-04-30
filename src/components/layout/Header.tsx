@@ -4,13 +4,15 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
-import { Search, ShoppingBag, Menu, Phone } from "lucide-react";
+import { Search, ShoppingBag, Menu, Phone, Heart } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
+import { useWishlist } from "@/lib/store/wishlist";
 import LocaleSwitch from "@/components/ui/LocaleSwitch";
 import CartDrawer from "@/components/layout/CartDrawer";
 import SearchModal from "@/components/ui/SearchModal";
 import { PeptideTicker } from "@/components/layout/PeptideTicker";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { LogoMark } from "@/components/ui/Logo";
 
 /* ── Cart icon with badge (reads Zustand) ── */
 function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
@@ -36,6 +38,33 @@ function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
         </span>
       )}
     </button>
+  );
+}
+
+/* ── Wishlist icon with badge ── */
+function WishlistIcon({ label }: { label: string }) {
+  const slugs = useWishlist((s) => s.slugs);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const count = mounted ? slugs.length : 0;
+
+  return (
+    <Link
+      href="/wishlist"
+      aria-label={label}
+      className="relative text-navy hover:text-rose-600 transition-colors duration-150"
+    >
+      <Heart size={20} strokeWidth={1.5} className={count > 0 ? "fill-rose-500 stroke-rose-500" : ""} />
+      {count > 0 && (
+        <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-medium w-4 h-4 rounded-full flex items-center justify-center leading-none">
+          {count > 9 ? "9+" : count}
+        </span>
+      )}
+    </Link>
   );
 }
 
@@ -122,13 +151,13 @@ export default function Header() {
       {/* Main nav */}
       <div className="flex items-center justify-between py-3 px-4 md:py-4 md:px-6 border-b border-border/60">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-navy rounded-md flex items-center justify-center">
-            <span className="text-white text-sm font-semibold leading-none">
-              P
-            </span>
-          </div>
-          <span className="font-semibold tracking-widest text-navy text-sm">
+        <Link
+          href="/"
+          aria-label="PeptidLabs"
+          className="inline-flex items-center gap-2.5"
+        >
+          <LogoMark size={32} />
+          <span className="font-semibold tracking-[0.18em] text-navy text-sm">
             PEPTIDLABS
           </span>
         </Link>
@@ -170,6 +199,7 @@ export default function Header() {
           >
             <Search size={20} strokeWidth={1.5} />
           </button>
+          <WishlistIcon label={locale === "bg" ? "Любими" : "Wishlist"} />
           <CartIcon onClick={() => setCartOpen(true)} label={tc("cartLabel")} />
 
           {/* Hamburger — visible below lg */}
