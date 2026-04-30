@@ -139,11 +139,15 @@ export default async function AccountPage({
   // ---------- Fetch orders + rewards ----------
   const supabase = createAdminSupabase();
 
+  // Sanitize for ilike — escape % and _ wildcards even though email comes
+  // from a signed JWT token, defensive against future input source changes.
+  const safeEmail = email.replace(/[%_]/g, "\\$&");
+
   const [ordersResult, rewardsResult] = await Promise.all([
     supabase
       .from("orders")
       .select("*")
-      .ilike("email", email)
+      .ilike("email", safeEmail)
       .order("created_at", { ascending: false })
       .limit(50),
     supabase
