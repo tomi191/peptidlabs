@@ -6,6 +6,7 @@ import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
 import { ProductCard } from "@/components/product/ProductCard";
+import { GroupedProductCard, groupProductVariants } from "@/components/product/GroupedProductCard";
 import { applyFilters, parseFilters } from "@/components/product/ShopFilters";
 import type { Product } from "@/lib/types";
 
@@ -132,11 +133,17 @@ export function SortableProductGrid({
 
       {filtered.length > 0 ? (
         <MotionProductGrid>
-          {filtered.map((product) => (
-            <MotionProductItem key={product.id}>
-              <ProductCard product={product} locale={locale} />
-            </MotionProductItem>
-          ))}
+          {groupProductVariants(filtered).map((entry) =>
+            entry.kind === "group" ? (
+              <MotionProductItem key={`g:${entry.key}`}>
+                <GroupedProductCard variants={entry.variants} />
+              </MotionProductItem>
+            ) : (
+              <MotionProductItem key={entry.product.id}>
+                <ProductCard product={entry.product} locale={locale} />
+              </MotionProductItem>
+            ),
+          )}
         </MotionProductGrid>
       ) : (
         <p className="py-12 text-center text-sm text-muted">

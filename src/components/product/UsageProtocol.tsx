@@ -12,11 +12,8 @@ import {
   Clock,
   Calendar,
   Lightbulb,
-  Calculator as CalcIcon,
-  ArrowRight,
   Sparkles,
 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
 
 type Locale = "bg" | "en";
 
@@ -78,20 +75,13 @@ export function UsageProtocol({
 
   // Format dose with unit (auto-switch mg if >= 1000 mcg)
   const dose = tier.dose_mcg;
+  const mlUnit = isBg ? "мл." : "ml";
   const doseDisplay =
     dose >= 1000000
-      ? `${(dose / 1000000).toFixed(0)} ml`
+      ? `${(dose / 1000000).toFixed(0)} ${mlUnit}`
       : dose >= 1000
         ? `${(dose / 1000).toLocaleString("en-US", { maximumFractionDigits: 1 })} mg`
         : `${dose} mcg`;
-
-  // Calculator link with prefilled params for the active tier
-  const calcParams = new URLSearchParams({
-    vial: String(vialSizeMg ?? 5),
-    water: "2",
-    dose: String(Math.min(dose, vialSizeMg ? vialSizeMg * 1000 : dose)),
-    syringe: dose <= 300 ? "0" : dose <= 500 ? "1" : "2",
-  }).toString();
 
   return (
     <section className="rounded-3xl border border-border bg-white p-6 md:p-8">
@@ -223,34 +213,6 @@ export function UsageProtocol({
           )}
         </motion.div>
       </AnimatePresence>
-
-      {/* CTA to calculator with prefilled values */}
-      <Link
-        href={`/calculator?${calcParams}` as `/calculator`}
-        className="group mt-6 flex items-center justify-between gap-4 rounded-xl border border-navy bg-white px-5 py-3.5 text-navy transition-colors hover:bg-navy hover:text-white"
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy text-white group-hover:bg-white group-hover:text-navy transition-colors">
-            <CalcIcon size={16} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold">
-              {isBg
-                ? "Изчисли точната доза + флакони за курса"
-                : "Calculate exact dose + vials for cycle"}
-            </p>
-            <p className="text-[11px] opacity-70">
-              {isBg
-                ? "Отваря калкулатора с този протокол"
-                : "Opens calculator with this protocol"}
-            </p>
-          </div>
-        </div>
-        <ArrowRight
-          size={18}
-          className="shrink-0 transition-transform group-hover:translate-x-1"
-        />
-      </Link>
 
       {/* Disclaimer */}
       <p className="mt-4 border-t border-border pt-4 text-[11px] italic text-muted leading-relaxed">

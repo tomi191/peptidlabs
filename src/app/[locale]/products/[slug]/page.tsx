@@ -31,6 +31,10 @@ import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { SpecsTable } from "@/components/product/SpecsTable";
 import { FrequentlyBoughtTogether } from "@/components/product/FrequentlyBoughtTogether";
 import { ProductFaq } from "@/components/product/ProductFaq";
+import { SideEffectsCard } from "@/components/product/SideEffectsCard";
+import { ReconstitutionGuide } from "@/components/product/ReconstitutionGuide";
+import { ProductCalculator } from "@/components/product/ProductCalculator";
+import { ClinicalPhases, type ClinicalPhase } from "@/components/product/ClinicalPhases";
 import { ProductReviews } from "@/components/product/ProductReviews";
 import { ProductCard } from "@/components/product/ProductCard";
 import { MotionProductGrid, MotionProductItem } from "@/components/product/MotionProductGrid";
@@ -147,8 +151,34 @@ export default async function ProductPage({ params }: PageProps) {
     },
   };
 
-  // FAQ items
+  // Product-specific content from scientific_data
+  const sciData = (product.scientific_data ?? {}) as Record<string, unknown>;
+  const sideEffectsBg = typeof sciData.side_effects_bg === "string" ? sciData.side_effects_bg : null;
+  const reconstitutionBg = typeof sciData.reconstitution_bg === "string" ? sciData.reconstitution_bg : null;
+  const productFaqBg = Array.isArray(sciData.faq_bg)
+    ? (sciData.faq_bg as Array<{ q?: string; a?: string }>).filter(
+        (f): f is { q: string; a: string } =>
+          typeof f.q === "string" && typeof f.a === "string",
+      )
+    : [];
+  const clinicalPhases = Array.isArray(sciData.clinical_phases)
+    ? (sciData.clinical_phases as Array<Record<string, unknown>>).filter(
+        (r): r is ClinicalPhase =>
+          typeof r.phase === "string" &&
+          ["I", "II", "III", "Approved"].includes(r.phase as string) &&
+          typeof r.trial === "string" &&
+          typeof r.dose === "string" &&
+          typeof r.duration === "string" &&
+          typeof r.result === "string",
+      )
+    : [];
+
+  // FAQ items — product-specific (BG only) prepended, then generic
+  const productFaqItems = locale === "bg"
+    ? productFaqBg.map((f) => ({ question: f.q, answer: f.a }))
+    : [];
   const faqItems = [
+    ...productFaqItems,
     {
       question: t("faqWhat", { name: product.name }),
       answer: description ?? t("researchDisclaimer"),
@@ -503,6 +533,61 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
         );
       })()}
+
+      {/* ─── PRODUCT CALCULATOR — embedded interactive dose calc ─── */}
+      {product.vial_size_mg !== null && (() => {
+        const usageProtocol = (product.scientific_data as Record<string, unknown> | null)?.usage_protocol as UsageProtocolData | undefined;
+        const standardTier = usageProtocol?.tiers?.standard ?? usageProtocol?.tiers?.starter ?? usageProtocol?.tiers?.extended;
+        const defaultDoseMcg = standardTier?.dose_mcg ?? 250;
+        return (
+          <div className="bg-surface py-12">
+            <div className="mx-auto max-w-[1280px] px-6">
+              <ProductCalculator
+                vialSizeMg={product.vial_size_mg}
+                defaultDoseMcg={defaultDoseMcg}
+                productName={displayName}
+                productSlug={product.slug}
+                locale={locale as "bg" | "en"}
+              />
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ─── RECONSTITUTION + SIDE EFFECTS (BG only) ─── */}
+      {locale === "bg" && (reconstitutionBg || sideEffectsBg) && (
+        <div className="bg-white py-12">
+          <div className="mx-auto max-w-[1280px] px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {reconstitutionBg && (
+                <ReconstitutionGuide
+                  text={reconstitutionBg}
+                  heading="Реконституция стъпка по стъпка"
+                />
+              )}
+              {sideEffectsBg && (
+                <SideEffectsCard
+                  text={sideEffectsBg}
+                  heading="Странични ефекти"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── CLINICAL PHASES TABLE ─── */}
+      {clinicalPhases.length > 0 && (
+        <div className="bg-surface py-12">
+          <div className="mx-auto max-w-[1280px] px-6">
+            <ClinicalPhases
+              phases={clinicalPhases}
+              heading={locale === "bg" ? "Клинични фази и резултати" : "Clinical phases and results"}
+              locale={locale as "bg" | "en"}
+            />
+          </div>
+        </div>
+      )}
 
       {/* ─── LIVE MECHANISM VISUALIZATION ─── */}
       {getPeptideVisualization(product.slug) && (

@@ -214,9 +214,10 @@ async function main() {
         done++;
         break;
       } catch (err) {
-        const isRetryable = /Internal Error|timed out|503|502|504|ECONN/i.test(
-          err.message
-        );
+        const isRetryable =
+          /Internal Error|timed out|503|502|504|ECONN|fetch failed|network|EAI_AGAIN|ENOTFOUND|socket hang up/i.test(
+            err.message
+          );
         if (!isRetryable || attempt === MAX_ATTEMPTS) {
           console.error(`  ✗ ${err.message} (attempt ${attempt}/${MAX_ATTEMPTS})\n`);
           failed++;

@@ -20,6 +20,8 @@ import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { DesktopAppRail } from "@/components/layout/DesktopAppRail";
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
 import { PreLaunchBanner } from "@/components/waitlist/PreLaunchBanner";
+import { PromoBanner } from "@/components/layout/PromoBanner";
+import { CompareBar } from "@/components/product/CompareBar";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 import "../globals.css";
 
@@ -158,6 +160,7 @@ export default async function LocaleLayout({
           <LenisProvider>
             <GrainOverlay />
             <PreLaunchBanner />
+            <PromoBanner />
             <Header />
             <main
               id="main-content"
@@ -167,6 +170,7 @@ export default async function LocaleLayout({
             </main>
             <Footer />
             <WhatsAppButton />
+            <CompareBar />
             <MobileTabBar />
             <DesktopAppRail />
             <InstallPrompt />
