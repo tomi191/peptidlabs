@@ -8,6 +8,9 @@ import NumberFlow from "@number-flow/react";
 import { motion, AnimatePresence } from "motion/react";
 import { useCart } from "@/lib/store/cart";
 import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
+import { PRE_LAUNCH_MODE } from "@/lib/config";
+import { WaitlistForm } from "@/components/waitlist/WaitlistForm";
+import { Bell } from "lucide-react";
 
 type CartDrawerProps = {
   open: boolean;
@@ -93,6 +96,52 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
             aria-modal="true"
             aria-label={t("title")}
           >
+        {/* Pre-launch: replace cart with waitlist signup */}
+        {PRE_LAUNCH_MODE ? (
+          <>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h2 className="text-navy font-semibold text-lg flex items-center gap-2">
+                <Bell size={18} className="text-accent" />
+                {locale === "bg" ? "Бъди първи" : "Be first"}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-secondary hover:text-navy transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} strokeWidth={1.5} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <WaitlistForm
+                variant="card"
+                source="cart-drawer"
+                title={
+                  locale === "bg"
+                    ? "Каталогът се подготвя за пускане"
+                    : "Catalog is preparing for launch"
+                }
+                subtitle={
+                  locale === "bg"
+                    ? "Все още не приемаме поръчки. Запиши се с имейл и ще те уведомим веднага щом продуктите станат достъпни."
+                    : "We are not yet accepting orders. Add your email and we will notify you the moment products become available."
+                }
+              />
+              <div className="mt-6 text-center">
+                <Link
+                  href="/waitlist"
+                  onClick={onClose}
+                  className="text-sm text-accent hover:underline"
+                >
+                  {locale === "bg"
+                    ? "Виж пълната страница за списъка →"
+                    : "View full waitlist page →"}
+                </Link>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-navy font-semibold text-lg">{t("title")}</h2>
@@ -235,6 +284,8 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
                 {t("checkout")}
               </motion.button>
             </div>
+          </>
+        )}
           </>
         )}
           </motion.div>

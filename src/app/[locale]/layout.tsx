@@ -19,6 +19,7 @@ import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { DesktopAppRail } from "@/components/layout/DesktopAppRail";
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
+import { PreLaunchBanner } from "@/components/waitlist/PreLaunchBanner";
 import "../globals.css";
 
 const inter = Inter({
@@ -148,6 +149,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <LenisProvider>
             <GrainOverlay />
+            <PreLaunchBanner />
             <Header />
             <main
               id="main-content"

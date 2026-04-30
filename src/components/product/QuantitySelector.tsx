@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { useLocale } from "next-intl";
 import { useCart } from "@/lib/store/cart";
 import type { Product } from "@/lib/types";
+import { PRE_LAUNCH_MODE } from "@/lib/config";
+import { NotifyMeButton } from "@/components/waitlist/NotifyMeButton";
 
 export function QuantitySelector({
   product,
@@ -19,6 +21,25 @@ export function QuantitySelector({
   const addItem = useCart((s) => s.addItem);
   const locale = useLocale();
   const isBg = locale === "bg";
+
+  // Pre-launch: replace cart UI with waitlist signup
+  if (PRE_LAUNCH_MODE) {
+    return (
+      <div className="mt-4">
+        <NotifyMeButton
+          peptideSlug={product.slug}
+          source={`product:${product.slug}`}
+          size="lg"
+          fullWidth
+        />
+        <p className="mt-2 text-xs text-muted text-center">
+          {isBg
+            ? "Каталогът все още не приема поръчки. Запиши се в списъка."
+            : "The catalog is not yet accepting orders. Join the list."}
+        </p>
+      </div>
+    );
+  }
 
   function decrement() {
     setQuantity((q) => Math.max(1, q - 1));

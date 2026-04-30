@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FlaskConical, FileCheck } from "lucide-react";
+import { FlaskConical, FileCheck, Bell } from "lucide-react";
+import { PRE_LAUNCH_MODE } from "@/lib/config";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, useScroll, useTransform } from "motion/react";
 import NumberFlow from "@number-flow/react";
@@ -179,32 +180,65 @@ export function HeroSection({ peptideTotal = 65 }: { peptideTotal?: number }) {
               {t("subtitle", { count: peptideTotal })}
             </motion.p>
             <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
-              <motion.div
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              >
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-navy/90 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.4)] hover:shadow-[0_8px_30px_-10px_rgba(15,23,42,0.5)]"
-                >
-                  <FlaskConical size={16} />
-                  {t("browsePeptides")}
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              >
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 rounded-xl border border-border bg-white/80 backdrop-blur-sm px-6 py-3.5 text-sm font-medium text-navy transition-colors hover:bg-white hover:border-navy/30"
-                >
-                  <FileCheck size={16} />
-                  {t("viewCoa")}
-                </Link>
-              </motion.div>
+              {PRE_LAUNCH_MODE ? (
+                <>
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  >
+                    <Link
+                      href="/waitlist"
+                      className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-navy/90 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.4)] hover:shadow-[0_8px_30px_-10px_rgba(15,23,42,0.5)]"
+                    >
+                      <Bell size={16} />
+                      {isBg ? "Запиши се в списъка" : "Join the waitlist"}
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  >
+                    <Link
+                      href="/shop"
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-white/80 backdrop-blur-sm px-6 py-3.5 text-sm font-medium text-navy transition-colors hover:bg-white hover:border-navy/30"
+                    >
+                      <FlaskConical size={16} />
+                      {isBg ? "Разгледай каталога" : "Browse catalog"}
+                    </Link>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  >
+                    <Link
+                      href="/shop"
+                      className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-navy/90 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.4)] hover:shadow-[0_8px_30px_-10px_rgba(15,23,42,0.5)]"
+                    >
+                      <FlaskConical size={16} />
+                      {t("browsePeptides")}
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  >
+                    <Link
+                      href="/about"
+                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-white/80 backdrop-blur-sm px-6 py-3.5 text-sm font-medium text-navy transition-colors hover:bg-white hover:border-navy/30"
+                    >
+                      <FileCheck size={16} />
+                      {t("viewCoa")}
+                    </Link>
+                  </motion.div>
+                </>
+              )}
             </motion.div>
 
             {/* Inline trust row — replaces static chips */}

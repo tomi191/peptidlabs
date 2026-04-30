@@ -2,7 +2,7 @@
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAdmin } from "@/lib/store/admin";
-import { LogOut, Package, ShoppingCart, LayoutDashboard } from "lucide-react";
+import { LogOut, Package, ShoppingCart, LayoutDashboard, Bell } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, logout } = useAdmin();
@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthenticated()) return <>{children}</>;
 
   const nav = [
+    { href: "/admin/waitlist", label: "Списък (waitlist)", icon: Bell },
     { href: "/admin/orders", label: "Поръчки", icon: ShoppingCart },
     { href: "/admin/products", label: "Продукти", icon: Package },
   ] as const;

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import type { Product } from "@/lib/types";
+import { PRE_LAUNCH_MODE } from "@/lib/config";
+import { NotifyMeButton } from "@/components/waitlist/NotifyMeButton";
 
 export function StickyAddToCart({
   product,
@@ -34,13 +36,21 @@ export function StickyAddToCart({
           </p>
           <p className="text-sm font-bold text-navy tabular">{price}</p>
         </div>
-        <button
-          onClick={() => cart.addItem(product)}
-          className="flex shrink-0 items-center gap-2 rounded-lg bg-navy px-5 py-2.5 text-sm font-semibold text-white"
-        >
-          <ShoppingBag size={16} />
-          {locale === "bg" ? "Добави" : "Add to Cart"}
-        </button>
+        {PRE_LAUNCH_MODE ? (
+          <NotifyMeButton
+            peptideSlug={product.slug}
+            source={`sticky:${product.slug}`}
+            size="md"
+          />
+        ) : (
+          <button
+            onClick={() => cart.addItem(product)}
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-navy px-5 py-2.5 text-sm font-semibold text-white"
+          >
+            <ShoppingBag size={16} />
+            {locale === "bg" ? "Добави" : "Add to Cart"}
+          </button>
+        )}
       </div>
     </div>
   );

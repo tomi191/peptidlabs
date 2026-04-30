@@ -8,6 +8,7 @@ import { Lock } from "lucide-react";
 import { useCart } from "@/lib/store/cart";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 import OrderSummary from "@/components/checkout/OrderSummary";
+import { PRE_LAUNCH_MODE } from "@/lib/config";
 
 export default function CheckoutPage() {
   const t = useTranslations("checkout");
@@ -21,8 +22,15 @@ export default function CheckoutPage() {
     setMounted(true);
   }, []);
 
+  // Pre-launch: redirect checkout to waitlist
   useEffect(() => {
-    if (mounted && items.length === 0) {
+    if (PRE_LAUNCH_MODE && mounted) {
+      router.push(`/${locale}/waitlist`);
+    }
+  }, [mounted, router, locale]);
+
+  useEffect(() => {
+    if (!PRE_LAUNCH_MODE && mounted && items.length === 0) {
       router.push("/shop");
     }
   }, [mounted, items.length, router]);

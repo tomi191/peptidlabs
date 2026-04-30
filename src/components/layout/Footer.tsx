@@ -14,6 +14,7 @@ const shopLinks = [
 ] as const;
 
 const infoLinks = [
+  { label: "waitlist", href: "/waitlist" },
   { label: "whatArePeptides", href: "/what-are-peptides" },
   { label: "delivery", href: "/delivery" },
   { label: "returns", href: "/returns" },
