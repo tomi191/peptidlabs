@@ -214,6 +214,23 @@ p { text-wrap: pretty; }
   100% { transform: translateX(-50%); }
 }
 
+/* ── Infinite category marquee (react-bits style) ──
+   Two identical halves inside a w-max flex; -50% lands exactly at the start of the duplicate. */
+@keyframes category-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.category-marquee-track {
+  animation: category-marquee 50s linear infinite;
+  will-change: transform;
+}
+.category-marquee-pause:hover .category-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-marquee-track { animation: none; }
+}
+
 /* Aurora / mesh gradient blobs — slow organic drift behind hero content */
 @keyframes aurora-drift-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
