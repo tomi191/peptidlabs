@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
 
   const ok_ = await verifyAdminPassword(parsed.data.password);
   if (!ok_) {
-    // Constant-ish time — the bcrypt path already takes time.
     return fail("Invalid credentials", 401, "INVALID_CREDENTIALS");
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAdmin } from "@/lib/store/admin";
 import { LogOut, Package, ShoppingCart, LayoutDashboard, Bell } from "lucide-react";
@@ -7,6 +8,12 @@ import { LogOut, Package, ShoppingCart, LayoutDashboard, Bell } from "lucide-rea
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, logout } = useAdmin();
   const pathname = usePathname();
+
+  // Hydration guard: zustand-persist reads localStorage only after mount.
+  // Server renders unauthenticated; client must match on first paint.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <>{children}</>;
 
   if (!isAuthenticated()) return <>{children}</>;
 
