@@ -61,56 +61,55 @@ const force = args.includes("--force");
 
 // ---------- Common style preamble (kept short — KIE succeeds more often) ----------
 const STYLE = [
-  "Editorial fine-art macro photography.",
-  "Soft warm natural window light.",
-  "Cream linen and stone background.",
-  "Muted palette of cream beige bone porcelain warm gold.",
-  "Shallow depth of field.",
-  "No text, no logos, no people, no faces.",
-  "Clean minimal composition, 2026 wellness aesthetic.",
+  "Premium editorial fitness and wellness photography, 2026 magazine quality.",
+  "Real athletic person, professional model, fit body, healthy skin.",
+  "Modern bright gym, clinic, or studio interior, soft cool natural light, cinematic depth.",
+  "Sharp focus on subject, slightly blurred background.",
+  "No text, no logos, no watermarks.",
+  "Confident wellness aesthetic — looks like a Nike, Lululemon, or premium peptide brand campaign.",
 ].join(" ");
 
 // ---------- Per-category prompts ----------
 const CATEGORIES = {
   healing: {
     name: "Healing & Recovery",
-    prompt: `${STYLE} Macro close-up of fresh sage and aloe leaves on cream linen, single drop of clear serum on a leaf, copper-tinted morning sunlight. Conveys regeneration and skin recovery.`,
+    prompt: `${STYLE} Athletic woman in light grey activewear on a yoga mat in a bright recovery studio, gently massaging her shoulder with focused calm expression, soft window light, plants in background. Conveys recovery, healing, regeneration.`,
   },
   "weight-loss": {
     name: "Weight Loss",
-    prompt: `${STYLE} Overhead minimalist still life: one ripe green pear, a coiled cloth measuring tape in soft beige, a single sprig of fresh rosemary, on a stone surface. Clean negative space. Conveys lightness and metabolism.`,
+    prompt: `${STYLE} Slim athletic woman in black sports bra and leggings, mid-30s, lean toned body, side profile in a bright minimalist gym, holding a white shaker bottle, natural daylight. Conveys metabolism and lean physique.`,
   },
   "gh-muscle": {
     name: "GH & Muscle",
-    prompt: `${STYLE} Macro photograph of a single fresh whole egg balanced on a smooth river stone, beside a small ceramic dish of golden honey. Warm amber light. Conveys protein, growth, and natural strength.`,
+    prompt: `${STYLE} Muscular man in his 30s, defined back and shoulders, performing a dumbbell row in a modern dark concrete gym, dramatic side lighting highlighting muscle definition, focused intensity. Conveys strength and growth.`,
   },
   "anti-aging": {
     name: "Anti-aging",
-    prompt: `${STYLE} Extreme macro of a perfect dewdrop on a soft pink rose petal, real dew, gold-leaf flecks scattered on cream silk in background. Luminous and youthful.`,
+    prompt: `${STYLE} Beautiful woman in her 40s, glowing healthy luminous skin, no wrinkles, natural makeup, soft smile, looking off-camera, premium skincare campaign aesthetic, bright airy studio light, cream background. Conveys youth and skin regeneration.`,
   },
   nootropic: {
     name: "Nootropic",
-    prompt: `${STYLE} Macro of a single open walnut on cream linen beside fresh blueberries and a sprig of rosemary, soft golden hour light. Conveys cognition, memory, focus.`,
+    prompt: `${STYLE} Sharp focused man in his 30s working at a sleek desk with laptop in a modern bright office, intense concentration, clean minimal workspace, daylight from large windows. Conveys cognitive focus and mental clarity.`,
   },
   "sexual-health": {
     name: "Sexual Health",
-    prompt: `${STYLE} Macro still life of warm coral silk fabric draped softly, two ripe figs split open beside a single white orchid bloom. Sensual but clean and tasteful.`,
+    prompt: `${STYLE} Confident athletic couple in their 30s, both fit and toned, side embrace silhouette in soft warm bedroom light, tasteful and intimate, cream linen sheets, no nudity, premium lifestyle aesthetic. Conveys vitality and intimacy.`,
   },
   "hair-growth": {
     name: "Hair Growth",
-    prompt: `${STYLE} Macro of a wooden boar-bristle brush on cream linen, beside a small glass dish of golden castor oil with a single dropper. Honey amber tones, luxurious.`,
+    prompt: `${STYLE} Beautiful woman with long thick healthy shiny dark hair, back of her head and hair flowing, salon quality, soft studio lighting catching individual strands, premium hair-care campaign style. Conveys hair growth and density.`,
   },
   immune: {
     name: "Immune",
-    prompt: `${STYLE} Macro overhead of fresh sliced ginger root, lemon halves, a single garlic clove, and raw honey in a small ceramic bowl on cream linen. Warm soft light. Conveys protection and vitality.`,
+    prompt: `${STYLE} Healthy energetic woman in her 30s in white t-shirt, bright sunlight on her face, eyes closed, deep breath, peaceful confident expression, outdoor garden setting, vibrant glowing skin. Conveys vitality and immune strength.`,
   },
   blends: {
     name: "Blends",
-    prompt: `${STYLE} Macro of three glass apothecary droppers in a row above cream linen, releasing a single golden, amber, and pearl droplet that converge into one luminous drop on a porcelain surface. Conveys synergy.`,
+    prompt: `${STYLE} Professional woman scientist in her 30s wearing white lab coat, holding two clear glass vials side by side comparing them, focused expression, modern bright laboratory, soft daylight, clinical aesthetic. Conveys peptide synergy and clinical research.`,
   },
   accessories: {
     name: "Accessories",
-    prompt: `${STYLE} Minimalist clinical flat-lay: one clean glass syringe, two empty amber medical vials, soft cream linen napkin, single sprig of dried lavender. No labels visible. Soft window light, editorial pharmacy aesthetic.`,
+    prompt: `${STYLE} Close-up of professional hands wearing white nitrile gloves holding a clear glass syringe and amber medical vial, drawing liquid in a clinical setting, sharp focus on the syringe, blurred clinical background. Conveys precise clinical research equipment.`,
   },
 };
 
