@@ -2,10 +2,10 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { getPublishedBlogPosts } from "@/lib/queries";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Mail } from "lucide-react";
+import { Mail, BookOpen } from "lucide-react";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { PageHero } from "@/components/layout/PageHero";
+import { BlogClient, type BlogClientPost } from "./BlogClient";
 
 export async function generateMetadata({
   params,
@@ -27,20 +27,32 @@ export async function generateMetadata({
   };
 }
 
-function formatDate(dateStr: string, locale: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-GB", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+const FRESH_THRESHOLD_DAYS = 21;
+const WORDS_PER_MINUTE = 220;
 
-function getExcerpt(content: string | null, maxLen = 160): string {
+function getExcerpt(content: string | null, maxLen = 200): string {
   if (!content) return "";
-  const plain = content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  // Strip markdown syntax for cleaner preview
+  const plain = content
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // links
+    .replace(/[#*_`>]/g, "") // markdown chars
+    .replace(/\n+/g, " ") // newlines → space
+    .trim();
   if (plain.length <= maxLen) return plain;
   return plain.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
+}
+
+function getReadMinutes(content: string | null): number {
+  if (!content) return 1;
+  const words = content.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+}
+
+function isFresh(publishedAt: string | null): boolean {
+  if (!publishedAt) return false;
+  const days =
+    (Date.now() - new Date(publishedAt).getTime()) / (1000 * 60 * 60 * 24);
+  return days >= 0 && days <= FRESH_THRESHOLD_DAYS;
 }
 
 export default async function BlogPage({
@@ -53,11 +65,36 @@ export default async function BlogPage({
   const t = await getTranslations("blog");
   const posts = await getPublishedBlogPosts();
   const isBg = locale === "bg";
+  const loc = (locale === "bg" ? "bg" : "en") as "bg" | "en";
 
-  // Collect all unique tags
-  const tagSet = new Set<string>();
-  posts.forEach((p) => (p.tags || []).forEach((t) => tagSet.add(t)));
-  const allTags = Array.from(tagSet).slice(0, 8);
+  // Map DB posts → client-friendly shape
+  const clientPosts: BlogClientPost[] = posts.map((p) => {
+    const title = isBg ? p.title_bg : p.title_en;
+    const content = isBg ? p.content_bg : p.content_en;
+    return {
+      id: p.id,
+      slug: p.slug,
+      title,
+      excerpt: getExcerpt(content),
+      tags: p.tags ?? [],
+      publishedAt: p.published_at,
+      author: p.author,
+      readMinutes: getReadMinutes(content),
+      isFresh: isFresh(p.published_at),
+    };
+  });
+
+  // Top tags by frequency, capped to 5 (PillNav stays uncluttered)
+  const tagCounts = new Map<string, number>();
+  clientPosts.forEach((p) =>
+    p.tags.forEach((tag) =>
+      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1),
+    ),
+  );
+  const topTags = Array.from(tagCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([tag]) => tag);
 
   return (
     <main className="flex-1 bg-white">
@@ -67,128 +104,61 @@ export default async function BlogPage({
         subtitle={t("subtitle")}
         locale={locale}
         aside={
-          <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-5 py-3">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-teal-700">
-              {isBg ? "Статии" : "Articles"}
-            </p>
-            <p className="font-mono text-lg font-bold text-teal-700 mt-0.5 tabular">
-              {posts.length}
-            </p>
+          <div className="inline-flex items-center gap-3 rounded-2xl border border-accent-border bg-accent-tint/60 px-4 py-2.5">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white ring-1 ring-accent-border">
+              <BookOpen size={16} strokeWidth={1.8} className="text-teal-700" />
+            </span>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-teal-700">
+                {t("articles")}
+              </p>
+              <p className="font-mono text-lg font-bold tabular text-teal-700">
+                {posts.length}
+              </p>
+            </div>
           </div>
         }
       />
 
-      <div className="mx-auto max-w-[1280px] px-6 pb-16">
-        {posts.length === 0 ? (
-          <div className="max-w-md mx-auto">
-            <p className="text-sm text-muted mb-6">{t("noPosts")}</p>
-            <div className="border border-border rounded-xl p-6">
-              <div className="flex items-center gap-2 mb-3">
-                <Mail size={16} className="text-teal-600" />
-                <p className="text-sm font-semibold text-navy">
-                  {t("subscribePrompt")}
-                </p>
-              </div>
+      {posts.length === 0 ? (
+        <div className="mx-auto max-w-md px-6 pb-20">
+          <div className="rounded-2xl border border-border bg-white p-8 text-center shadow-sm">
+            <span className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-tint ring-1 ring-accent-border">
+              <Mail size={20} strokeWidth={1.6} className="text-teal-700" />
+            </span>
+            <p className="text-sm text-secondary">{t("noPosts")}</p>
+            <p className="mt-2 text-sm font-semibold text-navy">
+              {t("subscribePrompt")}
+            </p>
+            <div className="mt-5">
               <NewsletterSignup />
             </div>
           </div>
-        ) : (
-          <div className="grid gap-10 lg:grid-cols-[1fr_280px] lg:items-start">
-            <div>
-              <div className="grid gap-5 sm:grid-cols-2">
-                {posts.map((post) => {
-                  const title =
-                    locale === "bg" ? post.title_bg : post.title_en;
-                  const content =
-                    locale === "bg" ? post.content_bg : post.content_en;
-                  const excerpt = getExcerpt(content);
-
-                  return (
-                    <Link
-                      key={post.id}
-                      href={`/${locale}/blog/${post.slug}`}
-                      className="group border border-border rounded-xl p-6 hover:border-navy/30 transition-colors bg-white flex flex-col"
-                    >
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-3">
-                          {post.tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-full bg-surface px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-muted"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      <h2 className="text-base font-semibold text-navy group-hover:text-teal-600 transition-colors leading-snug">
-                        {title}
-                      </h2>
-
-                      {excerpt && (
-                        <p className="mt-2 text-sm text-secondary line-clamp-3 leading-relaxed">
-                          {excerpt}
-                        </p>
-                      )}
-
-                      <div className="mt-auto pt-4 flex items-center justify-between">
-                        {post.published_at && (
-                          <time className="font-mono text-[11px] text-muted tabular">
-                            {formatDate(post.published_at, locale)}
-                          </time>
-                        )}
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-teal-600 group-hover:gap-2 transition-all">
-                          {t("readMore")}
-                          <ArrowRight size={12} strokeWidth={1.5} />
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <aside className="lg:sticky lg:top-24 space-y-4">
-              {/* Tag cloud */}
-              {allTags.length > 0 && (
-                <div className="rounded-xl border border-border p-5">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-3">
-                    {isBg ? "Теми" : "Topics"}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {allTags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-surface px-3 py-1 text-xs text-secondary border border-transparent hover:border-border"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Newsletter */}
-              <div className="rounded-xl border border-teal-200 bg-teal-50/50 p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Mail size={16} className="text-teal-700" />
-                  <p className="text-sm font-semibold text-teal-700">
-                    {t("subscribePrompt")}
-                  </p>
-                </div>
-                <p className="text-xs text-secondary mb-3 leading-relaxed">
-                  {isBg
-                    ? "Нови статии и научни публикации — веднъж месечно в пощата ви."
-                    : "New articles and scientific publications — once a month in your inbox."}
-                </p>
-                <NewsletterSignup />
-              </div>
-            </aside>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <BlogClient
+          posts={clientPosts}
+          topTags={topTags}
+          locale={loc}
+          i18n={{
+            featured: t("featured"),
+            filterAll: t("filterAll"),
+            filterEmpty: t("filterEmpty"),
+            readMore: t("readMore"),
+            minRead: t("minRead"),
+            newest: t("newest"),
+            newsletterTitle: t("newsletterTitle"),
+            newsletterSubtitle: t("newsletterSubtitle"),
+            subscribePrompt: t("subscribePrompt"),
+            byline: t("byline"),
+            articles: t("articles"),
+            newsletterLabel: "Newsletter",
+            trust1: isBg ? "1 имейл / месец" : "1 email / month",
+            trust2: isBg ? "Отписване с 1 клик" : "1-click unsubscribe",
+            trust3: isBg ? "Без спам" : "No spam",
+          }}
+        />
+      )}
     </main>
   );
 }

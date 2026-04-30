@@ -17,8 +17,8 @@ export async function generateMetadata({
   const { locale } = await params;
   const title =
     locale === "bg"
-      ? "Сертификати за анализ (COA) — HPLC тестване | PeptidLabs"
-      : "Certificates of Analysis (COA) — HPLC Testing | PeptidLabs";
+      ? "Сертификати за анализ (COA) — HPLC тестване"
+      : "Certificates of Analysis (COA) — HPLC Testing";
   const description =
     locale === "bg"
       ? "Прозрачността е в основата на нашия бизнес. Сертификат за анализ за всяка партида — HPLC хроматограма, данни за чистота и тестове за ендотоксини."

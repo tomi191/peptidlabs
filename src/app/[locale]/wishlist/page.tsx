@@ -15,10 +15,11 @@ export async function generateMetadata({
   const { locale } = await params;
   const isBg = locale === "bg";
   return {
-    title: isBg ? "Любими — PeptidLabs" : "Wishlist — PeptidLabs",
+    title: isBg ? "Любими" : "Wishlist",
     description: isBg
       ? "Запазените от теб изследователски пептиди — за бърз достъп при следваща поръчка."
       : "Your saved research peptides — for quick access on your next order.",
+    robots: { index: false, follow: true },
   };
 }
 

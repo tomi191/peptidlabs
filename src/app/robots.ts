@@ -5,8 +5,19 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/admin/"],
+      disallow: [
+        "/api/",
+        "/admin/",
+        "/account",
+        "/account/",
+        "/wishlist",
+        "/compare",
+        "/checkout",
+        "/cart",
+        "/*?cv=*", // variant query — duplicate content
+      ],
     },
     sitemap: "https://peptidlabs.eu/sitemap.xml",
+    host: "https://peptidlabs.eu",
   };
 }

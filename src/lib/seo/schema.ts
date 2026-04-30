@@ -84,6 +84,7 @@ export function itemListSchema(items: ItemListEntry[], listName?: string) {
 /**
  * Build canonical Metadata.alternates for a localized path.
  * `path` should start with the locale segment, e.g. `/bg/waitlist`.
+ * Includes x-default hreflang pointing to the English version (international fallback).
  */
 export function alternatesFor(path: string, locale: string) {
   const slug = path.replace(/^\/(bg|en)/, "");
@@ -92,6 +93,7 @@ export function alternatesFor(path: string, locale: string) {
     languages: {
       bg: `${BASE_URL}/bg${slug}`,
       en: `${BASE_URL}/en${slug}`,
+      "x-default": `${BASE_URL}/en${slug}`,
     },
   };
 }

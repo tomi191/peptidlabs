@@ -450,7 +450,16 @@
     "relatedProducts": "Related Products",
     "publishedOn": "Published on",
     "by": "by",
-    "noPosts": "No articles published yet."
+    "noPosts": "No articles published yet.",
+    "articles": "Articles",
+    "featured": "Featured",
+    "filterAll": "All",
+    "filterEmpty": "No articles in this topic.",
+    "minRead": "min read",
+    "newest": "New",
+    "newsletterTitle": "Stay close to peptide science",
+    "newsletterSubtitle": "One email per month — fresh research, molecule reviews, and lab protocols. No spam, unsubscribe with one click.",
+    "byline": "By the PeptidLabs team"
   },
   "coaVault": {
     "title": "Certificates of Analysis (COA)",

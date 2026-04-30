@@ -17,6 +17,7 @@ import {
   getRelatedProducts,
   getProductCategory,
   getSiblingProducts,
+  getProductReviews,
 } from "@/lib/queries";
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { QuickSpecBar } from "@/components/product/QuickSpecBar";
@@ -76,24 +77,35 @@ export async function generateMetadata({
   const useCase =
     locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en;
 
+  // Trim long descriptions to 155-160 chars for meta description
+  const fallbackDescBg = `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота над ${product.purity_percent}%. COA включен. Доставка 1-3 дни.`;
+  const fallbackDescEn = `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ${product.purity_percent}%+. COA included. 1-3 day delivery.`;
+  const rawDesc = description ?? (locale === "bg" ? fallbackDescBg : fallbackDescEn);
+  const metaDesc = rawDesc.length > 160 ? rawDesc.slice(0, 157).trimEnd() + "…" : rawDesc;
+
   return {
-    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} | PeptidLabs`,
-    description:
-      description ??
-      (locale === "bg"
-        ? `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — лиофилизиран прах с HPLC чистота над ${product.purity_percent}%. COA включен. Доставка 1-3 дни.`
-        : `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""} — lyophilized powder, HPLC purity ${product.purity_percent}%+. COA included. 1-3 day delivery.`),
+    // Title without trailing brand — layout template appends " | PeptidLabs"
+    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""}`,
+    description: metaDesc,
     openGraph: {
-      title: `${product.name} | PeptidLabs`,
-      description: description ?? undefined,
+      title: `${product.name} ${product.vial_size_mg}mg`,
+      description: metaDesc,
       type: "website",
       url: `https://peptidlabs.eu/${locale}/products/${slug}`,
+      images: product.images?.[0] ? [{ url: product.images[0] }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} ${product.vial_size_mg}mg`,
+      description: metaDesc,
+      images: product.images?.[0] ? [product.images[0]] : undefined,
     },
     alternates: {
       canonical: `https://peptidlabs.eu/${locale}/products/${slug}`,
       languages: {
         bg: `https://peptidlabs.eu/bg/products/${slug}`,
         en: `https://peptidlabs.eu/en/products/${slug}`,
+        "x-default": `https://peptidlabs.eu/en/products/${slug}`,
       },
     },
   };
@@ -113,10 +125,11 @@ export default async function ProductPage({ params }: PageProps) {
 
   const displayName = getProductDisplayName(product, locale);
 
-  const [relatedProducts, category, siblings] = await Promise.all([
+  const [relatedProducts, category, siblings, reviewData] = await Promise.all([
     getRelatedProducts(product.id),
     getProductCategory(product.id),
     getSiblingProducts(product.name, product.slug),
+    getProductReviews(product.id),
   ]);
 
   const categoryName =
@@ -127,29 +140,60 @@ export default async function ProductPage({ params }: PageProps) {
   const description =
     locale === "bg" ? product.description_bg : product.description_en;
 
-  // Product JSON-LD
-  const productJsonLd = {
+  // Short description for schema (160 chars max — Google ignores beyond ~5000 but best practice is short)
+  const summaryText =
+    (locale === "bg" ? product.summary_bg : product.summary_en) ?? description ?? "";
+  const schemaDescription =
+    summaryText.length > 200 ? summaryText.slice(0, 197).trimEnd() + "…" : summaryText;
+
+  // Product JSON-LD — Google rich snippet eligible
+  const productJsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
-    description,
+    name: `${product.name} ${product.vial_size_mg}mg`,
+    description: schemaDescription,
     sku: product.sku,
-    image: product.images?.[0] || `https://rthawomwdjdthdiorgvb.supabase.co/storage/v1/object/public/product-images/masters/powder.png`,
+    mpn: product.sku,
+    image: product.images && product.images.length > 0
+      ? product.images
+      : [`https://rthawomwdjdthdiorgvb.supabase.co/storage/v1/object/public/product-images/masters/powder.png`],
     brand: {
       "@type": "Brand",
+      name: "PeptidLabs",
+    },
+    manufacturer: {
+      "@type": "Organization",
       name: "PeptidLabs",
     },
     category: (locale === "bg" ? product.use_case_tag_bg : product.use_case_tag_en) || "Research Peptide",
     offers: {
       "@type": "Offer",
-      price: product.price_eur,
+      price: product.price_eur.toFixed(2),
       priceCurrency: "EUR",
+      url: `https://peptidlabs.eu/${locale}/products/${product.slug}`,
+      itemCondition: "https://schema.org/NewCondition",
       availability:
         product.stock > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
+      priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      seller: {
+        "@type": "Organization",
+        name: "PeptidLabs",
+      },
     },
   };
+
+  // Add aggregateRating only when there are real reviews
+  if (reviewData.aggregate.count > 0) {
+    productJsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: reviewData.aggregate.average,
+      reviewCount: reviewData.aggregate.count,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
 
   // Product-specific content from scientific_data
   const sciData = (product.scientific_data ?? {}) as Record<string, unknown>;
