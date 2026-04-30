@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
+import { buildMetadata } from "@/lib/seo/schema";
 import {
   ArrowRight,
   ShieldCheck,
@@ -20,14 +21,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isBg = locale === "bg";
-  return {
+  return buildMetadata({
     title: isBg
       ? "Запиши се в списъка | Бъди първи на старта"
       : "Join the waitlist | Be first at launch",
     description: isBg
       ? "Запиши се в нашия списък за уведомяване и получи имейл веднага щом каталогът отвори за поръчки."
       : "Join our waitlist and get an email the moment the catalog opens for orders.",
-  };
+    path: `/${locale}/waitlist`,
+    locale,
+  });
 }
 
 export default async function WaitlistPage({

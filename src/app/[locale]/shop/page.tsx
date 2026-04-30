@@ -22,6 +22,7 @@ import { Link } from "@/i18n/navigation";
 import { getCategoriesWithCounts, getPublishedProducts } from "@/lib/queries";
 import { SortableProductGrid } from "@/components/product/SortableProductGrid";
 import { ShopFilters } from "@/components/product/ShopFilters";
+import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 import { PageHero } from "@/components/layout/PageHero";
 import { Abbr } from "@/components/ui/Abbr";
@@ -89,8 +90,29 @@ export default async function ShopPage({
 
   const isBg = locale === "bg";
 
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: isBg ? "Начало" : "Home", path: `/${locale}` },
+    { name: t("title"), path: `/${locale}/shop` },
+  ]);
+  const itemListJsonLd = itemListSchema(
+    products.map((p) => ({
+      name: p.name,
+      url: `/${locale}/products/${p.slug}`,
+      price: p.price_eur,
+    })),
+    isBg ? "Каталог пептиди" : "Peptide catalog"
+  );
+
   return (
     <main className="w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <PageHero
         crumbs={[{ label: t("title") }]}
         title={t("title")}

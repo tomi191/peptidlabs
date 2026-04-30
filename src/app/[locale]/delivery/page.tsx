@@ -18,6 +18,7 @@ import {
 import { FadeIn } from "@/components/ui/FadeIn";
 import { PageHero } from "@/components/layout/PageHero";
 import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import { buildMetadata } from "@/lib/seo/schema";
 
 export async function generateMetadata({
   params,
@@ -26,7 +27,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "delivery" });
-  return { title: t("title") };
+  const isBg = locale === "bg";
+  return buildMetadata({
+    title: t("title"),
+    description: isBg
+      ? "Доставка от EU склад с Еконт и Спиди за България (1-2 дни) и международни куриери за останалите страни от ЕС (3-7 дни). Безплатна доставка за поръчки над €49."
+      : "Shipping from EU warehouse with Econt and Speedy for Bulgaria (1-2 days) and international couriers for the rest of the EU (3-7 days). Free shipping for orders above €49.",
+    path: `/${locale}/delivery`,
+    locale,
+  });
 }
 
 export default async function DeliveryPage({

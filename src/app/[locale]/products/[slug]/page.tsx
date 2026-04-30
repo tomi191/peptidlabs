@@ -41,6 +41,7 @@ import { Abbr } from "@/components/ui/Abbr";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 import { BulkDiscountTiers } from "@/components/product/BulkDiscountTiers";
 import { getCategoryLabel, getProductDisplayName } from "@/lib/labels";
+import { breadcrumbSchema } from "@/lib/seo/schema";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -172,6 +173,13 @@ export default async function ProductPage({ params }: PageProps) {
     })),
   };
 
+  // Breadcrumb JSON-LD
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: locale === "bg" ? "Начало" : "Home", path: `/${locale}` },
+    { name: locale === "bg" ? "Магазин" : "Shop", path: `/${locale}/shop` },
+    { name: product.name, path: `/${locale}/products/${product.slug}` },
+  ]);
+
   const tabTranslations = {
     overview: t("overview"),
     science: t("science"),
@@ -224,6 +232,10 @@ export default async function ProductPage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* ─── BREADCRUMB BAR ─── */}

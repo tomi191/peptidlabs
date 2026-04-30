@@ -20,6 +20,7 @@ import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { DesktopAppRail } from "@/components/layout/DesktopAppRail";
 import { InstallPrompt } from "@/components/ui/InstallPrompt";
 import { PreLaunchBanner } from "@/components/waitlist/PreLaunchBanner";
+import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 import "../globals.css";
 
 const inter = Inter({
@@ -138,6 +139,13 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${GeistSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-app">
+        {/* Knowledge Graph: Organization + WebSite */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([organizationSchema(), websiteSchema()]),
+          }}
+        />
         <PlausibleScript />
         <ServiceWorkerRegister />
         <a

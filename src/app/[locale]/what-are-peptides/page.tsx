@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
+import { buildMetadata } from "@/lib/seo/schema";
 import {
   ArrowRight,
   FlaskConical,
@@ -24,14 +25,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isBg = locale === "bg";
-  return {
+  return buildMetadata({
     title: isBg
       ? "Какво са пептидите? Пълно ръководство на човешки език"
       : "What are peptides? Complete guide in plain language",
     description: isBg
       ? "Всичко за пептидите на разбираем български: какво представляват, как работят, история от 1902 до днес, видове, производство и връзка с GLP-1 пептидите за тегло."
       : "Everything about peptides in plain English: what they are, how they work, history from 1902 to today, types, production, and the connection to GLP-1 peptides for weight.",
-  };
+    path: `/${locale}/what-are-peptides`,
+    locale,
+  });
 }
 
 export default async function WhatArePeptidesPage({

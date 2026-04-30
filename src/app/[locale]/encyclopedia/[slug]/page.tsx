@@ -16,6 +16,7 @@ import { VialPlaceholder } from "@/components/ui/VialPlaceholder";
 import { TextWithAbbr } from "@/components/ui/TextWithAbbr";
 import { PageHero } from "@/components/layout/PageHero";
 import { ResearchOnlyBanner } from "@/components/home/ResearchOnlyBanner";
+import { buildMetadata, breadcrumbSchema } from "@/lib/seo/schema";
 
 export async function generateStaticParams() {
   const supabase = createStaticSupabase();
@@ -43,10 +44,12 @@ export async function generateMetadata({
     locale === "bg"
       ? peptide.summary_bg || peptide.summary_en
       : peptide.summary_en || peptide.summary_bg;
-  return {
+  return buildMetadata({
     title: `${peptide.name}${fullName ? ` — ${fullName}` : ""} | ${t("title")}`,
     description: summary || fullName || peptide.name,
-  };
+    path: `/${locale}/encyclopedia/${slug}`,
+    locale,
+  });
 }
 
 export default async function EncyclopediaDetailPage({
@@ -83,8 +86,18 @@ export default async function EncyclopediaDetailPage({
   // Lowest-priced product as primary CTA
   const primaryProduct = products[0];
 
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: isBg ? "Начало" : "Home", path: `/${locale}` },
+    { name: t("title"), path: `/${locale}/encyclopedia` },
+    { name: peptide.name, path: `/${locale}/encyclopedia/${slug}` },
+  ]);
+
   return (
     <main className="flex-1 bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <ResearchOnlyBanner locale={locale as "bg" | "en"} />
 
       <PageHero

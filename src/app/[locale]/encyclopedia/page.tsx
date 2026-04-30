@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { EncyclopediaGrid } from "./EncyclopediaGrid";
 import { PageHero } from "@/components/layout/PageHero";
+import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 
 export async function generateMetadata({
   params,
@@ -37,8 +38,28 @@ export default async function EncyclopediaPage({
   const peptides = await getPeptides();
   const isBg = locale === "bg";
 
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: isBg ? "Начало" : "Home", path: `/${locale}` },
+    { name: t("title"), path: `/${locale}/encyclopedia` },
+  ]);
+  const itemListJsonLd = itemListSchema(
+    peptides.map((p) => ({
+      name: p.name,
+      url: `/${locale}/encyclopedia/${p.slug}`,
+    })),
+    isBg ? "Енциклопедия на пептидите" : "Peptide encyclopedia"
+  );
+
   return (
     <main className="flex-1 bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <PageHero
         crumbs={[{ label: t("title") }]}
         title={t("title")}

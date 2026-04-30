@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Download, FileText, ShieldCheck } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import { buildMetadata } from "@/lib/seo/schema";
 
 export async function generateMetadata({
   params,
@@ -22,7 +23,7 @@ export async function generateMetadata({
     locale === "bg"
       ? "Прозрачността е в основата на нашия бизнес. Сертификат за анализ за всяка партида — HPLC хроматограма, данни за чистота и тестове за ендотоксини."
       : "Transparency is at the core of our business. Certificate of Analysis for every batch — HPLC chromatogram, purity data, and endotoxin test results.";
-  return { title, description };
+  return buildMetadata({ title, description, path: `/${locale}/coa-vault`, locale });
 }
 
 export default async function CoaVaultPage({

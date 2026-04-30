@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 import { getCategoriesWithCounts, getBestsellers, getPublishedBlogPosts, getPublishedPeptideCount } from "@/lib/queries";
+import { buildMetadata } from "@/lib/seo/schema";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SocialProofBar } from "@/components/home/SocialProofBar";
 import { LiveTrustTicker } from "@/components/home/LiveTrustTicker";
@@ -17,6 +19,23 @@ import { TrustBar } from "@/components/home/TrustBar";
 import { BlogPreview } from "@/components/home/BlogPreview";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { FadeIn } from "@/components/ui/FadeIn";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const isBg = locale === "bg";
+  const peptideTotal = await getPublishedPeptideCount();
+  const title = isBg
+    ? `PeptidLabs — ${peptideTotal}+ изследователски пептида от ЕС`
+    : `PeptidLabs — ${peptideTotal}+ Research Peptides from EU`;
+  const description = isBg
+    ? `${peptideTotal}+ HPLC-тествани изследователски пептида с чистота над 98%. BPC-157, Семаглутид, Тирзепатид и още. Сертификат за анализ с всяка партида. Доставка в целия ЕС.`
+    : `${peptideTotal}+ HPLC-tested research peptides at 98%+ purity. BPC-157, Semaglutide, Tirzepatide and more. Certificate of Analysis included with every batch. EU-wide shipping.`;
+  return buildMetadata({ title, description, path: `/${locale}`, locale });
+}
 
 // ---- Async data wrappers — each fetches independently and streams in ----
 

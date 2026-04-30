@@ -9,6 +9,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
+import { buildMetadata } from "@/lib/seo/schema";
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -52,10 +53,12 @@ export async function generateMetadata({
     ? content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").slice(0, 160)
     : title;
 
-  return {
+  return buildMetadata({
     title: `${title} | PeptidLabs`,
     description,
-  };
+    path: `/${locale}/blog/${slug}`,
+    locale,
+  });
 }
 
 function formatDate(dateStr: string, locale: string): string {

@@ -27,6 +27,7 @@ import {
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { SortableProductGrid } from "@/components/product/SortableProductGrid";
 import { ShopFilters } from "@/components/product/ShopFilters";
+import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 
 const iconMap: Record<string, LucideIcon> = {
   activity: Activity,
@@ -91,8 +92,30 @@ export default async function CategoryPage({
   const categoryDescription =
     locale === "bg" ? category.description_bg : category.description_en;
 
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: locale === "bg" ? "Начало" : "Home", path: `/${locale}` },
+    { name: t("title"), path: `/${locale}/shop` },
+    { name: categoryName, path: `/${locale}/shop/${categorySlug}` },
+  ]);
+  const itemListJsonLd = itemListSchema(
+    products.map((p) => ({
+      name: p.name,
+      url: `/${locale}/products/${p.slug}`,
+      price: p.price_eur,
+    })),
+    categoryName
+  );
+
   return (
     <main className="w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <div className="mx-auto max-w-[1280px] px-6 py-12">
         {/* Breadcrumb */}
         <nav className="mb-6 flex items-center gap-1 text-sm text-muted">
