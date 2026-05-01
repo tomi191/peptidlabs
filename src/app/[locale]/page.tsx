@@ -28,9 +28,11 @@ export async function generateMetadata({
   const { locale } = await params;
   const isBg = locale === "bg";
   const peptideTotal = await getPublishedPeptideCount();
+  // Lead with locality + headline trust signals (HPLC + COA) for stronger
+  // commercial intent match in SERP. PeptidLabs is appended via title template.
   const title = isBg
-    ? `PeptidLabs — ${peptideTotal}+ изследователски пептида от ЕС`
-    : `PeptidLabs — ${peptideTotal}+ Research Peptides from EU`;
+    ? `Изследователски пептиди България — ${peptideTotal}+ HPLC над 98%, COA с всяка партида`
+    : `Research Peptides EU — ${peptideTotal}+ HPLC over 98%, COA with every batch`;
   const description = isBg
     ? `${peptideTotal}+ HPLC-тествани изследователски пептида с чистота над 98%. BPC-157, Семаглутид, Тирзепатид и още. Сертификат за анализ с всяка партида. Доставка в целия ЕС.`
     : `${peptideTotal}+ HPLC-tested research peptides at 98%+ purity. BPC-157, Semaglutide, Tirzepatide and more. Certificate of Analysis included with every batch. EU-wide shipping.`;

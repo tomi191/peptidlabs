@@ -83,12 +83,22 @@ export async function generateMetadata({
   const rawDesc = description ?? (locale === "bg" ? fallbackDescBg : fallbackDescEn);
   const metaDesc = rawDesc.length > 160 ? rawDesc.slice(0, 157).trimEnd() + "…" : rawDesc;
 
+  // Commercial-intent title formula per SEO audit:
+  //   BG: "<Name> <dose>mg — €<price> в България | COA, ЕС доставка"
+  //   EN: "<Name> <dose>mg — €<price> EU | COA, fast EU shipping"
+  // The locale layout appends " | PeptidLabs" so brand is always present.
+  const priceTag = `€${product.price_eur.toFixed(0)}`;
+  const doseTag = product.vial_size_mg ? ` ${product.vial_size_mg}mg` : "";
+  const title =
+    locale === "bg"
+      ? `${product.name}${doseTag} — ${priceTag} в България | COA, ЕС доставка`
+      : `${product.name}${doseTag} — ${priceTag} EU | COA, fast EU shipping`;
+
   return {
-    // Title without trailing brand — layout template appends " | PeptidLabs"
-    title: `${product.name} ${product.vial_size_mg}mg${useCase ? ` ${useCase}` : ""}`,
+    title,
     description: metaDesc,
     openGraph: {
-      title: `${product.name} ${product.vial_size_mg}mg`,
+      title: `${product.name}${doseTag} — ${priceTag}`,
       description: metaDesc,
       type: "website",
       url: `https://peptidlabs.eu/${locale}/products/${slug}`,
@@ -96,7 +106,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} ${product.vial_size_mg}mg`,
+      title: `${product.name}${doseTag} — ${priceTag}`,
       description: metaDesc,
       images: product.images?.[0] ? [product.images[0]] : undefined,
     },

@@ -67,7 +67,7 @@
   },
   "trust": {
     "hplcTitle": "HPLC Verified",
-    "hplcSub": "98%+ purity guaranteed on every batch",
+    "hplcSub": "98%+ guaranteed — most batches reach 99%+",
     "coaTitle": "COA Included",
     "coaSub": "Independent analysis from accredited laboratories",
     "shippingTitle": "EU Shipping",
@@ -173,7 +173,7 @@
     "pubmedReferences": "PubMed References",
     "faqWhat": "What is {name}?",
     "faqPurity": "What purity is guaranteed?",
-    "faqPurityAnswer": "All peptides undergo HPLC analysis with a guaranteed purity of 98%+. Every order includes a batch-specific Certificate of Analysis (COA) from an independent laboratory, documenting purity, identity, and molecular weight. Additional analytical data is available on request.",
+    "faqPurityAnswer": "All peptides undergo HPLC analysis with a guaranteed minimum purity of 98%. In practice, most batches reach 99% or higher — the exact value for your specific batch is documented in the Certificate of Analysis (COA) we ship with every order, issued by an independent accredited laboratory. The COA also documents identity and molecular weight. Additional analytical data is available on request.",
     "faqStorage": "How should I store this peptide?",
     "faqStorageAnswer": "Store lyophilized peptides at -20C in a dark, dry environment. In this form, stability is maintained for up to 24 months. After reconstitution, the solution remains stable for 2-4 weeks at 2-8C. Avoid repeated freeze-thaw cycles — aliquot as needed.",
     "faqCoa": "Do you provide a Certificate of Analysis?",
@@ -557,8 +557,8 @@
     "sidebarRewardsText": "See every past order, your loyalty balance, and reorder with one click. Every €1 = 1 point. {points} points = €{amount} discount."
   },
   "calculator": {
-    "metaTitle": "Peptide Calculator — calculate reconstitution dose | PeptidLabs",
-    "metaDescription": "Free peptide reconstitution calculator. Calculate the exact dose, volume, and syringe marking for your research.",
+    "metaTitle": "Peptide Reconstitution Calculator — Dose, Volume, BAC Water",
+    "metaDescription": "Free peptide reconstitution calculator. Calculate exact dose, bacteriostatic water volume, and insulin syringe marking. No signup, instant result.",
     "title": "Peptide Calculator",
     "subtitle": "Calculate the exact solution volume for your research work. Enter your vial data and desired dose.",
     "step1": "Peptide amount in vial",
