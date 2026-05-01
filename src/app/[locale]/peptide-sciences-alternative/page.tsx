@@ -22,8 +22,8 @@ export async function generateMetadata({
   const isBg = locale === "bg";
   return buildMetadata({
     title: isBg
-      ? "Алтернатива на Peptide Sciences за ЕС изследователи | PeptidLabs"
-      : "Peptide Sciences Alternative for EU Researchers | PeptidLabs",
+      ? "Алтернатива на Peptide Sciences за ЕС изследователи"
+      : "Peptide Sciences Alternative for EU Researchers",
     description: isBg
       ? "Peptide Sciences прекрати дейност в началото на 2026. PeptidLabs е native EU доставчик с HPLC верифицирана чистота, COA с всяка партида и доставка от ЕС склад за 1-7 работни дни. Без мита, без митнически забавяния."
       : "Peptide Sciences shut down in early 2026. PeptidLabs is a native EU supplier with HPLC-verified purity, COA per batch, and EU warehouse shipping in 1-7 business days. No customs duties, no border delays.",
