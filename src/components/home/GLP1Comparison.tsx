@@ -292,8 +292,13 @@ export function GLP1Comparison({ locale }: { locale: Locale }) {
                     <span className="text-xs text-muted">
                       {isBg ? "Цена" : "Price"}
                     </span>
-                    <span className="font-mono text-2xl font-bold text-navy tabular">
-                      €{activeVariant.priceEur.toFixed(2)}
+                    <span className="flex flex-col items-end leading-tight">
+                      <span className="font-mono text-2xl font-bold text-navy tabular">
+                        €{activeVariant.priceEur.toFixed(2)}
+                      </span>
+                      <span className="font-mono text-[11px] text-muted tabular">
+                        ≈ {(activeVariant.priceEur * 1.95583).toFixed(2)} лв
+                      </span>
                     </span>
                   </div>
                   <Link

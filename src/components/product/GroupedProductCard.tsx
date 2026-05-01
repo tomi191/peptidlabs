@@ -136,6 +136,9 @@ export function GroupedProductCard({ variants }: Props) {
           <span className="text-base font-bold text-navy tabular leading-none">
             €{active.price_eur.toFixed(2)}
           </span>
+          <span className="font-mono text-[10px] text-muted tabular leading-none mt-0.5">
+            ≈ {(active.price_eur * 1.95583).toFixed(2)} лв
+          </span>
           {sorted.length > 1 && active.price_eur > minPrice && (
             <span className="text-[10px] text-muted tabular leading-none mt-0.5">
               {locale === "bg" ? "най-малък" : "smallest"}: €{minPrice.toFixed(2)}

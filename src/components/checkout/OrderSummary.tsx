@@ -58,6 +58,9 @@ export default function OrderSummary() {
               </div>
               <p className="text-sm text-navy whitespace-nowrap tabular">
                 {item.quantity} x €{price.toFixed(2)}
+                <span className="block font-mono text-[10px] text-muted">
+                  ≈ {(price * 1.95583 * item.quantity).toFixed(2)} лв общо
+                </span>
               </p>
             </div>
           );

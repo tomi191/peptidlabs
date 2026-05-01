@@ -177,6 +177,31 @@ export async function getProductsForPeptide(
   return (products as Product[]) ?? [];
 }
 
+/**
+ * Inverse of getProductsForPeptide — given a product, return the peptide
+ * (slug + name) it documents in the encyclopedia, if any. Used for the
+ * "View full scientific reference" cross-link on the product detail page.
+ */
+export async function getPeptideForProduct(
+  productId: string,
+): Promise<{ slug: string; name: string } | null> {
+  const supabase = await createServerSupabase();
+  const { data: link } = await supabase
+    .from("product_peptides")
+    .select("peptide_id")
+    .eq("product_id", productId)
+    .limit(1)
+    .maybeSingle();
+  if (!link?.peptide_id) return null;
+
+  const { data: peptide } = await supabase
+    .from("peptides")
+    .select("slug, name")
+    .eq("id", link.peptide_id)
+    .single();
+  return peptide ?? null;
+}
+
 export async function getCategoryBySlug(
   slug: string
 ): Promise<Category | null> {

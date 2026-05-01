@@ -253,8 +253,11 @@ export default async function BlogPostPage({ params }: PageProps) {
                             {product.vial_size_mg}mg
                           </p>
                         )}
-                        <p className="font-mono text-sm text-accent mt-1">
+                        <p className="font-mono text-sm text-accent mt-1 leading-tight">
                           &euro;{product.price_eur.toFixed(2)}
+                          <span className="block text-[10px] text-muted">
+                            &asymp; {(product.price_eur * 1.95583).toFixed(2)} лв
+                          </span>
                         </p>
                       </Link>
                     ))}

@@ -373,8 +373,13 @@ export function PeptideFinder({ locale }: { locale: Locale }) {
                       {isBg ? r.why.bg : r.why.en}
                     </p>
                     <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                      <span className="font-mono text-lg font-bold text-navy tabular">
-                        €{r.priceEur.toFixed(2)}
+                      <span className="flex flex-col leading-tight">
+                        <span className="font-mono text-lg font-bold text-navy tabular">
+                          €{r.priceEur.toFixed(2)}
+                        </span>
+                        <span className="font-mono text-[10px] text-muted tabular">
+                          ≈ {(r.priceEur * 1.95583).toFixed(2)} лв
+                        </span>
                       </span>
                       <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent">
                         {isBg ? "Виж" : "View"}

@@ -18,7 +18,9 @@ import {
   getProductCategory,
   getSiblingProducts,
   getProductReviews,
+  getPeptideForProduct,
 } from "@/lib/queries";
+import { BookOpen, ArrowRight } from "lucide-react";
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { QuickSpecBar } from "@/components/product/QuickSpecBar";
 import { ProductTabs } from "@/components/product/ProductTabs";
@@ -138,11 +140,12 @@ export default async function ProductPage({ params }: PageProps) {
 
   const displayName = getProductDisplayName(product, locale);
 
-  const [relatedProducts, category, siblings, reviewData] = await Promise.all([
+  const [relatedProducts, category, siblings, reviewData, peptideRef] = await Promise.all([
     getRelatedProducts(product.id),
     getProductCategory(product.id),
     getSiblingProducts(product.name, product.slug),
     getProductReviews(product.id),
+    getPeptideForProduct(product.id),
   ]);
 
   const categoryName =
@@ -460,6 +463,34 @@ export default async function ProductPage({ params }: PageProps) {
                 </p>
               </div>
             </div>
+
+            {/* Encyclopedia cross-link — full scientific reference for this peptide */}
+            {peptideRef && (
+              <Link
+                href={`/encyclopedia/${peptideRef.slug}`}
+                className="mt-4 group inline-flex items-center justify-between gap-3 rounded-lg border border-accent-border bg-accent-tint/40 px-3 py-2.5 transition-colors hover:bg-accent-tint hover:border-accent/50"
+              >
+                <span className="flex items-center gap-2.5">
+                  <BookOpen size={14} className="text-accent" strokeWidth={1.75} />
+                  <span className="text-xs">
+                    <span className="font-semibold text-navy">
+                      {locale === "bg"
+                        ? `Виж научната справка за ${peptideRef.name}`
+                        : `View scientific reference for ${peptideRef.name}`}
+                    </span>
+                    <span className="block font-mono text-[10px] text-muted">
+                      {locale === "bg"
+                        ? "механизъм, формула, публикации"
+                        : "mechanism, formula, publications"}
+                    </span>
+                  </span>
+                </span>
+                <ArrowRight
+                  size={14}
+                  className="text-accent transition-transform group-hover:translate-x-1"
+                />
+              </Link>
+            )}
 
             {/* Lab-style batch/serial line */}
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-dashed border-border bg-surface px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted">

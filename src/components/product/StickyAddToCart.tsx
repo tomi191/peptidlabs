@@ -25,7 +25,8 @@ export function StickyAddToCart({
 
   if (!visible) return null;
 
-  const price = `\u20AC${product.price_eur.toFixed(2)}`;
+  const priceEur = `\u20AC${product.price_eur.toFixed(2)}`;
+  const priceBgn = `${(product.price_eur * 1.95583).toFixed(2)} \u043B\u0432`;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-white px-4 py-3 shadow-lg lg:hidden">
@@ -34,7 +35,8 @@ export function StickyAddToCart({
           <p className="truncate text-sm font-semibold text-navy">
             {product.name}
           </p>
-          <p className="text-sm font-bold text-navy tabular">{price}</p>
+          <p className="text-sm font-bold text-navy tabular leading-tight">{priceEur}</p>
+          <p className="font-mono text-[10px] text-muted tabular leading-none">≈ {priceBgn}</p>
         </div>
         {PRE_LAUNCH_MODE ? (
           <NotifyMeButton
