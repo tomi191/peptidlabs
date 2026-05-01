@@ -4,28 +4,63 @@ import { createAdminSupabase } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api/response";
 import { isAdmin } from "@/lib/auth/guard";
 
+const PAGE_SIZE_DEFAULT = 100;
+const PAGE_SIZE_MAX = 500;
+
 export async function GET(req: NextRequest) {
   if (!(await isAdmin(req))) {
     return fail("Unauthorized", 401, "UNAUTHORIZED");
   }
 
+  const url = new URL(req.url);
+  const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10) || 1);
+  const pageSizeRaw = parseInt(
+    url.searchParams.get("pageSize") ?? String(PAGE_SIZE_DEFAULT),
+    10
+  );
+  const pageSize = Math.min(
+    PAGE_SIZE_MAX,
+    Math.max(10, Number.isFinite(pageSizeRaw) ? pageSizeRaw : PAGE_SIZE_DEFAULT)
+  );
+  const filter = url.searchParams.get("filter") ?? "all"; // all | real | test
+  const search = (url.searchParams.get("search") ?? "").trim();
+
   const supabase = createAdminSupabase();
 
-  const { data, error } = await supabase
+  let q = supabase
     .from("waitlist_subscribers")
     .select(
-      "id, email, locale, interested_peptide_slugs, source_page, confirmed, is_test, created_at"
+      "id, email, locale, interested_peptide_slugs, source_page, confirmed, is_test, created_at",
+      { count: "exact" }
     )
-    .order("created_at", { ascending: false })
-    .limit(1000);
+    .order("created_at", { ascending: false });
 
+  if (filter === "real") q = q.eq("is_test", false);
+  else if (filter === "test") q = q.eq("is_test", true);
+
+  if (search.length > 0) {
+    // Sanitize ilike wildcards from user input
+    const safe = search.replace(/[%_\\]/g, (c) => `\\${c}`);
+    q = q.ilike("email", `%${safe}%`);
+  }
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  q = q.range(from, to);
+
+  const { data, count, error } = await q;
   if (error) {
-    return fail("Failed to load waitlist", 500, "DB_ERROR");
+    return fail("Failed to load waitlist", 500, "DB_ERROR", error.message);
   }
 
   return ok({
     subscribers: data ?? [],
-    total: data?.length ?? 0,
+    pagination: {
+      page,
+      pageSize,
+      total: count ?? 0,
+      totalPages: Math.max(1, Math.ceil((count ?? 0) / pageSize)),
+    },
   });
 }
 

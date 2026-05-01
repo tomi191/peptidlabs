@@ -52,6 +52,10 @@ docs/
 # vercel
 .vercel
 
+# data dumps / contact lists — never commit user PII
+/users-*.csv
+/scripts/.tmp-*
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

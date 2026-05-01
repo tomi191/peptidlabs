@@ -16,6 +16,14 @@ import {
   AlertCircle,
   FlaskConical,
   Filter,
+  Plus,
+  CheckSquare,
+  Square,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -47,33 +55,92 @@ type ImportResult = {
 
 type FilterMode = "all" | "real" | "test";
 
+type Pagination = {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+type Stats = {
+  total: number;
+  real: number;
+  test: number;
+  realByLocale: { bg: number; en: number };
+  topSources: Array<[string, number]>;
+  topPeptides: Array<[string, number]>;
+};
+
+const PAGE_SIZE_OPTIONS = [50, 100, 250, 500];
+
 export default function AdminWaitlistPage() {
   const router = useRouter();
   const { token, isAuthenticated } = useAdmin();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    pageSize: 100,
+    total: 0,
+    totalPages: 1,
+  });
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [filter, setFilter] = useState<FilterMode>("all");
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Debounce search input → search query
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(searchInput.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/admin");
       return;
     }
-    fetchSubscribers();
+    fetchPage(1, pagination.pageSize, filter, search);
+    fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function fetchSubscribers() {
+  // Refetch page when filter/search/pageSize change → reset to page 1
+  useEffect(() => {
+    if (!isAuthenticated()) return;
+    fetchPage(1, pagination.pageSize, filter, search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, search, pagination.pageSize]);
+
+  async function fetchPage(
+    page: number,
+    pageSize: number,
+    filter: FilterMode,
+    search: string
+  ) {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/waitlist", {
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+        filter,
+      });
+      if (search) params.set("search", search);
+      const res = await fetch(`/api/admin/waitlist?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         const json = await res.json();
-        if (json?.success) setSubscribers(json.data.subscribers);
+        if (json?.success) {
+          setSubscribers(json.data.subscribers);
+          setPagination(json.data.pagination);
+          // Clear selection when navigating to a new page set
+          setSelected(new Set());
+        }
       }
     } catch {
       // network error
@@ -82,8 +149,89 @@ export default function AdminWaitlistPage() {
     }
   }
 
+  async function fetchStats() {
+    try {
+      const res = await fetch("/api/admin/waitlist/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.success) setStats(json.data);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  async function refreshAll() {
+    await Promise.all([
+      fetchPage(pagination.page, pagination.pageSize, filter, search),
+      fetchStats(),
+    ]);
+  }
+
+  async function bulkSetTest(ids: string[], next: boolean) {
+    if (ids.length === 0) return;
+    setSubscribers((prev) =>
+      prev.map((s) => (ids.includes(s.id) ? { ...s, is_test: next } : s))
+    );
+    try {
+      const res = await fetch("/api/admin/waitlist", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ids, isTest: next }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error ?? "Грешка при операцията");
+        await refreshAll();
+        return;
+      }
+      toast.success(
+        `${json.data.updated} ${next ? "маркирани като тестови" : "размаркирани"}`
+      );
+      setSelected(new Set());
+      fetchStats();
+    } catch {
+      toast.error("Мрежова грешка");
+      await refreshAll();
+    }
+  }
+
+  async function bulkDelete(ids: string[]) {
+    if (ids.length === 0) return;
+    if (
+      !confirm(
+        `Сигурен ли си, че искаш да изтриеш ${ids.length} контакта? Това действие е необратимо.`
+      )
+    )
+      return;
+    try {
+      const res = await fetch("/api/admin/waitlist", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ids }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error ?? "Грешка при изтриване");
+        return;
+      }
+      toast.success(`${json.data.deleted} контакта изтрити`);
+      setSelected(new Set());
+      await refreshAll();
+    } catch {
+      toast.error("Мрежова грешка");
+    }
+  }
+
   async function toggleTest(id: string, next: boolean) {
-    // Optimistic
     setSubscribers((prev) =>
       prev.map((s) => (s.id === id ? { ...s, is_test: next } : s))
     );
@@ -99,11 +247,12 @@ export default function AdminWaitlistPage() {
       const json = await res.json();
       if (!res.ok || !json?.success) {
         toast.error("Грешка при смяна на статус");
-        // Rollback
         setSubscribers((prev) =>
           prev.map((s) => (s.id === id ? { ...s, is_test: !next } : s))
         );
+        return;
       }
+      fetchStats();
     } catch {
       toast.error("Мрежова грешка");
       setSubscribers((prev) =>
@@ -112,52 +261,69 @@ export default function AdminWaitlistPage() {
     }
   }
 
-  function downloadCsv() {
-    const list = filterSubscribers(subscribers, filter, search);
-    const header =
-      "email,locale,interested_peptides,source,confirmed,is_test,created_at\n";
-    const rows = list
-      .map(
-        (s) =>
-          `"${s.email}","${s.locale}","${(s.interested_peptide_slugs ?? []).join("|")}","${s.source_page ?? ""}",${s.confirmed},${s.is_test},"${s.created_at}"`
-      )
-      .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `waitlist-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  async function downloadCsv() {
+    setExporting(true);
+    const accumulator: Subscriber[] = [];
+    const EXPORT_PAGE = 500;
+    try {
+      let page = 1;
+      // Loop server-side pages until we drain the matching set (capped at 50K)
+      while (true) {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(EXPORT_PAGE),
+          filter,
+        });
+        if (search) params.set("search", search);
+        const res = await fetch(`/api/admin/waitlist?${params}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          toast.error("Експортът се провали");
+          return;
+        }
+        const json = await res.json();
+        if (!json?.success) {
+          toast.error("Експортът се провали");
+          return;
+        }
+        const rows = json.data.subscribers as Subscriber[];
+        accumulator.push(...rows);
+        if (rows.length < EXPORT_PAGE || accumulator.length >= 50000) break;
+        page++;
+      }
+
+      const header =
+        "email,locale,interested_peptides,source,confirmed,is_test,created_at\n";
+      const csv = accumulator
+        .map(
+          (s) =>
+            `"${s.email}","${s.locale}","${(s.interested_peptide_slugs ?? []).join("|")}","${s.source_page ?? ""}",${s.confirmed},${s.is_test},"${s.created_at}"`
+        )
+        .join("\n");
+      const blob = new Blob([header + csv], {
+        type: "text/csv;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `waitlist-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Експортирани ${accumulator.length} контакта`);
+    } catch {
+      toast.error("Мрежова грешка при експорт");
+    } finally {
+      setExporting(false);
+    }
   }
 
   if (!isAuthenticated()) return null;
 
-  const realCount = subscribers.filter((s) => !s.is_test).length;
-  const testCount = subscribers.filter((s) => s.is_test).length;
-
-  // Aggregate by source page (real subscribers only — test addresses pollute analytics)
-  const realSubs = subscribers.filter((s) => !s.is_test);
-  const bySource = realSubs.reduce<Record<string, number>>((acc, s) => {
-    const key = s.source_page ?? "(unknown)";
-    acc[key] = (acc[key] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const peptideCounts = realSubs.reduce<Record<string, number>>((acc, s) => {
-    for (const slug of s.interested_peptide_slugs ?? []) {
-      acc[slug] = (acc[slug] ?? 0) + 1;
-    }
-    return acc;
-  }, {});
-  const topPeptides = Object.entries(peptideCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
-
-  const visible = useMemo(
-    () => filterSubscribers(subscribers, filter, search),
-    [subscribers, filter, search]
-  );
+  const visible = subscribers;
+  const realCount = stats?.real ?? 0;
+  const testCount = stats?.test ?? 0;
+  const totalCount = stats?.total ?? 0;
 
   return (
     <div className="space-y-6">
@@ -170,16 +336,23 @@ export default function AdminWaitlistPage() {
           <p className="text-sm text-muted mt-1">
             {loading
               ? "Зареждане..."
-              : `${realCount} реални • ${testCount} тестови`}
+              : `${totalCount.toLocaleString("bg-BG")} общо • ${realCount.toLocaleString("bg-BG")} реални • ${testCount.toLocaleString("bg-BG")} тестови`}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={fetchSubscribers}
+            onClick={refreshAll}
             className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-navy transition-colors"
           >
             <RefreshCw size={14} />
             Обнови
+          </button>
+          <button
+            onClick={() => setQuickAddOpen(true)}
+            className="inline-flex items-center gap-1.5 border border-amber-300 bg-amber-50 text-amber-900 rounded-lg px-4 py-2 text-sm font-medium hover:bg-amber-100 transition-colors"
+          >
+            <FlaskConical size={14} />
+            Добави тестов
           </button>
           <button
             onClick={() => setImportOpen(true)}
@@ -190,11 +363,15 @@ export default function AdminWaitlistPage() {
           </button>
           <button
             onClick={downloadCsv}
-            disabled={visible.length === 0}
+            disabled={exporting || pagination.total === 0}
             className="inline-flex items-center gap-1.5 bg-navy text-white rounded-lg px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
           >
-            <Download size={14} />
-            CSV ({visible.length})
+            {exporting ? (
+              <RefreshCw size={14} className="animate-spin" />
+            ) : (
+              <Download size={14} />
+            )}
+            CSV ({pagination.total.toLocaleString("bg-BG")})
           </button>
         </div>
       </div>
@@ -202,53 +379,52 @@ export default function AdminWaitlistPage() {
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard label="Реални контакти" value={realCount} accent="navy" />
-        <StatCard label="Тестови имейли" value={testCount} accent="amber" icon={<FlaskConical size={14} />} />
         <StatCard
-          label="БГ"
-          value={realSubs.filter((s) => s.locale === "bg").length}
+          label="Тестови имейли"
+          value={testCount}
+          accent="amber"
+          icon={<FlaskConical size={14} />}
         />
-        <StatCard
-          label="EN"
-          value={realSubs.filter((s) => s.locale === "en").length}
-        />
+        <StatCard label="БГ" value={stats?.realByLocale.bg ?? 0} />
+        <StatCard label="EN" value={stats?.realByLocale.en ?? 0} />
       </div>
 
       {/* Insights — based on real subs only */}
-      {topPeptides.length > 0 && (
+      {stats && (stats.topPeptides.length > 0 || stats.topSources.length > 0) && (
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-border bg-white p-5">
-            <p className="text-sm font-semibold text-navy mb-3">
-              Топ заявени пептиди{" "}
-              <span className="text-xs text-muted font-normal">
-                (без тестови)
-              </span>
-            </p>
-            <ol className="space-y-2">
-              {topPeptides.map(([slug, count], i) => (
-                <li
-                  key={slug}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span className="text-secondary">
-                    {i + 1}. <span className="font-mono">{slug}</span>
-                  </span>
-                  <span className="font-bold text-navy tabular">{count}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div className="rounded-xl border border-border bg-white p-5">
-            <p className="text-sm font-semibold text-navy mb-3">
-              Източници{" "}
-              <span className="text-xs text-muted font-normal">
-                (без тестови)
-              </span>
-            </p>
-            <ol className="space-y-2">
-              {Object.entries(bySource)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 10)
-                .map(([source, count]) => (
+          {stats.topPeptides.length > 0 && (
+            <div className="rounded-xl border border-border bg-white p-5">
+              <p className="text-sm font-semibold text-navy mb-3">
+                Топ заявени пептиди{" "}
+                <span className="text-xs text-muted font-normal">
+                  (без тестови)
+                </span>
+              </p>
+              <ol className="space-y-2">
+                {stats.topPeptides.map(([slug, count], i) => (
+                  <li
+                    key={slug}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-secondary">
+                      {i + 1}. <span className="font-mono">{slug}</span>
+                    </span>
+                    <span className="font-bold text-navy tabular">{count}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+          {stats.topSources.length > 0 && (
+            <div className="rounded-xl border border-border bg-white p-5">
+              <p className="text-sm font-semibold text-navy mb-3">
+                Източници{" "}
+                <span className="text-xs text-muted font-normal">
+                  (без тестови)
+                </span>
+              </p>
+              <ol className="space-y-2">
+                {stats.topSources.map(([source, count]) => (
                   <li
                     key={source}
                     className="flex items-center justify-between text-sm"
@@ -259,8 +435,9 @@ export default function AdminWaitlistPage() {
                     <span className="font-bold text-navy tabular">{count}</span>
                   </li>
                 ))}
-            </ol>
-          </div>
+              </ol>
+            </div>
+          )}
         </div>
       )}
 
@@ -272,36 +449,120 @@ export default function AdminWaitlistPage() {
             onClick={() => setFilter("all")}
             icon={<Filter size={11} />}
           >
-            Всички ({subscribers.length})
+            Всички ({totalCount.toLocaleString("bg-BG")})
           </FilterPill>
           <FilterPill
             active={filter === "real"}
             onClick={() => setFilter("real")}
           >
-            Реални ({realCount})
+            Реални ({realCount.toLocaleString("bg-BG")})
           </FilterPill>
           <FilterPill
             active={filter === "test"}
             onClick={() => setFilter("test")}
             icon={<FlaskConical size={11} />}
           >
-            Тестови ({testCount})
+            Тестови ({testCount.toLocaleString("bg-BG")})
           </FilterPill>
         </div>
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Търсене по имейл..."
-          className="text-sm rounded-lg border border-border px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-        />
+        <div className="flex items-center gap-2">
+          <input
+            type="search"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Търсене по имейл..."
+            className="text-sm rounded-lg border border-border px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+          />
+          <select
+            value={pagination.pageSize}
+            onChange={(e) =>
+              setPagination((p) => ({
+                ...p,
+                pageSize: parseInt(e.target.value, 10),
+              }))
+            }
+            className="text-sm rounded-lg border border-border px-2 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30"
+            title="Брой редове на страница"
+          >
+            {PAGE_SIZE_OPTIONS.map((n) => (
+              <option key={n} value={n}>
+                {n} / стр
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
+
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="sticky top-2 z-30 flex items-center justify-between gap-3 rounded-lg bg-navy text-white shadow-lg px-4 py-2.5 text-sm">
+          <span className="font-medium">
+            Избрани: <span className="tabular">{selected.size}</span>
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => bulkSetTest(Array.from(selected), true)}
+              className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            >
+              <FlaskConical size={12} />
+              Маркирай като тест
+            </button>
+            <button
+              onClick={() => bulkSetTest(Array.from(selected), false)}
+              className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            >
+              Размаркирай
+            </button>
+            <button
+              onClick={() => bulkDelete(Array.from(selected))}
+              className="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            >
+              <Trash2 size={12} />
+              Изтрий
+            </button>
+            <button
+              onClick={() => setSelected(new Set())}
+              className="text-white/60 hover:text-white text-xs px-2 transition-colors"
+            >
+              Откажи
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Subscribers table */}
       <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-surface text-xs uppercase text-muted font-semibold">
+              <th className="px-3 py-3 w-10">
+                <button
+                  onClick={() => {
+                    const allSelected = visible.every((s) => selected.has(s.id));
+                    if (allSelected) {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        for (const s of visible) next.delete(s.id);
+                        return next;
+                      });
+                    } else {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        for (const s of visible) next.add(s.id);
+                        return next;
+                      });
+                    }
+                  }}
+                  className="text-muted hover:text-navy transition-colors inline-flex"
+                  title="Избери всички видими"
+                >
+                  {visible.length > 0 && visible.every((s) => selected.has(s.id)) ? (
+                    <CheckSquare size={15} className="text-accent" />
+                  ) : (
+                    <Square size={15} />
+                  )}
+                </button>
+              </th>
               <th className="text-left px-4 py-3">Имейл</th>
               <th className="text-left px-4 py-3">Език</th>
               <th className="text-left px-4 py-3">Заявени пептиди</th>
@@ -315,74 +576,175 @@ export default function AdminWaitlistPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                <td colSpan={7} className="px-4 py-12 text-center text-muted">
                   Зареждане...
                 </td>
               </tr>
             ) : visible.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                <td colSpan={7} className="px-4 py-12 text-center text-muted">
                   {search
                     ? "Няма съвпадения"
                     : "Все още няма записани в списъка"}
                 </td>
               </tr>
             ) : (
-              visible.map((s) => (
-                <tr
-                  key={s.id}
-                  className={`border-b border-border transition-colors ${
-                    s.is_test
-                      ? "bg-amber-50/40 hover:bg-amber-50/70"
-                      : "hover:bg-surface/50"
-                  }`}
-                >
-                  <td className="px-4 py-3 text-navy font-medium">
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`mailto:${s.email}`}
-                        className="hover:text-accent inline-flex items-center gap-1"
-                      >
-                        <Mail size={12} className="text-muted" />
-                        {s.email}
-                      </a>
-                      {s.is_test && (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-widest font-bold text-amber-800 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
-                          <FlaskConical size={9} />
-                          Test
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs uppercase text-secondary">
-                    {s.locale}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-secondary">
-                    {(s.interested_peptide_slugs ?? []).join(", ") || "—"}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-xs text-muted">
-                    {s.source_page ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted">
-                    {new Date(s.created_at).toLocaleString("bg-BG")}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <label className="inline-flex items-center cursor-pointer">
+              visible.map((s) => {
+                const isSelected = selected.has(s.id);
+                return (
+                  <tr
+                    key={s.id}
+                    className={`border-b border-border transition-colors ${
+                      isSelected
+                        ? "bg-accent/5"
+                        : s.is_test
+                          ? "bg-amber-50/40 hover:bg-amber-50/70"
+                          : "hover:bg-surface/50"
+                    }`}
+                  >
+                    <td className="px-3 py-3 w-10">
                       <input
                         type="checkbox"
-                        checked={s.is_test}
-                        onChange={(e) => toggleTest(s.id, e.target.checked)}
-                        className="sr-only peer"
+                        checked={isSelected}
+                        onChange={(e) => {
+                          setSelected((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.add(s.id);
+                            else next.delete(s.id);
+                            return next;
+                          });
+                        }}
+                        className="accent-accent"
                       />
-                      <span className="relative inline-block w-8 h-4 bg-stone-300 peer-checked:bg-amber-500 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:bg-white after:rounded-full after:transition-transform peer-checked:after:translate-x-4" />
-                    </label>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td className="px-4 py-3 text-navy font-medium">
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`mailto:${s.email}`}
+                          className="hover:text-accent inline-flex items-center gap-1"
+                        >
+                          <Mail size={12} className="text-muted" />
+                          {s.email}
+                        </a>
+                        {s.is_test && (
+                          <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-widest font-bold text-amber-800 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
+                            <FlaskConical size={9} />
+                            Test
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs uppercase text-secondary">
+                      {s.locale}
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-secondary">
+                      {(s.interested_peptide_slugs ?? []).join(", ") || "—"}
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted">
+                      {s.source_page ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted">
+                      {new Date(s.created_at).toLocaleString("bg-BG")}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={s.is_test}
+                          onChange={(e) => toggleTest(s.id, e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <span className="relative inline-block w-8 h-4 bg-stone-300 peer-checked:bg-amber-500 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:bg-white after:rounded-full after:transition-transform peer-checked:after:translate-x-4" />
+                      </label>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {pagination.total > 0 && (
+        <div className="flex items-center justify-between gap-3 flex-wrap text-sm">
+          <p className="text-muted">
+            Показва{" "}
+            <span className="font-mono tabular text-navy">
+              {(pagination.page - 1) * pagination.pageSize + 1}
+            </span>
+            –
+            <span className="font-mono tabular text-navy">
+              {Math.min(
+                pagination.page * pagination.pageSize,
+                pagination.total
+              )}
+            </span>{" "}
+            от{" "}
+            <span className="font-mono tabular text-navy">
+              {pagination.total.toLocaleString("bg-BG")}
+            </span>
+          </p>
+          <div className="flex items-center gap-1">
+            <PagerButton
+              disabled={pagination.page <= 1}
+              onClick={() =>
+                fetchPage(1, pagination.pageSize, filter, search)
+              }
+              title="Първа страница"
+            >
+              <ChevronsLeft size={14} />
+            </PagerButton>
+            <PagerButton
+              disabled={pagination.page <= 1}
+              onClick={() =>
+                fetchPage(
+                  pagination.page - 1,
+                  pagination.pageSize,
+                  filter,
+                  search
+                )
+              }
+              title="Предишна"
+            >
+              <ChevronLeft size={14} />
+            </PagerButton>
+            <span className="px-3 text-sm text-secondary tabular">
+              Стр.{" "}
+              <span className="font-bold text-navy">{pagination.page}</span>
+              <span className="text-muted"> / {pagination.totalPages}</span>
+            </span>
+            <PagerButton
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() =>
+                fetchPage(
+                  pagination.page + 1,
+                  pagination.pageSize,
+                  filter,
+                  search
+                )
+              }
+              title="Следваща"
+            >
+              <ChevronRight size={14} />
+            </PagerButton>
+            <PagerButton
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() =>
+                fetchPage(
+                  pagination.totalPages,
+                  pagination.pageSize,
+                  filter,
+                  search
+                )
+              }
+              title="Последна страница"
+            >
+              <ChevronsRight size={14} />
+            </PagerButton>
+          </div>
+        </div>
+      )}
 
       {importOpen && (
         <ImportModal
@@ -390,7 +752,18 @@ export default function AdminWaitlistPage() {
           onClose={() => setImportOpen(false)}
           onDone={() => {
             setImportOpen(false);
-            fetchSubscribers();
+            refreshAll();
+          }}
+        />
+      )}
+
+      {quickAddOpen && (
+        <QuickAddModal
+          token={token}
+          onClose={() => setQuickAddOpen(false)}
+          onDone={() => {
+            setQuickAddOpen(false);
+            refreshAll();
           }}
         />
       )}
@@ -400,18 +773,27 @@ export default function AdminWaitlistPage() {
 
 /* ──────────────────────────────────────────────────────────────────────── */
 
-function filterSubscribers(
-  list: Subscriber[],
-  filter: FilterMode,
-  search: string
-): Subscriber[] {
-  const q = search.trim().toLowerCase();
-  return list.filter((s) => {
-    if (filter === "real" && s.is_test) return false;
-    if (filter === "test" && !s.is_test) return false;
-    if (q && !s.email.toLowerCase().includes(q)) return false;
-    return true;
-  });
+function PagerButton({
+  children,
+  onClick,
+  disabled,
+  title,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className="inline-flex items-center justify-center min-w-[32px] h-8 rounded-md border border-border bg-white text-secondary hover:text-navy hover:bg-surface transition-colors disabled:opacity-30 disabled:hover:bg-white"
+    >
+      {children}
+    </button>
+  );
 }
 
 function StatCard({
@@ -1038,6 +1420,184 @@ function ImportModal({
               Затвори и обнови
             </button>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────── */
+/*                          QUICK ADD TEST MODAL                            */
+/* ──────────────────────────────────────────────────────────────────────── */
+
+function QuickAddModal({
+  token,
+  onClose,
+  onDone,
+}: {
+  token: string | null;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [emails, setEmails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const parsed = useMemo(() => {
+    const seen = new Set<string>();
+    const valid: string[] = [];
+    let invalid = 0;
+    for (const raw of emails.split(/[\s,;]+/)) {
+      const e = raw.trim().toLowerCase();
+      if (!e) continue;
+      const angle = e.match(/<([^>]+)>/);
+      const candidate = angle ? angle[1] : e;
+      if (!EMAIL_RE.test(candidate)) {
+        invalid++;
+        continue;
+      }
+      if (seen.has(candidate)) continue;
+      seen.add(candidate);
+      valid.push(candidate);
+    }
+    return { valid, invalid };
+  }, [emails]);
+
+  async function submit() {
+    if (parsed.valid.length === 0) {
+      toast.error("Няма валидни имейли");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/admin/waitlist/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          rows: parsed.valid.map((email) => ({ email })),
+          defaults: {
+            locale: "bg",
+            source: "test-group",
+            confirmed: true,
+            isTest: true,
+          },
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        toast.error(json?.error ?? "Грешка");
+        return;
+      }
+      const r = json.data;
+      toast.success(
+        `Добавени: ${r.imported} тестови • Прескочени: ${r.skipped} (вече съществуват)`
+      );
+      // If skipped > 0, those emails already exist as non-test — flip them via PATCH
+      if (r.skipped > 0) {
+        const patchRes = await fetch("/api/admin/waitlist", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ emails: parsed.valid, isTest: true }),
+        });
+        const patchJson = await patchRes.json();
+        if (patchRes.ok && patchJson?.success) {
+          toast.success(`Маркирани като тестови: ${patchJson.data.updated}`);
+        }
+      }
+      onDone();
+    } catch {
+      toast.error("Мрежова грешка");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[200] bg-black/40 flex items-start md:items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div>
+            <h2 className="text-base font-semibold text-navy flex items-center gap-2">
+              <FlaskConical size={16} className="text-amber-600" />
+              Добави тестови имейли
+            </h2>
+            <p className="text-xs text-muted mt-0.5">
+              Ще се запишат с <code>is_test=true</code> и източник{" "}
+              <code>test-group</code>
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="text-muted hover:text-navy transition-colors p-1 disabled:opacity-30"
+            aria-label="Затвори"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-secondary mb-1.5">
+              Имейли (по един на ред или разделени със запетаи)
+            </label>
+            <textarea
+              value={emails}
+              onChange={(e) => setEmails(e.target.value)}
+              rows={6}
+              autoFocus
+              placeholder={`my@email.com\nteam-member@email.com\nqa@email.com`}
+              className="w-full font-mono text-xs rounded-lg border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+            />
+          </div>
+
+          <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-900">
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-medium">
+                {parsed.valid.length} валидни
+                {parsed.invalid > 0 && ` • ${parsed.invalid} невалидни`}
+              </span>
+              {parsed.valid.length > 0 && (
+                <FlaskConical size={12} className="text-amber-600" />
+              )}
+            </div>
+            <p className="text-amber-700">
+              Ако имейлът вече съществува като реален контакт, ще бъде
+              автоматично маркиран като тестов.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border bg-surface/40 rounded-b-2xl">
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="text-sm text-secondary hover:text-navy px-3 py-2 transition-colors disabled:opacity-30"
+          >
+            Отказ
+          </button>
+          <button
+            onClick={submit}
+            disabled={submitting || parsed.valid.length === 0}
+            className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40"
+          >
+            {submitting ? (
+              <>
+                <RefreshCw size={14} className="animate-spin" />
+                Добавяне...
+              </>
+            ) : (
+              <>
+                <Plus size={14} />
+                Добави {parsed.valid.length || ""} тестови
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
