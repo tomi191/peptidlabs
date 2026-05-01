@@ -5,20 +5,23 @@ import { getCategoriesWithCounts, getBestsellers, getPublishedBlogPosts, getPubl
 import { buildMetadata } from "@/lib/seo/schema";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SocialProofBar } from "@/components/home/SocialProofBar";
-import { LiveTrustTicker } from "@/components/home/LiveTrustTicker";
 import { GLP1Comparison } from "@/components/home/GLP1Comparison";
 import { PeptideFinder } from "@/components/home/PeptideFinder";
 import { ResearchOnlyBanner } from "@/components/home/ResearchOnlyBanner";
-import { GoalNav } from "@/components/home/GoalNav";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { BestsellersSection } from "@/components/home/BestsellersSection";
 import { IntroSection } from "@/components/home/IntroSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-import { TrustBar } from "@/components/home/TrustBar";
 import { BlogPreview } from "@/components/home/BlogPreview";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { FadeIn } from "@/components/ui/FadeIn";
+
+// Removed from homepage per 5-persona debate:
+//   - LiveTrustTicker  → cognitive noise + drop-off, dup of SocialProofBar
+//   - TrustBar         → third copy of trust info, marquee fatigue above-fold
+//   - GoalNav          → duplicates CategoryGrid; SEO equity preserved by sitemap
+//                        + Footer category links; remove from homepage scope.
 
 export async function generateMetadata({
   params,
@@ -146,43 +149,24 @@ export default async function HomePage({
 
   return (
     <main className="w-full">
-      {/* Research-only positioning banner — Meta/FB ads compliance + EU regulatory framing */}
+      {/* 1. Compliance banner — top, sticky */}
       <ResearchOnlyBanner locale={locale as "bg" | "en"} />
+
+      {/* 2. Hero — primary hook + portrait + CTAs */}
       <HeroSection peptideTotal={peptideTotal} />
-      {/* Live trust ticker — rotating psychological signals */}
-      <LiveTrustTicker locale={locale as "bg" | "en"} />
+
+      {/* 3. Single trust block — static, indexable. (LiveTrustTicker removed) */}
       <SocialProofBar />
 
-      {/* Peptide Finder Wizard — interactive 2-step quiz → personalized recommendations */}
-      <div className="bg-surface">
-        <FadeIn>
-          <PeptideFinder locale={locale as "bg" | "en"} />
-        </FadeIn>
-      </div>
-
-      <div className="bg-white">
-        <FadeIn>
-          <GoalNav />
-        </FadeIn>
-      </div>
-
+      {/* 4. How It Works — moved up; reduces uncertainty before product browse */}
       <div className="bg-surface">
         <FadeIn>
           <HowItWorks peptideTotal={peptideTotal} />
         </FadeIn>
       </div>
 
-      {/* Bestsellers — streams in when getBestsellers() resolves */}
+      {/* 5. Categories — moved up; discovery hub before curated picks */}
       <div className="bg-white">
-        <FadeIn>
-          <Suspense fallback={<BestsellersSkeleton />}>
-            <BestsellersSectionAsync locale={locale} />
-          </Suspense>
-        </FadeIn>
-      </div>
-
-      {/* Categories — streams in when getCategories() resolves */}
-      <div className="bg-surface">
         <FadeIn>
           <Suspense fallback={<CategoryGridSkeleton />}>
             <CategoryGridAsync locale={locale} />
@@ -190,33 +174,46 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
-      {/* GLP-1 Comparison Widget */}
+      {/* 6. Bestsellers — curated picks AFTER categories (mental-model funnel) */}
+      <div className="bg-surface">
+        <FadeIn>
+          <Suspense fallback={<BestsellersSkeleton />}>
+            <BestsellersSectionAsync locale={locale} />
+          </Suspense>
+        </FadeIn>
+      </div>
+
+      {/* 7. PeptideFinder — moved DOWN as rescue mechanic for users who didn't
+              find what they wanted in Bestsellers. Engagement after trust. */}
       <div className="bg-white">
+        <FadeIn>
+          <PeptideFinder locale={locale as "bg" | "en"} />
+        </FadeIn>
+      </div>
+
+      {/* 8. GLP-1 Comparison — interactive deep-dive for expert visitors */}
+      <div className="bg-surface">
         <FadeIn>
           <GLP1Comparison locale={locale as "bg" | "en"} />
         </FadeIn>
       </div>
 
+      {/* 9. Brand narrative pause */}
       <div className="bg-white">
         <FadeIn>
           <IntroSection peptideTotal={peptideTotal} />
         </FadeIn>
       </div>
 
+      {/* 10. Social proof — testimonials with avatars (after product context) */}
       <div className="bg-surface">
         <FadeIn>
           <TestimonialsSection />
         </FadeIn>
       </div>
 
+      {/* 11. Educational content — blog covers (low commitment, SEO equity) */}
       <div className="bg-white">
-        <FadeIn>
-          <TrustBar />
-        </FadeIn>
-      </div>
-
-      {/* Blog preview */}
-      <div className="bg-surface">
         <FadeIn>
           <Suspense fallback={<BlogPreviewSkeleton />}>
             <BlogPreviewAsync locale={locale} />
@@ -224,6 +221,7 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
+      {/* 12. Final low-friction conversion — newsletter signup */}
       <FadeIn>
         <NewsletterSection />
       </FadeIn>
