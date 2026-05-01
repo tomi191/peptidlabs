@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAdmin } from "@/lib/store/admin";
 import {
@@ -14,6 +14,8 @@ import {
   ClipboardPaste,
   CheckCircle2,
   AlertCircle,
+  FlaskConical,
+  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,6 +26,7 @@ type Subscriber = {
   interested_peptide_slugs: string[];
   source_page: string | null;
   confirmed: boolean;
+  is_test: boolean;
   created_at: string;
 };
 
@@ -42,12 +45,16 @@ type ImportResult = {
   details?: { invalid?: Array<{ email: string; reason: string }> };
 };
 
+type FilterMode = "all" | "real" | "test";
+
 export default function AdminWaitlistPage() {
   const router = useRouter();
   const { token, isAuthenticated } = useAdmin();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [importOpen, setImportOpen] = useState(false);
+  const [filter, setFilter] = useState<FilterMode>("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -75,34 +82,69 @@ export default function AdminWaitlistPage() {
     }
   }
 
+  async function toggleTest(id: string, next: boolean) {
+    // Optimistic
+    setSubscribers((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, is_test: next } : s))
+    );
+    try {
+      const res = await fetch("/api/admin/waitlist", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ids: [id], isTest: next }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.success) {
+        toast.error("Грешка при смяна на статус");
+        // Rollback
+        setSubscribers((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, is_test: !next } : s))
+        );
+      }
+    } catch {
+      toast.error("Мрежова грешка");
+      setSubscribers((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, is_test: !next } : s))
+      );
+    }
+  }
+
   function downloadCsv() {
-    const header = "email,locale,interested_peptides,source,confirmed,created_at\n";
-    const rows = subscribers
+    const list = filterSubscribers(subscribers, filter, search);
+    const header =
+      "email,locale,interested_peptides,source,confirmed,is_test,created_at\n";
+    const rows = list
       .map(
         (s) =>
-          `"${s.email}","${s.locale}","${(s.interested_peptide_slugs ?? []).join("|")}","${s.source_page ?? ""}",${s.confirmed},"${s.created_at}"`
+          `"${s.email}","${s.locale}","${(s.interested_peptide_slugs ?? []).join("|")}","${s.source_page ?? ""}",${s.confirmed},${s.is_test},"${s.created_at}"`
       )
       .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `waitlist-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `waitlist-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
   if (!isAuthenticated()) return null;
 
-  // Aggregate by source page for quick insights
-  const bySource = subscribers.reduce<Record<string, number>>((acc, s) => {
+  const realCount = subscribers.filter((s) => !s.is_test).length;
+  const testCount = subscribers.filter((s) => s.is_test).length;
+
+  // Aggregate by source page (real subscribers only — test addresses pollute analytics)
+  const realSubs = subscribers.filter((s) => !s.is_test);
+  const bySource = realSubs.reduce<Record<string, number>>((acc, s) => {
     const key = s.source_page ?? "(unknown)";
     acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 
-  // Top requested peptides
-  const peptideCounts = subscribers.reduce<Record<string, number>>((acc, s) => {
+  const peptideCounts = realSubs.reduce<Record<string, number>>((acc, s) => {
     for (const slug of s.interested_peptide_slugs ?? []) {
       acc[slug] = (acc[slug] ?? 0) + 1;
     }
@@ -111,6 +153,11 @@ export default function AdminWaitlistPage() {
   const topPeptides = Object.entries(peptideCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
+
+  const visible = useMemo(
+    () => filterSubscribers(subscribers, filter, search),
+    [subscribers, filter, search]
+  );
 
   return (
     <div className="space-y-6">
@@ -123,7 +170,7 @@ export default function AdminWaitlistPage() {
           <p className="text-sm text-muted mt-1">
             {loading
               ? "Зареждане..."
-              : `${subscribers.length} записани имейла`}
+              : `${realCount} реални • ${testCount} тестови`}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -143,49 +190,38 @@ export default function AdminWaitlistPage() {
           </button>
           <button
             onClick={downloadCsv}
-            disabled={subscribers.length === 0}
+            disabled={visible.length === 0}
             className="inline-flex items-center gap-1.5 bg-navy text-white rounded-lg px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
           >
             <Download size={14} />
-            CSV export
+            CSV ({visible.length})
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-border bg-white p-5">
-          <p className="text-xs text-muted uppercase tracking-widest mb-2">
-            Общо записани
-          </p>
-          <p className="text-3xl font-bold text-navy font-mono tabular">
-            {subscribers.length}
-          </p>
-        </div>
-        <div className="rounded-xl border border-border bg-white p-5">
-          <p className="text-xs text-muted uppercase tracking-widest mb-2">
-            БГ потребители
-          </p>
-          <p className="text-3xl font-bold text-navy font-mono tabular">
-            {subscribers.filter((s) => s.locale === "bg").length}
-          </p>
-        </div>
-        <div className="rounded-xl border border-border bg-white p-5">
-          <p className="text-xs text-muted uppercase tracking-widest mb-2">
-            EN потребители
-          </p>
-          <p className="text-3xl font-bold text-navy font-mono tabular">
-            {subscribers.filter((s) => s.locale === "en").length}
-          </p>
-        </div>
+      <div className="grid gap-4 md:grid-cols-4">
+        <StatCard label="Реални контакти" value={realCount} accent="navy" />
+        <StatCard label="Тестови имейли" value={testCount} accent="amber" icon={<FlaskConical size={14} />} />
+        <StatCard
+          label="БГ"
+          value={realSubs.filter((s) => s.locale === "bg").length}
+        />
+        <StatCard
+          label="EN"
+          value={realSubs.filter((s) => s.locale === "en").length}
+        />
       </div>
 
-      {/* Insights */}
+      {/* Insights — based on real subs only */}
       {topPeptides.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border border-border bg-white p-5">
             <p className="text-sm font-semibold text-navy mb-3">
-              Топ заявени пептиди
+              Топ заявени пептиди{" "}
+              <span className="text-xs text-muted font-normal">
+                (без тестови)
+              </span>
             </p>
             <ol className="space-y-2">
               {topPeptides.map(([slug, count], i) => (
@@ -203,7 +239,10 @@ export default function AdminWaitlistPage() {
           </div>
           <div className="rounded-xl border border-border bg-white p-5">
             <p className="text-sm font-semibold text-navy mb-3">
-              Източници (откъде се записват)
+              Източници{" "}
+              <span className="text-xs text-muted font-normal">
+                (без тестови)
+              </span>
             </p>
             <ol className="space-y-2">
               {Object.entries(bySource)
@@ -225,6 +264,39 @@ export default function AdminWaitlistPage() {
         </div>
       )}
 
+      {/* Filter toolbar */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-1 bg-surface p-1 rounded-lg">
+          <FilterPill
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+            icon={<Filter size={11} />}
+          >
+            Всички ({subscribers.length})
+          </FilterPill>
+          <FilterPill
+            active={filter === "real"}
+            onClick={() => setFilter("real")}
+          >
+            Реални ({realCount})
+          </FilterPill>
+          <FilterPill
+            active={filter === "test"}
+            onClick={() => setFilter("test")}
+            icon={<FlaskConical size={11} />}
+          >
+            Тестови ({testCount})
+          </FilterPill>
+        </div>
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Търсене по имейл..."
+          className="text-sm rounded-lg border border-border px-3 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+        />
+      </div>
+
       {/* Subscribers table */}
       <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full text-sm">
@@ -235,35 +307,52 @@ export default function AdminWaitlistPage() {
               <th className="text-left px-4 py-3">Заявени пептиди</th>
               <th className="text-left px-4 py-3">Източник</th>
               <th className="text-left px-4 py-3">Дата</th>
+              <th className="text-center px-4 py-3" title="Тестов имейл — изключва се от реални кампании">
+                Тест
+              </th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-muted">
+                <td colSpan={6} className="px-4 py-12 text-center text-muted">
                   Зареждане...
                 </td>
               </tr>
-            ) : subscribers.length === 0 ? (
+            ) : visible.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-muted">
-                  Все още няма записани в списъка
+                <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                  {search
+                    ? "Няма съвпадения"
+                    : "Все още няма записани в списъка"}
                 </td>
               </tr>
             ) : (
-              subscribers.map((s) => (
+              visible.map((s) => (
                 <tr
                   key={s.id}
-                  className="border-b border-border hover:bg-surface/50 transition-colors"
+                  className={`border-b border-border transition-colors ${
+                    s.is_test
+                      ? "bg-amber-50/40 hover:bg-amber-50/70"
+                      : "hover:bg-surface/50"
+                  }`}
                 >
                   <td className="px-4 py-3 text-navy font-medium">
-                    <a
-                      href={`mailto:${s.email}`}
-                      className="hover:text-accent inline-flex items-center gap-1"
-                    >
-                      <Mail size={12} className="text-muted" />
-                      {s.email}
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`mailto:${s.email}`}
+                        className="hover:text-accent inline-flex items-center gap-1"
+                      >
+                        <Mail size={12} className="text-muted" />
+                        {s.email}
+                      </a>
+                      {s.is_test && (
+                        <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-widest font-bold text-amber-800 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5">
+                          <FlaskConical size={9} />
+                          Test
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 font-mono text-xs uppercase text-secondary">
                     {s.locale}
@@ -276,6 +365,17 @@ export default function AdminWaitlistPage() {
                   </td>
                   <td className="px-4 py-3 text-xs text-muted">
                     {new Date(s.created_at).toLocaleString("bg-BG")}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={s.is_test}
+                        onChange={(e) => toggleTest(s.id, e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <span className="relative inline-block w-8 h-4 bg-stone-300 peer-checked:bg-amber-500 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:bg-white after:rounded-full after:transition-transform peer-checked:after:translate-x-4" />
+                    </label>
                   </td>
                 </tr>
               ))
@@ -299,10 +399,79 @@ export default function AdminWaitlistPage() {
 }
 
 /* ──────────────────────────────────────────────────────────────────────── */
+
+function filterSubscribers(
+  list: Subscriber[],
+  filter: FilterMode,
+  search: string
+): Subscriber[] {
+  const q = search.trim().toLowerCase();
+  return list.filter((s) => {
+    if (filter === "real" && s.is_test) return false;
+    if (filter === "test" && !s.is_test) return false;
+    if (q && !s.email.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function StatCard({
+  label,
+  value,
+  accent = "navy",
+  icon,
+}: {
+  label: string;
+  value: number;
+  accent?: "navy" | "amber";
+  icon?: React.ReactNode;
+}) {
+  const valueClass =
+    accent === "amber" ? "text-amber-700" : "text-navy";
+  return (
+    <div className="rounded-xl border border-border bg-white p-5">
+      <p className="text-xs text-muted uppercase tracking-widest mb-2 inline-flex items-center gap-1.5">
+        {icon}
+        {label}
+      </p>
+      <p className={`text-3xl font-bold font-mono tabular ${valueClass}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function FilterPill({
+  active,
+  onClick,
+  children,
+  icon,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md transition-colors ${
+        active
+          ? "bg-white text-navy shadow-sm font-medium"
+          : "text-muted hover:text-navy"
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────── */
 /*                            IMPORT MODAL                                  */
 /* ──────────────────────────────────────────────────────────────────────── */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CLIENT_BATCH = 2000; // rows per request — keeps payload small + responsive
 
 function ImportModal({
   token,
@@ -320,7 +489,12 @@ function ImportModal({
   const [defaultLocale, setDefaultLocale] = useState<"bg" | "en">("bg");
   const [defaultSource, setDefaultSource] = useState("admin-import");
   const [confirmed, setConfirmed] = useState(true);
+  const [markAsTest, setMarkAsTest] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<{
+    sent: number;
+    total: number;
+  } | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -333,7 +507,6 @@ function ImportModal({
     for (const raw of text.split(/\r?\n/)) {
       const line = raw.trim();
       if (!line) continue;
-      // Allow lines like "email" OR "Name <email>" OR "email,locale"
       const angle = line.match(/<([^>]+)>/);
       const candidate = angle ? angle[1] : line.split(",")[0].trim();
       if (EMAIL_RE.test(candidate)) {
@@ -352,7 +525,6 @@ function ImportModal({
     const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (lines.length === 0) return { rows: [], invalid: 0 };
 
-    // Header detection — accept "email" header or any first line that looks like a header
     const first = splitCsvLine(lines[0]);
     const headerLooksLikeData = first.some((c) => EMAIL_RE.test(c.trim()));
     const headers = headerLooksLikeData
@@ -361,8 +533,7 @@ function ImportModal({
 
     const dataLines = headerLooksLikeData ? lines : lines.slice(1);
 
-    const idx = (name: string) =>
-      headers ? headers.indexOf(name) : -1;
+    const idx = (name: string) => (headers ? headers.indexOf(name) : -1);
     const emailIdx = headers ? idx("email") : 0;
     const localeIdx = idx("locale");
     const peptidesIdx =
@@ -441,12 +612,23 @@ function ImportModal({
   }
 
   const text = tab === "paste" ? pasteText : csvText;
-  const parsed =
-    text.trim().length === 0
-      ? { rows: [], invalid: 0 }
-      : tab === "paste"
-        ? parsePasteRows(pasteText)
-        : parseCsvRows(csvText);
+  const parsed = useMemo(() => {
+    if (text.trim().length === 0) return { rows: [] as ParsedRow[], invalid: 0 };
+    return tab === "paste" ? parsePasteRows(pasteText) : parseCsvRows(csvText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, tab]);
+
+  // Client-side dedupe preview
+  const dedupedRows = useMemo(() => {
+    const seen = new Set<string>();
+    return parsed.rows.filter((r) => {
+      const e = r.email.toLowerCase();
+      if (seen.has(e)) return false;
+      seen.add(e);
+      return true;
+    });
+  }, [parsed.rows]);
+  const localDuplicates = parsed.rows.length - dedupedRows.length;
 
   async function handleFile(file: File) {
     setCsvFileName(file.name);
@@ -456,44 +638,76 @@ function ImportModal({
   }
 
   async function submit() {
-    if (parsed.rows.length === 0) {
+    if (dedupedRows.length === 0) {
       toast.error("Няма валидни имейли за импорт");
       return;
     }
     setSubmitting(true);
     setResult(null);
+    setProgress({ sent: 0, total: dedupedRows.length });
+
+    const aggregate: ImportResult = {
+      imported: 0,
+      skipped: 0,
+      invalid: 0,
+      total: dedupedRows.length,
+      details: { invalid: [] },
+    };
+
     try {
-      const res = await fetch("/api/admin/waitlist/import", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          rows: parsed.rows,
-          defaults: {
-            locale: defaultLocale,
-            source: defaultSource || "admin-import",
-            confirmed,
+      for (let i = 0; i < dedupedRows.length; i += CLIENT_BATCH) {
+        const slice = dedupedRows.slice(i, i + CLIENT_BATCH);
+        const res = await fetch("/api/admin/waitlist/import", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json?.success) {
-        toast.error(json?.error ?? "Импортът се провали");
-        return;
+          body: JSON.stringify({
+            rows: slice,
+            defaults: {
+              locale: defaultLocale,
+              source: defaultSource || "admin-import",
+              confirmed,
+              isTest: markAsTest,
+            },
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json?.success) {
+          toast.error(
+            `Грешка при партида ${Math.floor(i / CLIENT_BATCH) + 1}: ${json?.error ?? "unknown"}`
+          );
+          setSubmitting(false);
+          setResult(aggregate);
+          return;
+        }
+        const r = json.data as ImportResult;
+        aggregate.imported += r.imported;
+        aggregate.skipped += r.skipped;
+        aggregate.invalid += r.invalid;
+        if (r.details?.invalid && aggregate.details!.invalid!.length < 50) {
+          aggregate.details!.invalid!.push(
+            ...r.details.invalid.slice(0, 50 - aggregate.details!.invalid!.length)
+          );
+        }
+        setProgress({ sent: Math.min(i + slice.length, dedupedRows.length), total: dedupedRows.length });
       }
-      const r = json.data as ImportResult;
-      setResult(r);
+
+      setResult(aggregate);
       toast.success(
-        `Импортирани: ${r.imported} • Прескочени: ${r.skipped} • Невалидни: ${r.invalid}`
+        `Импортирани: ${aggregate.imported} • Прескочени: ${aggregate.skipped} • Невалидни: ${aggregate.invalid}`
       );
     } catch {
       toast.error("Мрежова грешка при импорта");
+      setResult(aggregate);
     } finally {
       setSubmitting(false);
     }
   }
+
+  const isLargeImport = dedupedRows.length > CLIENT_BATCH;
+  const batchCount = Math.ceil(dedupedRows.length / CLIENT_BATCH);
 
   return (
     <div className="fixed inset-0 z-[200] bg-black/40 flex items-start md:items-center justify-center p-4 overflow-y-auto">
@@ -506,12 +720,13 @@ function ImportModal({
               Импорт на контакти
             </h2>
             <p className="text-xs text-muted mt-0.5">
-              Поставяне на списък или качване на CSV файл
+              Дубликатите автоматично се откриват и пропускат
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-muted hover:text-navy transition-colors p-1"
+            disabled={submitting}
+            className="text-muted hover:text-navy transition-colors p-1 disabled:opacity-30"
             aria-label="Затвори"
           >
             <X size={18} />
@@ -568,7 +783,7 @@ function ImportModal({
               ) : (
                 <div>
                   <label className="block text-xs font-medium text-secondary mb-1.5">
-                    CSV файл
+                    CSV файл (поддържа до 10 000 реда наведнъж)
                   </label>
                   <div className="flex items-center gap-3">
                     <input
@@ -601,17 +816,6 @@ function ImportModal({
                     Пептидите могат да са разделени с <code>|</code>,{" "}
                     <code>,</code> или <code>;</code>.
                   </p>
-                  {csvText && (
-                    <details className="mt-3">
-                      <summary className="text-xs text-secondary cursor-pointer hover:text-navy">
-                        Преглед на съдържанието
-                      </summary>
-                      <pre className="mt-2 max-h-40 overflow-auto bg-surface rounded-lg p-3 text-[10px] font-mono text-secondary">
-                        {csvText.slice(0, 2000)}
-                        {csvText.length > 2000 ? "\n…" : ""}
-                      </pre>
-                    </details>
-                  )}
                 </div>
               )}
 
@@ -655,41 +859,109 @@ function ImportModal({
                       onChange={(e) => setConfirmed(e.target.checked)}
                       className="accent-accent"
                     />
-                    Потвърден (confirmed)
+                    Потвърден
                   </label>
                 </div>
               </div>
 
+              {/* Test toggle */}
+              <label
+                className={`flex items-start gap-3 rounded-lg border-2 px-4 py-3 cursor-pointer transition-colors ${
+                  markAsTest
+                    ? "border-amber-300 bg-amber-50"
+                    : "border-border bg-white hover:bg-surface/50"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={markAsTest}
+                  onChange={(e) => setMarkAsTest(e.target.checked)}
+                  className="mt-0.5 accent-amber-500"
+                />
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-navy flex items-center gap-1.5">
+                    <FlaskConical size={14} className="text-amber-600" />
+                    Маркирай всички като тестови имейли
+                  </div>
+                  <p className="text-xs text-muted mt-0.5">
+                    Тестовите имейли се изключват от реалните кампании и
+                    статистиките. Можеш да ги използваш за пробни изпращания.
+                  </p>
+                </div>
+              </label>
+
               {/* Preview */}
-              <div className="rounded-lg bg-surface px-4 py-3 flex items-center justify-between text-xs">
-                <span className="text-secondary">
-                  Засечени:{" "}
-                  <span className="font-bold text-navy tabular">
-                    {parsed.rows.length}
-                  </span>{" "}
-                  валидни
-                  {parsed.invalid > 0 && (
-                    <>
-                      {" • "}
-                      <span className="text-rose-700 font-bold tabular">
-                        {parsed.invalid}
-                      </span>{" "}
-                      невалидни
-                    </>
+              <div className="rounded-lg bg-surface px-4 py-3 space-y-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-secondary">
+                    Засечени:{" "}
+                    <span className="font-bold text-navy tabular">
+                      {dedupedRows.length}
+                    </span>{" "}
+                    уникални
+                    {localDuplicates > 0 && (
+                      <>
+                        {" • "}
+                        <span className="text-amber-700 tabular">
+                          {localDuplicates}
+                        </span>{" "}
+                        дубликата във файла
+                      </>
+                    )}
+                    {parsed.invalid > 0 && (
+                      <>
+                        {" • "}
+                        <span className="text-rose-700 font-bold tabular">
+                          {parsed.invalid}
+                        </span>{" "}
+                        невалидни
+                      </>
+                    )}
+                  </span>
+                  {isLargeImport && (
+                    <span className="text-muted">
+                      Ще бъде изпратено в {batchCount} партиди
+                    </span>
                   )}
-                </span>
-                {parsed.rows.length > 0 && (
-                  <span className="text-muted">
+                </div>
+                {dedupedRows.length > 0 && (
+                  <div className="text-muted truncate">
                     Първи 3:{" "}
                     <span className="font-mono">
-                      {parsed.rows
+                      {dedupedRows
                         .slice(0, 3)
                         .map((r) => r.email)
                         .join(", ")}
                     </span>
-                  </span>
+                  </div>
                 )}
               </div>
+
+              {/* Progress bar (during submit) */}
+              {progress && submitting && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-secondary">
+                      Изпращане...{" "}
+                      <span className="font-bold text-navy tabular">
+                        {progress.sent}
+                      </span>{" "}
+                      / {progress.total}
+                    </span>
+                    <span className="text-muted tabular">
+                      {Math.round((progress.sent / progress.total) * 100)}%
+                    </span>
+                  </div>
+                  <div className="h-2 bg-surface rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-accent transition-all duration-300"
+                      style={{
+                        width: `${(progress.sent / progress.total) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </>
           )}
 
@@ -701,7 +973,11 @@ function ImportModal({
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <Stat label="Импортирани" value={result.imported} tone="ok" />
-                <Stat label="Прескочени (вече съществуват)" value={result.skipped} tone="muted" />
+                <Stat
+                  label="Прескочени (вече съществуват)"
+                  value={result.skipped}
+                  tone="muted"
+                />
                 <Stat label="Невалидни" value={result.invalid} tone="warn" />
               </div>
               {result.details?.invalid && result.details.invalid.length > 0 && (
@@ -714,9 +990,7 @@ function ImportModal({
                     {result.details.invalid.map((it, i) => (
                       <li key={i} className="flex justify-between gap-2">
                         <span className="truncate">{it.email}</span>
-                        <span className="text-muted shrink-0">
-                          {it.reason}
-                        </span>
+                        <span className="text-muted shrink-0">{it.reason}</span>
                       </li>
                     ))}
                   </ul>
@@ -732,13 +1006,14 @@ function ImportModal({
             <>
               <button
                 onClick={onClose}
-                className="text-sm text-secondary hover:text-navy px-3 py-2 transition-colors"
+                disabled={submitting}
+                className="text-sm text-secondary hover:text-navy px-3 py-2 transition-colors disabled:opacity-30"
               >
                 Отказ
               </button>
               <button
                 onClick={submit}
-                disabled={submitting || parsed.rows.length === 0}
+                disabled={submitting || dedupedRows.length === 0}
                 className="inline-flex items-center gap-1.5 bg-navy text-white rounded-lg px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
               >
                 {submitting ? (
@@ -749,7 +1024,8 @@ function ImportModal({
                 ) : (
                   <>
                     <Upload size={14} />
-                    Импортирай {parsed.rows.length || ""}
+                    Импортирай {dedupedRows.length || ""}
+                    {markAsTest ? " като тестови" : ""}
                   </>
                 )}
               </button>
