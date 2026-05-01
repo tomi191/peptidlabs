@@ -13,6 +13,9 @@ import SearchModal from "@/components/ui/SearchModal";
 import { PeptideTicker } from "@/components/layout/PeptideTicker";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { LogoMark } from "@/components/ui/Logo";
+import { NavLink } from "@/components/layout/NavLink";
+import { Magnet } from "@/components/ui/Magnet";
+import { LayoutGroup } from "motion/react";
 
 /* ── Cart icon with badge (reads Zustand) ── */
 function CartIcon({ onClick, label }: { onClick: () => void; label: string }) {
@@ -154,18 +157,17 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
-        <nav className="hidden lg:flex items-center gap-8 pwa-hide-when-rail">
-          {navKeys.map((key) => (
-            <Link
-              key={key}
-              href={navHrefs[key]}
-              className="text-secondary text-sm hover:text-navy transition-colors"
-            >
-              {t(key)}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop nav — react-bits-style morphing underline (motion layoutId)
+            slides smoothly between the active link as the route changes. */}
+        <LayoutGroup id="header-nav">
+          <nav className="hidden lg:flex items-center gap-8 pwa-hide-when-rail">
+            {navKeys.map((key) => (
+              <NavLink key={key} href={navHrefs[key]}>
+                {t(key)}
+              </NavLink>
+            ))}
+          </nav>
+        </LayoutGroup>
 
         {/* Right icons — Search + Cart only */}
         <div className="flex items-center gap-3">
@@ -183,25 +185,33 @@ export default function Header() {
               ⌘K
             </kbd>
           </button>
-          {/* Mobile: icon-only */}
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="md:hidden text-navy hover:text-secondary transition-colors duration-150"
-            aria-label={tc("searchLabel")}
-          >
-            <Search size={20} strokeWidth={1.5} />
-          </button>
-          <WishlistIcon label={locale === "bg" ? "Любими" : "Wishlist"} />
-          <CartIcon onClick={() => setCartOpen(true)} label={tc("cartLabel")} />
+          {/* Mobile: icon-only — wrapped in Magnet for tactile feel */}
+          <Magnet strength={0.25} radius={40}>
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="md:hidden text-navy hover:text-secondary transition-colors duration-150"
+              aria-label={tc("searchLabel")}
+            >
+              <Search size={20} strokeWidth={1.5} />
+            </button>
+          </Magnet>
+          <Magnet strength={0.25} radius={40}>
+            <WishlistIcon label={locale === "bg" ? "Любими" : "Wishlist"} />
+          </Magnet>
+          <Magnet strength={0.25} radius={40}>
+            <CartIcon onClick={() => setCartOpen(true)} label={tc("cartLabel")} />
+          </Magnet>
 
           {/* Hamburger — visible below lg */}
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full border border-border text-navy hover:border-navy hover:bg-surface transition-colors"
-            aria-label={tc("menuLabel")}
-          >
-            <Menu size={18} strokeWidth={1.5} />
-          </button>
+          <Magnet strength={0.25} radius={40}>
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full border border-border text-navy hover:border-navy hover:bg-surface transition-colors"
+              aria-label={tc("menuLabel")}
+            >
+              <Menu size={18} strokeWidth={1.5} />
+            </button>
+          </Magnet>
         </div>
       </div>
 
