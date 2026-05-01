@@ -1,0 +1,148 @@
+# PeptidLabs — Full Knowledge Index for LLMs
+
+> Extended index following the [llms-full.txt convention](https://llmstxt.org/).
+> Includes condensed page contents + structured catalog data so a model can
+> answer questions about PeptidLabs without crawling the live site.
+> All product framing is research-only / in-vitro per EU regulatory positioning.
+
+---
+
+## What PeptidLabs is
+
+PeptidLabs is a European supplier of HPLC-verified research peptides shipping across the EU. Every batch is independently tested for purity (≥98% by HPLC) and ships with a downloadable Certificate of Analysis. The catalog covers regenerative peptides (BPC-157, TB-500, GHK-Cu), GLP-1 receptor agonists (Semaglutide, Tirzepatide, Retatrutide), GHRPs (Ipamorelin, GHRP-6, Hexarelin, MGF), nootropic peptides (Selank, Semax, Cerebrolysin, Humanin), longevity compounds (NAD+, Epitalon, FOXO4-DRI, MOTS-c, 5-Amino-1MQ), and supporting accessories (bacteriostatic water, syringes, alcohol swabs, storage cases).
+
+The site is bilingual:
+- **Bulgarian** (`/bg/...`) is the primary content surface — all copy originates here.
+- **English** (`/en/...`) is a faithful translation of the BG source, kept at parity in length and depth.
+
+Pricing is in **EUR** (€) only. Bulgarian leva (лв / BGN) are never shown to customers.
+
+---
+
+## Tech stack (for context)
+
+- Next.js 16 (App Router, Turbopack, React Compiler)
+- Supabase (PostgreSQL + Storage + Auth + RLS)
+- Stripe Checkout for card payments + Cash on Delivery (Econt + Speedy)
+- next-intl for routing + translations
+- Resend for transactional email (order confirmation, magic-link login, waitlist)
+- KIE.ai GPT Image-2 for product, hero, and editorial photography
+
+---
+
+## Brand voice & framing rules
+
+- Always research-only / in-vitro. Never make medical claims, never recommend dosing for humans.
+- Use scientific neutral framing: cite published studies (NEJM, Lancet, PubMed), name researchers (Sikiric for BPC-157, Goldspink for MGF, Sinclair for NAD+, Hashimoto for Humanin, Sauve for 5-Amino-1MQ, du Vigneaud for Oxytocin, Bowers for GHRP-6, etc.).
+- Explain technical terms inline (mitochondria, fibroblast, satellite cell, sirtuin, IRR receptor, etc.) — accessible language for non-specialists.
+- Do NOT use marketing superlatives ("best", "most sought-after", "miraculous", "amazing").
+- "Дамско нежно" warm aesthetic at the visual layer — but content tone is rigorous and clinical.
+
+---
+
+## Catalog overview (condensed)
+
+### Healing & Recovery
+- **BPC-157** (5mg, 10mg, blend with TB-500): 15-amino-acid fragment of stomach protective protein. Modulates NO + VEGF synthesis, accelerates angiogenesis. Sikiric lab, 100+ peer-reviewed studies.
+- **TB-500**: active fragment (LKKTETQ) of Thymosin Beta-4. Binds G-actin, aids cell migration to injury sites. Classic partner to BPC-157.
+- **ARA-290 / Cibinetide** (16mg): EPO-derived 11-aa peptide without erythropoietic activity. Innate Repair Receptor (IRR) agonist. FDA orphan-drug designation for sarcoidosis-induced small fiber neuropathy.
+- **KPV** (10mg): tripeptide α-MSH fragment, anti-inflammatory.
+
+### Weight Loss / Metabolic
+- **Semaglutide** (5mg): GLP-1 receptor agonist (Novo Nordisk). STEP trials, 14.9% body weight reduction at 68 weeks.
+- **Tirzepatide** (5mg, 10mg): dual GLP-1 + GIP twincretin (Eli Lilly). SURMOUNT-1, 22.5% body weight reduction at 72 weeks.
+- **Retatrutide** (5mg, 10mg): triple agonist GLP-1 + GIP + glucagon (Eli Lilly). TRIUMPH-1 NEJM 2023, 24.2% body weight reduction at 48 weeks.
+- **Tesamorelin** (5mg, 10mg): GHRH analog, FDA-approved for HIV-related visceral fat reduction.
+- **AOD-9604** (5mg): C-terminal fragment (176-191) of human growth hormone, lipolytic.
+- **5-Amino-1MQ** (50mg): selective NNMT inhibitor (Sauve, Cornell). Activates fat metabolism via NAD+ pathway. Kraus et al, Nature 2014: >25% fat-mass reduction in obese mice in 11 days.
+
+### GH / Muscle
+- **Ipamorelin** (5mg): pentapeptide GHRP, no cortisol/prolactin elevation. Cleanest GH secretagogue.
+- **CJC-1295** (5mg, with or without DAC): modified GHRH analog with DPP-IV resistance. Two forms differ pharmacologically.
+- **Ipamorelin + CJC-1295 Blend** (10mg): doubles GH pulses.
+- **GHRP-6** (5mg): first-generation GHRP, Cyril Bowers (Tulane). Discovery led to ghrelin identification (Kojima 1999).
+- **Hexarelin** (5mg): potent GHRP, additional CD36-mediated cardioprotective effect (Deghenghi/Ghigo, Torino).
+- **MGF** (5mg): IGF-1 splice variant (Geoffrey Goldspink, UCL). Activates muscle satellite cells.
+- **Sermorelin** (5mg): synthetic GHRH analog (1-29).
+
+### Anti-aging / Longevity
+- **NAD+** (500mg): coenzyme central to mitochondrial energy metabolism. Levels drop ~50% by age 60. Sirtuin (SIRT1-7) cofactor. Sinclair (Harvard), Imai (Washington Univ).
+- **Epitalon** (10mg): tetrapeptide telomerase activator (Vladimir Khavinson, St. Petersburg).
+- **GHK-Cu** (50mg, 100mg): copper tripeptide ("blue elixir"). Pickart 1973. Affects 31% of human genes; collagen synthesis, DNA repair.
+- **FOXO4-DRI**: senolytic peptide, selectively triggers apoptosis in senescent cells.
+- **Humanin** (10mg): mitochondrial-derived peptide, encoded in 16S rRNA gene of mtDNA. Inhibits BAX-mediated apoptosis. Hashimoto (Tokyo) 2001. Centenarians have higher levels.
+- **MOTS-c** (10mg): mitochondrial-derived peptide, regulates metabolic homeostasis.
+
+### Nootropic / Mood
+- **Selank** (5mg): Russian nootropic, modified TP-7 fragment. Anxiolytic without sedation.
+- **Semax** (5mg) / **NA-Semax** (30mg): modified ACTH 4-7 fragment (Russian Academy of Sciences). Elevates BDNF in hippocampus. Registered for ischemic stroke.
+- **Cerebrolysin** (5ml): porcine brain hydrolysate, neurotrophin-mimetic peptides. CASTA trial (Lancet Neurology 2012, n=1,070).
+- **DSIP** (5mg): Delta Sleep-Inducing Peptide, sleep architecture studies.
+- **Oxytocin** (2mg): 9-aa neuropeptide. First synthesized peptide hormone (du Vigneaud 1953, Nobel Prize). Studied for autism, PTSD, social bonding.
+
+### Sexual Health
+- **PT-141 / Bremelanotide** (10mg): MC4R agonist, central-nervous-system mechanism for arousal.
+- **Melanotan 2** (10mg): α-MSH analog, melanogenesis + libido studies.
+
+### Cosmetic / Skin
+- **Matrixyl** (50mg): pentapeptide-3, collagen synthesis stimulant.
+- **PTD-DBM** (5mg): protein transduction domain peptide, hair-follicle research.
+
+### Accessories
+- Bacteriostatic Water 20ml, Insulin Syringes 29G, Mixing Syringes 21G, Alcohol Swabs (100-pack), Empty Storage Vials (10-pack), Cold Storage Case, Reconstitution Starter Kit.
+
+---
+
+## Key business pages
+
+### `/bg/about` — About PeptidLabs
+EU-based research peptide supplier. Independent third-party HPLC verification via partner labs in Greece and Poland. Mass spectrometry on every batch. Team: biotechnologists, pharmacists, engineers from European research institutions.
+
+### `/bg/coa-vault` — COA Vault
+Every batch ships with a downloadable Certificate of Analysis: lot number, manufacture date, HPLC purity %, mass spectrometry confirmation, endotoxin testing where applicable. Customers can verify any vial's COA via lot lookup.
+
+### `/bg/delivery` — Delivery
+- Bulgaria: Econt + Speedy, 1–2 business days
+- EU: international couriers, 3–7 business days
+- Free shipping over €49
+- No pickup option
+- Discreet packaging
+
+### `/bg/returns` — Returns
+- 14-day return window for unopened, sealed product
+- Defective product: full replacement or refund
+- Opened lyophilized vials are not returnable for sterility reasons
+
+### `/bg/encyclopedia` — Peptide Encyclopedia
+49 peptides with full mechanism articles. Each entry: name, alternate names, molecular formula, mechanism of action, named researchers, published trial references (NEJM, Lancet, Cochrane), molecular fingerprint visualization.
+
+### `/bg/blog` — Blog
+- BPC-157 Guide
+- Semaglutide vs Tirzepatide — detailed 2026 comparison
+- Top 5 Peptides for Beginners
+
+### `/bg/faq` — FAQ
+Common questions on shipping, COA verification, payment methods, peptide reconstitution, storage, Stripe + cash-on-delivery flow.
+
+---
+
+## API surface (for integrations)
+
+The site exposes these public API routes:
+- `POST /api/newsletter` — Resend-backed newsletter subscription
+- `POST /api/waitlist` — pre-launch waitlist
+- `POST /api/orders/cod` — cash-on-delivery order creation
+- `POST /api/checkout/stripe` — Stripe Checkout session
+- `POST /api/webhooks/stripe` — Stripe webhook (checkout completed, payment failed, refund)
+- `GET /api/products/search` — product search
+- `POST /api/reviews` — product review submission (rate-limited 3/hr/IP)
+- `GET /api/reviews/[productId]` — fetch reviews
+- `POST /api/account/request-link` — passwordless magic-link login
+
+Admin routes are bcrypt+JWT protected and out of scope for public LLM consumption.
+
+---
+
+## Compliance footer
+
+All references to clinical numbers are from published peer-reviewed literature. PeptidLabs products are sold strictly for in-vitro research purposes within the European Union. They are not medications, are not approved by EMA/FDA for human consumption, and are not sold to consumers under 18.

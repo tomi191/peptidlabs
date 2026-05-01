@@ -10,11 +10,15 @@ export default function robots(): MetadataRoute.Robots {
         "/admin/",
         "/account",
         "/account/",
+        "/orders",
+        "/orders/",
         "/wishlist",
         "/compare",
         "/checkout",
+        "/checkout/",
         "/cart",
         "/*?cv=*", // variant query — duplicate content
+        "/*?session_id=*", // Stripe success URL
       ],
     },
     sitemap: "https://peptidlabs.eu/sitemap.xml",
