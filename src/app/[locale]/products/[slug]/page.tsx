@@ -102,13 +102,16 @@ export async function generateMetadata({
       description: metaDesc,
       type: "website",
       url: `https://peptidlabs.eu/${locale}/products/${slug}`,
-      images: product.images?.[0] ? [{ url: product.images[0] }] : undefined,
+      // images deliberately omitted — Next.js auto-injects the
+      // file-based opengraph-image.tsx (per-product SEO card with
+      // name + price + tag on navy gradient). Overriding with the raw
+      // product photo loses the brand framing in social previews.
     },
     twitter: {
       card: "summary_large_image",
       title: `${product.name}${doseTag} — ${priceTag}`,
       description: metaDesc,
-      images: product.images?.[0] ? [product.images[0]] : undefined,
+      // Same — let next/og opengraph-image flow through to twitter:image.
     },
     alternates: {
       canonical: `https://peptidlabs.eu/${locale}/products/${slug}`,
