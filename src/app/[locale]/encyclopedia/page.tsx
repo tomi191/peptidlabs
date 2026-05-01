@@ -77,11 +77,18 @@ export default async function EncyclopediaPage({
         }
       />
 
-      {/* Detail paragraph */}
-      <div className="mx-auto max-w-[1280px] px-6 pb-6 -mt-4">
+      {/* Detail paragraph + azbuka link */}
+      <div className="mx-auto max-w-[1280px] px-6 pb-6 -mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-3xl text-sm text-muted leading-relaxed">
           {t("heroDetail", { count: peptides.length })}
         </p>
+        <a
+          href={`/${locale}/encyclopedia/azbuka`}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface/60 px-4 py-1.5 text-xs font-medium text-secondary transition-colors hover:border-accent/40 hover:text-accent"
+        >
+          {isBg ? "Азбучен указател" : "A–Z Index"}
+          <span className="font-mono text-[10px] text-muted">A → Я</span>
+        </a>
       </div>
 
       <section className="mx-auto max-w-[1280px] px-6 py-8">

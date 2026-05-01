@@ -39,6 +39,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", priority: 1.0, freq: "weekly" as const },
     { path: "/shop", priority: 0.9, freq: "weekly" as const },
     { path: "/encyclopedia", priority: 0.8, freq: "weekly" as const },
+    { path: "/encyclopedia/azbuka", priority: 0.6, freq: "weekly" as const },
+    { path: "/peptide-sciences-alternative", priority: 0.7, freq: "monthly" as const },
     { path: "/what-are-peptides", priority: 0.8, freq: "monthly" as const },
     { path: "/waitlist", priority: 0.8, freq: "weekly" as const },
     { path: "/blog", priority: 0.7, freq: "weekly" as const },

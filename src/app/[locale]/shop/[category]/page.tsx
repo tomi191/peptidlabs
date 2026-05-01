@@ -27,7 +27,11 @@ import {
 import { createStaticSupabase } from "@/lib/supabase/static";
 import { SortableProductGrid } from "@/components/product/SortableProductGrid";
 import { ShopFilters } from "@/components/product/ShopFilters";
+import { ShopEditorial } from "@/components/shop/ShopEditorial";
 import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
+
+// Slugs that get a deep editorial intro (highest-traffic categories per SEO audit).
+const EDITORIAL_SLUGS = new Set(["weight-loss", "healing"]);
 
 const iconMap: Record<string, LucideIcon> = {
   activity: Activity,
@@ -144,6 +148,15 @@ export default async function CategoryPage({
             {products.length} {t("productsInCategory")}
           </p>
         </div>
+
+        {/* Deep editorial intro for the SEO-critical categories
+            (weight-loss, healing) — humanized prose, indexable. */}
+        {EDITORIAL_SLUGS.has(categorySlug) && (
+          <ShopEditorial
+            intent={categorySlug as "weight-loss" | "healing"}
+            locale={locale}
+          />
+        )}
 
         {/* Mobile category chips */}
         <div className="flex gap-2 overflow-x-auto pb-4 lg:hidden snap-x">
