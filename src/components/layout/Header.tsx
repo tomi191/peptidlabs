@@ -128,20 +128,12 @@ export default function Header() {
         <PeptideTicker />
       </div>
 
-      {/* Top bar — desktop website chrome, hidden in installed PWA */}
+      {/* Top bar — desktop website chrome, hidden in installed PWA.
+          Free-shipping line removed at user request — promo lives in Footer
+          + checkout summary instead. */}
       <div className="hidden md:block bg-surface border-b border-border pwa-hide-in-app">
-        <div className="flex items-center justify-between text-muted text-xs py-2 px-6">
-          <span>{tc("freeShipping")}</span>
+        <div className="flex items-center justify-end text-muted text-xs py-2 px-6">
           <div className="flex items-center gap-3">
-            <a
-              href="https://wa.me/359XXXXXXXXX"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted text-xs hover:text-navy transition-colors inline-flex items-center gap-1"
-            >
-              <Phone size={14} strokeWidth={1.5} />
-              {tc("whatsapp")}
-            </a>
             <LocaleSwitch />
             <span className="text-muted text-xs font-mono">{currencyLabel}</span>
           </div>

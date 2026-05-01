@@ -64,6 +64,10 @@ html {
   text-size-adjust: 100%;
   /* Use dynamic viewport so 100dvh respects the iOS dynamic toolbar */
   min-height: 100dvh;
+  /* Native smooth-scroll for in-page anchor links (#header). Replaced
+     Lenis JS smooth-scroll which dropped wheel events on horizontal
+     marquee/carousel containers. */
+  scroll-behavior: smooth;
 }
 
 body {

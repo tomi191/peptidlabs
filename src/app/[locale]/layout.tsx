@@ -12,7 +12,9 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { GrainOverlay } from "@/components/ui/GrainOverlay";
-import { LenisProvider } from "@/components/ui/LenisProvider";
+// LenisProvider removed — caused mid-page wheel-event drops on horizontal
+// marquee + carousel containers, forcing users to grab the visual scrollbar.
+// Native browser scroll is reliable; smooth-scroll restored via CSS in globals.
 import { Toaster } from "sonner";
 import { PlausibleScript } from "@/components/analytics/Plausible";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
@@ -159,7 +161,7 @@ export default async function LocaleLayout({
           Skip to content
         </a>
         <NextIntlClientProvider messages={messages}>
-          <LenisProvider>
+          <>
             <GrainOverlay />
             <PreLaunchBanner />
             <PromoBanner />
@@ -190,7 +192,7 @@ export default async function LocaleLayout({
                 },
               }}
             />
-          </LenisProvider>
+          </>
         </NextIntlClientProvider>
       </body>
     </html>
