@@ -7,16 +7,13 @@ import { WishlistButton } from "@/components/product/WishlistButton";
 import { CompareCheckbox } from "@/components/product/CompareCheckbox";
 import { TiltedCard } from "@/components/ui/TiltedCard";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { DualPrice } from "@/components/ui/DualPrice";
 import type { Product } from "@/lib/types";
 import {
   getFormLabel,
   getCategoryLabel,
   getProductDisplayName,
 } from "@/lib/labels";
-
-function formatPrice(product: Product) {
-  return `€${product.price_eur.toFixed(2)}`;
-}
 
 export function ProductCard({
   product,
@@ -80,9 +77,7 @@ export function ProductCard({
       </Link>
 
       <div className="flex items-center justify-between px-4 pb-4 pt-1">
-        <span className="text-base font-bold text-navy tabular">
-          {formatPrice(product)}
-        </span>
+        <DualPrice eur={product.price_eur} bgn={product.price_bgn} size="md" mono />
         <AddToCartButton product={product} />
       </div>
     </SpotlightCard>

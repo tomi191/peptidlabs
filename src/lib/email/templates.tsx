@@ -34,7 +34,10 @@ const BRAND = {
 };
 
 function formatCurrency(amount: number, currency = "EUR"): string {
-  return `€${amount.toFixed(2)}`;
+  // Per Bulgarian Currency Conversion Act, transactional documents during the
+  // 12-month transition show both EUR (primary) and BGN at the fixed rate.
+  const bgn = (Math.round(amount * 195583) / 100000).toFixed(2);
+  return `€${amount.toFixed(2)} (≈ ${bgn} лв)`;
 }
 
 function formatOrderId(id: string): string {

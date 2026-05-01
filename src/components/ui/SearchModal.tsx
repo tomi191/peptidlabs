@@ -172,8 +172,13 @@ export default function SearchModal({
                         </p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-navy shrink-0 tabular">
-                      €{product.price_eur.toFixed(2)}
+                    <span className="flex shrink-0 flex-col items-end leading-tight">
+                      <span className="text-sm font-bold text-navy tabular">
+                        €{product.price_eur.toFixed(2)}
+                      </span>
+                      <span className="mt-0.5 font-mono text-[10px] text-muted tabular">
+                        ≈ {(product.price_eur * 1.95583).toFixed(2)} лв
+                      </span>
                     </span>
                   </button>
                 </li>

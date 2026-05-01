@@ -260,13 +260,23 @@ export default function CartDrawer({ open, onClose, locale }: CartDrawerProps) {
 
             {/* Footer */}
             <div className="border-t border-border px-6 py-4">
-              <div className="flex justify-between text-sm text-secondary">
-                <span>{t("subtotal")}</span>
-                <span className="font-semibold text-navy tabular">
-                  <NumberFlow
-                    value={subtotal}
-                    format={{ style: "currency", currency: "EUR" }}
-                  />
+              <div className="flex justify-between items-start text-sm text-secondary">
+                <span className="pt-1">{t("subtotal")}</span>
+                <span className="flex flex-col items-end leading-tight">
+                  <span className="font-semibold text-navy tabular">
+                    <NumberFlow
+                      value={subtotal}
+                      format={{ style: "currency", currency: "EUR" }}
+                    />
+                  </span>
+                  <span className="mt-0.5 font-mono text-[11px] text-muted tabular">
+                    ≈{" "}
+                    <NumberFlow
+                      value={Math.round(subtotal * 195583) / 100000}
+                      format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                    />{" "}
+                    лв
+                  </span>
                 </span>
               </div>
               <p className="text-xs text-muted mt-1">

@@ -42,7 +42,9 @@ function formatDate(iso: string) {
 }
 
 function formatCurrency(amount: number, _currency?: string) {
-  return `€${amount.toFixed(2)}`;
+  // Dual-currency per BG transition law (1.95583 fixed rate)
+  const bgn = (Math.round(amount * 195583) / 100000).toFixed(2);
+  return `€${amount.toFixed(2)} · ${bgn} лв`;
 }
 
 export default function OrderDetailPage({
