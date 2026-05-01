@@ -17,7 +17,12 @@ import {
 } from "lucide-react";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { PageHero } from "@/components/layout/PageHero";
-import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import Image from "next/image";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const DELIVERY_HERO = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/static/delivery.png`
+  : null;
 import { buildMetadata } from "@/lib/seo/schema";
 
 export async function generateMetadata({
@@ -138,12 +143,17 @@ export default async function DeliveryPage({
               </div>
             </div>
           </div>
-          <div className="mt-8">
-            <PlaceholderVisual
-              variant="map"
-              label={isBg ? "Карта на доставките в ЕС" : "EU delivery map"}
-              className="aspect-[16/7]"
-            />
+          <div className="mt-8 relative aspect-[16/7] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+            {DELIVERY_HERO && (
+              <Image
+                src={DELIVERY_HERO}
+                alt={isBg ? "Доставка в ЕС" : "EU delivery"}
+                fill
+                sizes="100vw"
+                quality={95}
+                className="object-cover"
+              />
+            )}
           </div>
         </FadeIn>
       </section>

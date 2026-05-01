@@ -13,7 +13,12 @@ import {
 } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { InfoTile } from "@/components/ui/InfoTile";
-import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import Image from "next/image";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const RETURNS_HERO = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/static/returns.png`
+  : null;
 
 export async function generateMetadata({
   params,
@@ -89,11 +94,18 @@ export default async function ReturnsPage({
               {t("policyOverview")}
             </p>
           </div>
-          <PlaceholderVisual
-            variant="certificate"
-            label={isBg ? "Процес на рекламация" : "Return flow"}
-            className="aspect-[4/3]"
-          />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+            {RETURNS_HERO && (
+              <Image
+                src={RETURNS_HERO}
+                alt={isBg ? "Процес на връщане" : "Returns process"}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={95}
+                className="object-cover"
+              />
+            )}
+          </div>
         </section>
 
         <section className="mb-16">

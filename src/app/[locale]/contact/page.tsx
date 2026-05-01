@@ -14,7 +14,12 @@ import {
 import { FadeIn } from "@/components/ui/FadeIn";
 import { ContactForm } from "./ContactForm";
 import { PageHero } from "@/components/layout/PageHero";
-import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import Image from "next/image";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const CONTACT_HERO = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/static/delivery.png`
+  : null;
 import { InfoTile } from "@/components/ui/InfoTile";
 
 export async function generateMetadata({
@@ -186,11 +191,18 @@ export default async function ContactPage({
                     : "We ship from an EU-based warehouse with Econt and Speedy for Bulgaria (1-2 business days) and international couriers for the rest of the EU (3-7 business days). We do not offer pickup."}
                 </p>
               </div>
-              <PlaceholderVisual
-                variant="map"
-                label={isBg ? "Карта на доставките" : "Shipping map"}
-                className="aspect-[4/3]"
-              />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+                {CONTACT_HERO && (
+                  <Image
+                    src={CONTACT_HERO}
+                    alt={isBg ? "Доставка от ЕС" : "EU shipping"}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 420px"
+                    quality={95}
+                    className="object-cover"
+                  />
+                )}
+              </div>
             </div>
           </FadeIn>
         </section>

@@ -17,7 +17,12 @@ import {
   Info,
 } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
-import { PlaceholderVisual } from "@/components/ui/PlaceholderVisual";
+import Image from "next/image";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const RECON_HERO = SUPABASE_URL
+  ? `${SUPABASE_URL}/storage/v1/object/public/product-images/static/reconstitution.png`
+  : null;
 
 const STEP_KEYS = [
   "preparation",
@@ -211,11 +216,18 @@ export default async function ReconstitutionGuidePage({
               </div>
             </div>
           </div>
-          <PlaceholderVisual
-            variant="diagram"
-            label={isBg ? "Работен процес" : "Workflow diagram"}
-            className="aspect-[4/3]"
-          />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+            {RECON_HERO && (
+              <Image
+                src={RECON_HERO}
+                alt={isBg ? "Реконституция на пептид" : "Peptide reconstitution"}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={95}
+                className="object-cover"
+              />
+            )}
+          </div>
         </section>
 
         <section className="mb-16">
