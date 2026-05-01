@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail } from "lucide-react";
 
 // NOTE: These category slugs are coupled to the database seed data.
 // If category slugs change in the DB, these must be updated to match.
@@ -107,17 +107,9 @@ export default function Footer() {
                   info@peptidlabs.eu
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://wa.me/359XXXXXXXXX"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-secondary text-sm hover:text-navy transition-colors inline-flex items-center gap-2"
-                >
-                  <MessageCircle size={16} strokeWidth={1.5} />
-                  WhatsApp
-                </a>
-              </li>
+              {/* WhatsApp link disabled until a real business number is provisioned —
+                  was a placeholder href that broke the footer. Restore by adding a
+                  WHATSAPP_NUMBER env var and re-enabling the <a>. */}
             </ul>
 
             {/* Social media */}
