@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Download, FileText, ShieldCheck } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import Image from "next/image";
+import { CoaPreview } from "@/components/product/CoaPreview";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const COA_HERO = SUPABASE_URL
@@ -84,7 +85,8 @@ export default async function CoaVaultPage({
                 : "A COA (Certificate of Analysis) is an independent laboratory document confirming the purity, identity and absence of contaminants in a specific batch. It includes the HPLC chromatogram, mass spectrometry analysis, endotoxin content and heavy metal tests."}
             </p>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)]">
+          <CoaPreview peptideName="GHK-Cu" dose={50} purityPercent={99} locale={locale} />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_12px_40px_-24px_rgba(15,23,42,0.18)] hidden">
             {COA_HERO && (
               <Image
                 src={COA_HERO}

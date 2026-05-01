@@ -46,7 +46,8 @@ export function DualPrice({
   mono,
   className,
 }: Props) {
-  const bgnText = bgn != null ? formatBgnFromBgn(bgn) : formatBgn(eur);
+  // Defensive: treat 0 as missing (4 legacy rows had price_bgn=0).
+  const bgnText = bgn && bgn > 0 ? formatBgnFromBgn(bgn) : formatBgn(eur);
   return (
     <span
       className={`inline-flex flex-col items-end leading-tight ${className ?? ""}`}
@@ -72,7 +73,7 @@ export function DualPriceInline({
   bgn,
   className,
 }: Pick<Props, "eur" | "bgn" | "className">) {
-  const bgnText = bgn != null ? formatBgnFromBgn(bgn) : formatBgn(eur);
+  const bgnText = bgn && bgn > 0 ? formatBgnFromBgn(bgn) : formatBgn(eur);
   return (
     <span className={`inline-flex items-baseline gap-1.5 ${className ?? ""}`}>
       <span className="font-bold text-navy tabular">{formatEur(eur)}</span>

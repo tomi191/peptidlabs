@@ -33,6 +33,7 @@ import {
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { SpecsTable } from "@/components/product/SpecsTable";
 import { FrequentlyBoughtTogether } from "@/components/product/FrequentlyBoughtTogether";
+import { CoaPreview } from "@/components/product/CoaPreview";
 import { ProductFaq } from "@/components/product/ProductFaq";
 import { SideEffectsCard } from "@/components/product/SideEffectsCard";
 import { ReconstitutionGuide } from "@/components/product/ReconstitutionGuide";
@@ -697,6 +698,53 @@ export default async function ProductPage({ params }: PageProps) {
             locale={locale}
             translations={tabTranslations}
           />
+        </div>
+      </div>
+
+      {/* ─── COA PREVIEW ─── sample format card with peptide-specific overlay */}
+      <div className="bg-white py-12">
+        <div className="mx-auto max-w-[1280px] px-6">
+          <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:items-start">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-accent">
+                {locale === "bg" ? "[Сертификат за анализ]" : "[Certificate of Analysis]"}
+              </p>
+              <h2 className="mt-2 font-display text-2xl md:text-3xl font-bold tracking-tight text-navy">
+                {locale === "bg"
+                  ? `COA с всяка партида ${displayName}`
+                  : `COA with every batch of ${displayName}`}
+              </h2>
+              <p className="mt-4 text-secondary leading-relaxed">
+                {locale === "bg"
+                  ? "Всяка партида преминава независим HPLC-UV анализ + масспектрометрия от акредитирана лаборатория. Сертификатът документира лот номер, дата на синтез, чистота, идентичност и резултати от тестове за ендотоксини. Получавате го с поръчката и винаги имате достъп до архива чрез"
+                  : "Every batch is independently tested by HPLC-UV + mass spectrometry from an accredited laboratory. The certificate documents lot number, manufacture date, purity, identity, and endotoxin test results. You receive it with your order and can always access the archive via the"}{" "}
+                <Link href="/coa-vault" className="text-accent underline decoration-dotted hover:no-underline">
+                  COA Vault
+                </Link>
+                .
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-secondary">
+                <li className="flex items-start gap-2">
+                  <CircleCheck size={14} className="mt-0.5 shrink-0 text-accent" strokeWidth={2} />
+                  <span>{locale === "bg" ? "HPLC-UV хроматограма с количествена оценка" : "HPLC-UV chromatogram with quantitative assessment"}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CircleCheck size={14} className="mt-0.5 shrink-0 text-accent" strokeWidth={2} />
+                  <span>{locale === "bg" ? "Mass spec потвърждение на молекулна маса" : "Mass spec confirmation of molecular weight"}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CircleCheck size={14} className="mt-0.5 shrink-0 text-accent" strokeWidth={2} />
+                  <span>{locale === "bg" ? "Лот номер + дата на синтез + срок на годност" : "Lot number + manufacture date + expiry"}</span>
+                </li>
+              </ul>
+            </div>
+            <CoaPreview
+              peptideName={product.name}
+              dose={product.vial_size_mg}
+              purityPercent={product.purity_percent}
+              locale={locale}
+            />
+          </div>
         </div>
       </div>
 
