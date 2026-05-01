@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAdmin } from "@/lib/store/admin";
-import { LogOut, Package, ShoppingCart, LayoutDashboard, Bell } from "lucide-react";
+import { LogOut, Package, ShoppingCart, LayoutDashboard, Bell, FileText } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, logout } = useAdmin();
@@ -21,6 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/waitlist", label: "Списък (waitlist)", icon: Bell },
     { href: "/admin/orders", label: "Поръчки", icon: ShoppingCart },
     { href: "/admin/products", label: "Продукти", icon: Package },
+    { href: "/admin/blog", label: "Блог (AI)", icon: FileText },
   ] as const;
 
   return (
