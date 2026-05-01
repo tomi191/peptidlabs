@@ -35,11 +35,14 @@ export default function CookieConsent() {
 
   function handleAccept() {
     localStorage.setItem("peptidelab_consent", "accepted");
+    // Notify GoogleAnalytics (and any other listeners) to flip consent → granted
+    window.dispatchEvent(new Event("peptidlab:analytics-consent-granted"));
     setVisible(false);
   }
 
   function handleDecline() {
     localStorage.setItem("peptidelab_consent", "declined");
+    window.dispatchEvent(new Event("peptidlab:analytics-consent-denied"));
     setVisible(false);
   }
 

@@ -15,6 +15,7 @@ import { GrainOverlay } from "@/components/ui/GrainOverlay";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import { Toaster } from "sonner";
 import { PlausibleScript } from "@/components/analytics/Plausible";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { DesktopAppRail } from "@/components/layout/DesktopAppRail";
@@ -149,6 +150,7 @@ export default async function LocaleLayout({
           }}
         />
         <PlausibleScript />
+        <GoogleAnalytics />
         <ServiceWorkerRegister />
         <a
           href="#main-content"
