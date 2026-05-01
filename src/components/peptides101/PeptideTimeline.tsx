@@ -104,8 +104,8 @@ function TimelineItem({ event, index }: { event: Event; index: number }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
       transition={{ duration: 0.5, delay: 0.05 }}
       className={`relative flex items-start gap-6 md:gap-0 ${
         isLeft ? "md:flex-row" : "md:flex-row-reverse"

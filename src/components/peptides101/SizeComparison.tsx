@@ -86,8 +86,8 @@ export function SizeComparison() {
         {items.map((item, i) => (
           <motion.div
             key={item.name}
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
             transition={{ duration: 0.5, delay: i * 0.08 }}
             className="grid gap-3 sm:grid-cols-[180px_1fr_auto] sm:items-center"
           >
