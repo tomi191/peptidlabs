@@ -158,15 +158,10 @@ export default async function HomePage({
       {/* 3. Single trust block — static, indexable. (LiveTrustTicker removed) */}
       <SocialProofBar />
 
-      {/* 4. How It Works — moved up; reduces uncertainty before product browse */}
+      {/* 4. Categories — discovery hub right after trust signal.
+              For an informed-researcher audience the molecule comes first;
+              ordering reassurance follows interest, doesn't precede it. */}
       <div className="bg-surface">
-        <FadeIn>
-          <HowItWorks peptideTotal={peptideTotal} />
-        </FadeIn>
-      </div>
-
-      {/* 5. Categories — moved up; discovery hub before curated picks */}
-      <div className="bg-white">
         <FadeIn>
           <Suspense fallback={<CategoryGridSkeleton />}>
             <CategoryGridAsync locale={locale} />
@@ -174,8 +169,8 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
-      {/* 6. Bestsellers — curated picks AFTER categories (mental-model funnel) */}
-      <div className="bg-surface">
+      {/* 5. Bestsellers — curated picks after the discovery hub */}
+      <div className="bg-white">
         <FadeIn>
           <Suspense fallback={<BestsellersSkeleton />}>
             <BestsellersSectionAsync locale={locale} />
@@ -183,8 +178,16 @@ export default async function HomePage({
         </FadeIn>
       </div>
 
-      {/* 7. PeptideFinder — moved DOWN as rescue mechanic for users who didn't
-              find what they wanted in Bestsellers. Engagement after trust. */}
+      {/* 6. How It Works — reassurance / friction-kill AFTER interest is
+              established (user has seen what we sell, now show how to buy). */}
+      <div className="bg-surface">
+        <FadeIn>
+          <HowItWorks peptideTotal={peptideTotal} />
+        </FadeIn>
+      </div>
+
+      {/* 7. PeptideFinder — rescue mechanic for users who didn't find what
+              they wanted in Bestsellers and want guided discovery. */}
       <div className="bg-white">
         <FadeIn>
           <PeptideFinder locale={locale as "bg" | "en"} />
